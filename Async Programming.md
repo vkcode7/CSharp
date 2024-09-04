@@ -492,9 +492,9 @@ Interlocked.Add(ref j, 1);
 ```
 
 ## **Monitor**
-The **<code>Monitor</code></strong> class exposes static methods to synchronize access to objects. The following static methods are commonly used to work with the <strong><code>Monitor</code></strong> class:
+The <strong><code>Monitor</code></strong> class exposes static methods to synchronize access to objects. The following static methods are commonly used to work with the <strong><code>Monitor</code></strong> class:
 
-* **<code>Enter()</code></strong>
+* <strong><code>Enter()</code></strong>
 * <strong><code>Exit()</code></strong>
 * <strong><code>Wait()</code></strong>
 * <strong><code>Pulse()</code></strong>
