@@ -1266,8 +1266,7 @@ class Dog : Animal
 
 **Abstract classes** are commonly used for _inheritance_ and can’t be _instantiated_. **Abstract methods** within an abstract class must be contained in the _child class_ or the program won’t compile. Virtual methods are not required to be overridden in _child classes_.
 
-
-```
+```c#
 SpanishLanguage languageSelected = new();
 languageSelected.Greeting(); // Output: Hola
 languageSelected.Goodbye(); // Output: Goodbye!  
@@ -1293,16 +1292,11 @@ public class SpanishLanguage : Talk
 }
 ```
 
-
-
 ### Calling Base Class Constructors
-
-
-```
+```c#
 public ListBox( int theTop, int theLeft, string theContents):
 base(theTop, theLeft) // call base constructor
 ```
-
 
 Because classes cannot inherit constructors, a derived class must implement its own constructor and can only make use of the constructor of its base class by calling it explicitly.
 
@@ -1316,29 +1310,20 @@ Designating a method as abstract is accomplished by placing the `abstract` keywo
 `abstract public void DrawWindow( ); `(Because the method can have no implementation, there are no braces, only a semicolon.)
 
 If one or more methods are abstract, the class definition must also be marked `abstract`, as in the following:
-
-
-```
+```c#
 abstract public class Window
 ```
-
-
- 
-
 
 ### Sealed Classes
 
 A sealed class does not allow classes to derive from it at all. 
-
 
 ### What are generics?
 
 **Generics** define _type-safe classes_ without committing to any specific data types. They’re essentially a placeholder until a specified data type is declared. There are many prebuilt classes that use generics. 
 
 **Generic type names** are usually a single capital letter, `T` being the most common, or a simple name starting with `T`, such as `TKey` or `TValue`.
-
-
-```
+```c#
 AGenericClass<int> intExample = new(5);
 // Output: The value is 5 and is a System.Int32
 
@@ -1360,8 +1345,6 @@ class AGenericClass<T>
 }
 ```
 
-
-
 ### What’s an extension method?
 
 **Extension methods** are those that appear to belong to a class, but they don’t actually. Extension methods must be defined in static classes and be static methods.
@@ -1369,9 +1352,7 @@ class AGenericClass<T>
 The built-in string class contains methods such as ToLower() and Length(). In the example below, an extension method called ToStarBox() is created and can be used like the previous string methods mentioned. It will appear to be in the string class, when it is actually not.
 
 Extension method parameters must start with the this keyword followed by the type that’s being created, in our example, this is the string data type.
-
-
-```
+```c#
 string aWord= "Hello";
 aWord.ToStarBox();
 // Output:
@@ -1395,14 +1376,10 @@ public static class StringExtensionExample
 }
 ```
 
-
-
 ### What is an `interface`?
 
 An `interface` behaves as a contract between itself and any class where it’s used. A class that implements an interface must now implement all its members. These `interfaces` are usually named with a capital `I`, though it isn’t required. These `interfaces` can only contain declarations, and all members are implicitly abstract and public. Beginning with **C# version 8.0**, however, an interface may define default implementations for some or all of its members.
-
-
-```
+```c#
 Cake exampleCake = new(); 
 Pasta examplePasta = new();
 
@@ -1445,26 +1422,20 @@ public class Pasta : IFood
 }
 ```
 
-
 C# doesn’t allow for multiple inheritances in classes but multiple interfaces are allowed. If interfaces are added to a class that’s also inheriting from a base class, the interfaces must follow the base class.
 
-
-```
+```c#
 public class DeckOfCards : ABaseClass, IInterface, IAnotherInterface
 {
   // Empty Class
 }
 ```
 
-
-
 ## Iterators
 
 [https://learn.microsoft.com/en-us/dotnet/csharp/iterators](https://learn.microsoft.com/en-us/dotnet/csharp/iterators)
 
 An _iterator_ is an object that traverses a container, particularly lists. Iterators can be used for:
-
-
 
 * Performing an action on each item in a collection.
 * Enumerating a custom collection.
@@ -1473,13 +1444,10 @@ An _iterator_ is an object that traverses a container, particularly lists. Itera
 
 The return type of an iterator can be [IEnumerable](https://learn.microsoft.com/en-us/dotnet/api/system.collections.ienumerable), [IEnumerable&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1), [IAsyncEnumerable&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1), [IEnumerator](https://learn.microsoft.com/en-us/dotnet/api/system.collections.ienumerator), or [IEnumerator&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerator-1).
 
-
 ### The IEnumerable and IEnumerator
 
 There are useful built-in interfaces, such as IEnumerable, IList, IDictionary, and IComparable. Adding the interface, IEnumerable, to a class means that it will iterate. The class must now also contain IEnumerator. In the example below, a class for a deck of cards is created and iterated over.
-
-
-```
+```c#
 using System.Collections; 
 
 DeckOfCards theDeck = new();
@@ -1522,16 +1490,12 @@ class DeckOfCards : IEnumerable // This class can now be iterated over to displa
 }
 ```
 
-
-
 ### Iterator Methods: The `yield return` and `yield break`
 
 Another great feature of the C# language enables you to build methods that create a source for an enumeration. These methods are referred to as** _iterator methods_**. An iterator method defines how to generate the objects in a sequence when requested. You use the `yield return` contextual keywords to define an iterator method.
 
 The `yield return` and `yield break` are used when implementing an iterator (`IEnumerable`). The `yield return` statement returns the next element in the sequence, whereas `yield break` ends the iteration.
-
-
-```
+```c#
 Console.WriteLine( "Output all numbers greater than 5, stop if number is 7");
 
 List<int > MyNumbers = new() { 9, 4, 20, 3, 7, 12 };
@@ -1557,11 +1521,8 @@ IEnumerable<int> GreaterThan5StopIf7()
 }
 ```
 
-
 The compiler translates the `foreach` loop into something similar to this construct:
-
-
-```
+```c#
 {
     var enumerator = collection.GetEnumerator();
     try
@@ -1580,12 +1541,8 @@ The compiler translates the `foreach` loop into something similar to this constr
 }
 ```
 
-
-
 ### Async counterpart of above:
-
-
-```
+```c#
 public async IAsyncEnumerable<int> GetSetsOfNumbersAsync()
 {
     int index = 0;
@@ -1609,10 +1566,7 @@ Console.WriteLine(item?.ToString());
 }
 ```
 
-
-
 ## Data Structures - struct, record, List, LinkedList, Dictionary, Tuple
-
 
 ### What is a struct?
 
@@ -1622,8 +1576,7 @@ A `struct` can be declared without using the `new` keyword. This is unique to `s
 
 When you create a struct object using the new operator, it gets created and the <span style="text-decoration:underline;">appropriate constructor is called</span>. Unlike classes, structs can be instantiated without using the new operator. If you do not use new, the fields will remain unassigned and the object cannot be used until all of the fields are initialized.
 
-
-```
+```c#
 With new()
 TheLocation theLocation1 = new();
 Console.WriteLine($"Location1: x = {theLocation1.X}, y = {theLocation1.Y}"); 
@@ -1651,10 +1604,7 @@ public struct TheLocation
 }
 ```
 
-
 **<span style="text-decoration:underline;">Limitations of Struct</span>**
-
-
 
 1. Class is a reference type, whereas Struct is a value type.
 2. A default constructor or destructor cannot be created in Struct.
@@ -1666,29 +1616,21 @@ public struct TheLocation
 8. A null value can be assigned to a struct as it can be used as a nullable type.
 9. Structs are allocated either on the stack or inline in containing types and deallocated when the stack or the containing type gets deallocated. But, reference types are allocated on the heap and garbage-collected. So, the allocation and deallocation of structs are cheaper than classes.
 
-
 ### What is a record?
 
 A **record (C# 9)** is a reference type that makes it easier to create _immutable reference types_ and provides _equality comparisons_. C# 10 introduces **<span style="text-decoration:underline;">record struct</span>** types too.
 
 It’s important to point out that, when records are created in the above manner, they’re immutable, meaning that they cannot be changed. This can be seen in the following code: \
 `Student student1 = new("Pablo", "Exam 1", 97);`
-
-
-```
+```c#
 student1.Grade = 98; // Error because the value can not be changed
 Console.WriteLine(student1);
 
 public record Student(string Name, string Assignment, int Grade);
 ```
 
-
-
-#### 
-    The with keyword
-
-
-```
+#### The with keyword
+```c#
 The with keyword can be used to create a copy of a record and change its properties as needed.
 Student student1 = new("Pablo", "Exam 1", 97);
 Console.WriteLine(student1);
@@ -1700,14 +1642,10 @@ Console.WriteLine(student2);
 public record Student(string Name, string Assignment, int Grade);
 ```
 
-
-
 #### Deconstruct
 
 Records can also use the **deconstruct** method to separate the record into component properties.
-
-
-```
+```c#
 Student student1 = new("Pablo", "Exam 1", 97);
 Console.WriteLine(student1);
 
@@ -1719,11 +1657,8 @@ Console.WriteLine(studentGrade); // Output: 97
 public record Student(string Name, string Assignment, int Grade);
 ```
 
-
 A method can be added to the `record` class. These methods are similar to class methods and are called with `record` objects. Records can _inherit_ from other records too.
-
-
-```
+```c#
 Student student1 = new("Pablo", "Exam 1", 97);        
 student1.DisplayMessage(); // Output: Hello
 
@@ -1736,8 +1671,6 @@ public record Student(string Name, string Assignment, int Grade)
 }
 ```
 
-
-
 ### What is a `list`? (part of `using System.Collections.Generic)`
 
 **Lists** and arrays are similar in that they both hold items. Lists can easily _search_, _sort_, _add_, and _remove_ items because of built-in functionalities. Lists can constantly be changed to include or disclude additional items, unlike an array that has a set number of items.
@@ -1745,9 +1678,7 @@ public record Student(string Name, string Assignment, int Grade)
 A `List` uses an internal array to handle its data, and automatically resizes the array when adding more elements to the `List` than its current capacity, which makes it more easy to use than an array, where you need to know the capacity beforehand.
 
 Methods: Add, Remove, Insert, RemoveAt, Sort, Clear, ToArray
-
-
-```
+```c#
 List<string> foods = new(); 
 foods.Add("Pizza"); 
 foods.Add("Burger");
@@ -1766,14 +1697,10 @@ foreach(var number in evenNumbers)
 string[] foodsArray = foods.ToArray();
 ```
 
-
-
 ### What’s a `LinkedList`?
 
 A **LinkedList** is generally slower than a regular list, but it can be beneficial when adding or removing items in the middle of a `list`. As with lists, a `LinkedList` uses _generics_. It is a doubly LL so Next and Previous are supported. Other important properties are Count(), First, Last. Key methods are AddFirst, AddLast, AddBefore, AddAfter, Contains, Find, Remove, RemoveFirst, RemoveLast. Every node in a LinkedList&lt;T> object is of the type LinkedListNode&lt;T>
-
-
-```
+```c#
         // Using LinkedList class
         LinkedList<String> my_list = new LinkedList<String>();
 
@@ -1784,14 +1711,10 @@ A **LinkedList** is generally slower than a regular list, but it can be benefici
         my_list.AddLast("Shilpa");
 ```
 
-
-
 ### What is a `dictionary`?
 
 A **dictionary** consists of a _key_ and a _value_. In an array, the key is created automatically (0, 1, and so on). With dictionaries, the key name can be set to something meaningful. As with lists, **dictionaries** use _generics_
-
-
-```
+```c#
 Dictionary <string , int> myInventory = new(); 
 myInventory.Add( "Pens", 7); 
 myInventory.Add( "Computers", 2);
@@ -1821,14 +1744,10 @@ foreach (KeyValuePair<string, int> theItem in myInventory)
 }
 ```
 
-
-
 ### What is a `tuple`?
 
 A `Tuple` can be thought of much like an array, but a `Tuple` collection can contain different data types. Classes of the `Tuple` type are _generic containers_ and can hold `1`-`8` items.
-
-
-```
+```c#
 // Instantiate a 3-Item Tuple: Int, String, and an Array of Ints
 Tuple<int,string,int[]> myTuple = Tuple.Create(101, "Hello", new int[] { 41, 52 });
 
@@ -1842,11 +1761,8 @@ foreach (int theNumber in myTuple.Item3)
 }
 ```
 
-
 We can use a `Tuple` as the return type in a method. The following example returns a `Tuple`.
-
-
-```
+```c#
 int num1 = 10;
 int num2 = 4;
 
@@ -1862,11 +1778,8 @@ static Tuple <int , int> DivideGetQuotientAndRemainder(int dividend, int divisor
 }
 ```
 
-
 Sometimes, you want your method to return more than a single value. You can do this easily by using _tuple types_ and _tuple literals_.
-
-
-```
+```c#
 public (string, string, string, int) GetPersonalInfo(string id)
 {
     PersonInfo per = PersonInfo.RetrieveInfoById(id);
@@ -1874,20 +1787,15 @@ public (string, string, string, int) GetPersonalInfo(string id)
 }
 ```
 
-
 The caller can then consume the returned tuple with code like the following:
-
-
-```
+```c#
 var person = GetPersonalInfo("111111111");
 Console.WriteLine($"{person.Item1} {person.Item3}: age = {person.Item4}");
 ```
 
-
 Names can also be assigned to the tuple elements in the tuple type definition. The following example shows an alternate version of the `GetPersonalInfo` method that uses named elements:
 
-
-```
+```c#
 public (string FName, string MName, string LName, int Age) GetPersonalInfo(string id)
 {
     PersonInfo per = PersonInfo.RetrieveInfoById(id);
@@ -1895,11 +1803,8 @@ public (string FName, string MName, string LName, int Age) GetPersonalInfo(strin
 }
 ```
 
-
 The previous call to the `GetPersonalInfo` method can then be modified as follows:
-
-
-```
+```c#
 var person = GetPersonalInfo("111111111");
 Console.WriteLine($"{person.FName} {person.LName}: age = {person.Age}");
 
@@ -1942,18 +1847,13 @@ if (limitsLookup.TryGetValue(4, out (int Min, int Max) limits))
 // Found limits: min is 10, max is 20
 ```
 
-
-
 #### Tuples vs System.Tuple
 
 C# tuples, which are backed by [System.ValueTuple](https://learn.microsoft.com/en-us/dotnet/api/system.valuetuple) types, are different from tuples that are represented by [System.Tuple](https://learn.microsoft.com/en-us/dotnet/api/system.tuple) types. The main differences are as follows:
 
-
-
 * `System.ValueTuple` types are [value types](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types). `System.Tuple` types are [reference types](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types).
 * `System.ValueTuple` types are mutable. `System.Tuple` types are immutable.
 * Data members of `System.ValueTuple` types are fields. Data members of `System.Tuple` types are properties.
-
 
 ## Boxing and Unboxing Types
 
@@ -1963,25 +1863,17 @@ Boxing and unboxing are the processes that enable value types (such as, integers
 
 Boxing is an implicit conversion of a value type to the type `Object`. Boxing a value allocates an instance of `Object` and copies the value into the new object instance.
 
-
-
 <p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
 
 ![alt_text](images/image1.png "image_tooltip")
 
-
 Boxing is implicit when you provide a value type where a reference is expected. The runtime notices that you've provided a value type and silently boxes it within an object. You can, of course, first cast the value type to a reference type, as in the following:
-
-
-```
+```c#
 int myIntegerValue = 5;
 object myObject = myIntegerValue; // cast to an object //boxing
 myObject.ToString();
 int c = (int)myObject; //unboxing
 ```
-
-
 
 ### Unboxing Must Be Explicit
 
@@ -1989,16 +1881,11 @@ To return the boxed object back to a value type, you must explicitly unbox it. F
 
 You should accomplish unboxing in two steps:
 
-
-
 1. Make sure the object instance is a boxed value of the given value type.
 2. Copy the value from the instance to the value-type variable.
 
-
 ### Example of boxing and unboxing
-
-
-```
+```c#
 using System;
 public class UnboxingTest
 {
@@ -2017,23 +1904,17 @@ Console.WriteLine( "anotherIntegerVariable: {0}",
 anotherIntegerVariable );
 }
 }
+```
 
 Output:
 myObjectVariable: 123
 anotherIntegerVariable: 123
 
-
-
 ## What is a Thread?
 Threads let us run multiple sections of code simultaneously. Threading allows the code to run on multiple processors, boosting performance.
-```
-
-
 
 ### Thread with a join
-
-
-```
+```c#
 Thread aThread = new Thread(CountTo200); 
 Thread bThread = new Thread(CountTo200); 
 
@@ -2052,12 +1933,8 @@ static void CountTo200()
 }
 ```
 
-
-
 ### Thread with one parameter
-
-
-```
+```c#
 Thread aThread = new Thread(CountTo);
 aThread.Start(45); // 1 parameter 
 
@@ -2068,32 +1945,18 @@ static void CountTo(object count)
         Console.WriteLine(i); 
     }
 }
-
-
+```
 
 ## What's asynchronous programming? using System.Threading.Tasks;
-```
-
-
 [https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/](https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/)
 
-
-```
 Asynchronous programming enhances the responsiveness of applications by using non-blocking operations to prevent bottlenecks that could slow down or freeze an application. The two main components of asynchronous programming are the keyword modifiers, async and await.
 A method using the async modifier enables the use of the await operator, which now must be included at least once within the method. The original caller method continues when the await operator is reached, and the async method processes until it's completed.
 The async methods must have a return type of void, Task, Task<T>, or any other type that has a GetAwaiter method. The naming convention for async methods is to append them with an async suffix.
-```
-
-
 
 ### The async void method
-
-
-```
 In the example below, the method, FirstMethodAsync(), contains a delay that would generally freeze a program for 3 seconds. Because this is an async method, the original caller of the method continues and the async method keeps processing when await is reached.
-```
-
-
+```c#
 FirstMethodAsync();
 
 Console.WriteLine( "System is not Frozen"); 
@@ -2101,66 +1964,46 @@ Console.WriteLine( "System is not Frozen");
 Console.ReadLine();
 
 static async void FirstMethodAsync()
-
 { 
-
     Console.WriteLine( "Task Started");
-
     await Task.Delay(3000); // Delays the method for 3 seconds
-
     Console.WriteLine( "Task Finished");
-
 }
 
 // Output: 
-
 // Task Started
-
 // System is not Frozen
-
 // Task Finished
-
+```
 
 ### The `async Task` method
 
 The `async` methods can return with `void` as demonstrated previously. They generally return with `Task` or `Task&lt;T Result>`,however, which encapsulates information. A `Task` is used if there is no return statement, and `Task&lt;T Result>` is used if there’s a return statement.
-
+```c++
 FirstMethodAsync();
-
 Console.WriteLine( "System is not Frozen"); 
 
 Console.ReadLine();
 
 static async void FirstMethodAsync()
-
 { 
 
     Console.WriteLine( "Task Started"); 
-
     await SecondMethodAsync();
-
     Console.WriteLine( "First Task Finished"); 
-
 }
 
 static async Task SecondMethodAsync()
-
 { 
-
     await Task.Delay(3000); // Delays the method for 3 seconds 
-
     Console.WriteLine( "Second Task Finished");
-
 }
 
 // Output: Task Started
-
 // System is not Frozen 
-
 // Second Task Finished 
-
 // First Task Finished
-
+```
 
 ### The `async Task &lt;T Result>` method
 
