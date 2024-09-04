@@ -2006,44 +2006,30 @@ static async Task SecondMethodAsync()
 ```
 
 ### The `async Task &lt;T Result>` method
-
+```c#
 FirstMethodAsync(); 
-
 Console.WriteLine("System is not Frozen"); 
-
 Console.ReadLine();
 
 static async void FirstMethodAsync()
-
 {
-
     Console.WriteLine("Task Started"); 
-
     Console.WriteLine(await SecondMethodAsync()); 
-
-    Console.WriteLine("First Task Finished");
-
+    Console.WriteLine("First Task Finished")
 }
 
 static async Task&lt;**string**> SecondMethodAsync()
-
 {
-
     await Task.Delay(3000); // Delays the method for 3 seconds
-
     return ("Second Task Finished");
-
 }
 
 // Output:
-
 // Task Started
-
 // System is not Frozen
-
 // Second Task Finished
-
 // First Task Finished
+```
 
 **Operator overloading**
 
@@ -2051,71 +2037,50 @@ The `Object` class (which is the root of every class in C#) offers a virtual met
 
 Overriding the `Equals( )` method allows your class to be compatible with other .NET languages that do not overload operators (but do support method overloading).
 
-
 ## Attributes
 
 Every .NET application contains code, data, and metadata. Attributes are objects that are embedded in your program (invisible at run time) that contain metadata that is, data about your classes and about your program. Attributes can be made visible with ILDasm the tool for looking at the Microsoft Intermediate Language (MSIL) that the C# compiler produces.
 
 The `is` operator lets you query whether an object implements an interface (or derives from a base class). The form of the `is` operator is:
-
-
-```
+```c#
 if ( myObject is ICompressible )
 ```
 
-
 The `as` operator tries to cast the object to the type, and if an exception would be thrown, it instead returns null:
-
-
-```
+```c#
 ICompressible myCompressible = myObject as ICompressible
 if ( myCompressible != null )
 ```
 
-
-
 ## Explicit Interface Implementation
 
 Because both `IStorable` and `ITalk` have a `Read( )` method, the implementing `Document` class must use explicit implementation for at least one of the methods. With explicit implementation, the implementing class (`Document`) explicitly identifies the interface for the method:
-
-
-```
+```c#
 void ITalk.Read( )
 ```
-
 
 Marking the `Read( )` method as a member of the `ITalk` interface resolves the conflict between the identical `Read( )` methods. There are some additional aspects you should keep in mind.
 
 First, the explicit implementation method cannot have an access modifier:
-
-
-```
+```c#
 void ITalk.Read( )
 ```
 
-
 This method is implicitly public. In fact, a method declared through explicit implementation cannot be declared with the `abstract`, `virtual`, `override`, or `new` keywords.
-
 Most importantly, you cannot access the explicitly implemented method through the object itself. When you write:
 
-
-```
+```c#
 theDoc.Read( );
 ```
 
-
 the compiler assumes you mean the implicitly implemented interface for `IStorable`. The only way to access an explicitly implemented interface is through a cast to the interface:
-
-
-```
+```c#
 ITalk itDoc = theDoc as ITalk;
 if (itDoc != null)
 {
 itDoc.Read( );
 }
 ```
-
-
 
 ## Collection Interfaces
 
@@ -2124,39 +2089,18 @@ The .NET Framework provides a number of interfaces , such as `IEnumerable` and `
 An indexer is a C# construct that allows you to treat a class as if it were an array. In the preceding example, you are treating the `ListBox` as if it were an array of strings, even though it is more than that. An indexer is a special kind of property, but like all properties, it includes `get` and `set` accessors to specify its behavior.
 
 You declare an indexer property within a class using the following syntax:
-
-
-```
+```c#
 type this [type argument ]{get; set;}
 ```
-
-
 **eg:**
-
-
-```
+```c#
 namespace SimpleIndexer
 {
 // a simplified ListBox control
 public class ListBoxTest
 {
-```
-
-
-
-<p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: Definition &darr;&darr; outside of definition list. Missing preceding term(s)? </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-**::**
-
-
-<p id="gdcalert3" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: Definition &darr;&darr; outside of definition list. Missing preceding term(s)? </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert4">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-**::**
-
-
-```
+::
+::
 public string this[int index]
 {
     get
@@ -2178,13 +2122,10 @@ public string this[int index]
         strings[index] = value;
         }
     }
+}
 ```
 
-
-**}**
-
-
-```
+```c#
 public class Tester
 {
 static void Main( )
@@ -2210,7 +2151,7 @@ Console.WriteLine( "lbt[{0}]: {1}", i, lbt[i] );
 }
 }
 }
-
+```
 
 <table>
   <tr>
@@ -2266,8 +2207,6 @@ Console.WriteLine( "lbt[{0}]: {1}", i, lbt[i] );
   </tr>
 </table>
 
-
-
 #### Dictionaries
 
 A dictionary is a collection that associates a key to a value. A language dictionary, such as Webster's, associates a word (the key) with its definition (the value)
@@ -2276,7 +2215,6 @@ A .NET Framework dictionary can associate any kind of key (string, integer, obje
 
 The most important attributes of a good dictionary are that it is easy to add values and it is quick to retrieve values.
 
-
 ### Creating Strings
 
 C# treats strings as if they were built-in types (much as it does with arrays). C# strings are flexible, powerful, and easy to use.
@@ -2284,26 +2222,20 @@ C# treats strings as if they were built-in types (much as it does with arrays). 
 In .NET, each string object is an immutable sequence of Unicode characters. In other words, methods that appear to change the string actually return a modified copy; the original string remains intact (and if no longer used, is collected by the Garbage Collector).
 
 The declaration of the `System.String` class is (in part):
-
-
-```
+```c#
 public sealed class String :
 IComparable, ICloneable, IConvertible, IEnumerable
 ```
 
-
 This declaration reveals that the class is `sealed`, meaning that it is not possible to derive from the `String` class. The class also implements four system interfaces`IComparable`, `ICloneable`, `IConvertible`, and `IEnumerable`which dictate functionality that `System.String` shares with other classes in the .NET Framework: the ability to be sorted, copied, converted to other types, and enumerated in `foreach` loops, respectively.
-
 
 #### The StringBuilder Class
 
 You can use the `System.Text.StringBuilder` class for creating and modifying strings. Unlike `String`, `StringBuilder` is mutable; when you modify an instance of the `StringBuilder` class, you modify the actual string, not a copy.
 
-
 ### The Regex Class
 
 The .NET Framework provides an object-oriented approach to regular expression pattern matching and replacement.
-
 
 ## Throwing Exceptions
 
@@ -2313,17 +2245,12 @@ All exceptions are either of type `System.Exception` or of types derived from `S
 
 The CLR System namespace includes a number of pre-defined exception types that you can use in your own programs. These exception types include `ArgumentNullException`, `InvalidCastException`, and `OverflowException`, as well as many others. You can guess their use based on their name. For example, `ArgumentNull` exception is thrown when an argument to a method is null when that is not an expected (or acceptable) value.
 
-
 ### The throw Statement
 
 To signal an abnormal condition in a C# program, throw an exception by using the `tHRow` keyword. The following line of code creates a new instance of `System.Exception` and then throws it:
-
-
-```
+```c#
 throw new System.Exception( );
 ```
-
-
 
 ### The finally Statement
 
@@ -2341,13 +2268,11 @@ The `HelpLink` property provides a link to a help file associated with the excep
 
 The read-only `StackTrace` property is set by the CLR. This property is used to provide a stack trace for the error statement.
 
-
 ### How to catch a non-CLS exception?
 
 Within a `catch(RuntimeWrappedException e)` block, access the original exception through the [RuntimeWrappedException.WrappedException](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.runtimewrappedexception.wrappedexception) property.
 
-
-```
+```c#
 // Class library written in C++/CLI.
 var myClass = new ThrowNonCLS.Class1();
 try
@@ -2385,9 +2310,7 @@ class Program{
 }
 ```
 
-
 The above code will cause a compilation error: `main.cs(15,5): error CS0160: A previous catch clause already catches all exceptions of this or a super type `System.Exception'`
-
 
 #### The partial Keyword
 
@@ -2407,7 +2330,6 @@ Web Forms are event-driven. An _event_ represents the idea that "something happe
 
 By convention, ASP.NET event handlers return `void` and take two parameters. The first parameter represents the object raising the event. The second, called the _event argument_, contains information specific to the event, if any. For most events, the event argument is of type `EventArgs`, which has no members and serves as a placeholder and as the base class for more specialized objects that provide properties needed by the event handler.
 
-
 #### State
 
 The web does not maintain state. By design, it is a stateless environment. That means that the server would normally have no idea that a second post from a given user has any association with previous posts by that same user. That is fine if all you have are one or two pages that are information only, with no interaction, but it is obviously limiting if you want to create an interactive application.
@@ -2416,19 +2338,15 @@ ASP.NET solves this problem by maintaining three types of state: view state, ses
 
 View state
 
-
     Maintains the value of controls (what you've filled into text boxes, which choices you've made in lists) when you post a page to the server. There was a time you had to write code to do this, but it is now done for you in an efficient and reliable manner.
 
 Session state
-
 
     Creates an artificial "connection" with the application, simulating the idea of an ongoing session for an individual user within a single application. This is so natural, you hardly notice it. You go to a site, and as you interact with it, remembers your input and responds accordingly, just like working with a desktop application. Sessions typically end by "timing out" after about 20 minutes of inactivity; but in most cases, this is invisible to the user.
 
 Application state
 
-
     Preserves values across users within a given web application. Application state is beyond the scope of this chapter.
-
 
 #### Code-Behind Files
 
@@ -2437,9 +2355,7 @@ Code-behind is the default coding model used by Visual Studio 2005. When a new w
 **Protecting Code by Using the Monitor Class**
 
 The System.Monitor class enables you to serialize the access to blocks of code by means of locks and signals.
-
-
-```
+```c#
 using System;
 using System.Threading;
 
@@ -2447,72 +2363,32 @@ class Database
 {
     public void SaveData(string text)
     {
-```
+        Console.WriteLine("[SaveData] Started");
 
-
-
-        `Console.WriteLine("[SaveData] Started");`
-
-
-        `try`
-
-
-        `{`
-
-
+        try
+        {
             `Monitor.Enter(this);`
-
-
             `Console.WriteLine("[SaveData] Working");`
-
-
             `throw new Exception("ERROR!");`
-
-
             `for (int i = 0; i &lt; 50; i++)`
-
-
             `{`
-
-
                 `Thread.Sleep(100);`
-
-
                 `Console.Write(text);`
-
-
             `}`
-
-
         `}`
-
-
         `finally`
-
-
         `{`
-
-
             `Monitor.Exit(this);`
-
-
         `}`
-
 
         `Console.WriteLine("\n[SaveData] Ended");`
-
-
     }
-
 }
-
-
 ```
+
+```c#
 class ThreadMonitor3App
 {
-```
-
-
     `public static Database db = new Database();`
 
     `public static void WorkerThreadMethod1()`
@@ -2590,8 +2466,8 @@ class ThreadMonitor3App
         `Console.ReadLine();`
 
     `}`
-
 }
+```
 
 If you’re going to use the Monitor class, you must be sure to place the Monitor.Exit call in a finally block. Otherwise, you might hang up other threads upon an exception being caught.
 
@@ -2599,13 +2475,9 @@ If you’re going to use the Monitor class, you must be sure to place the Monito
 
 To use the lock statement, simply specify the statement with the code being serialized in braces. The braces indicate the starting point and the stopping point of the code being protected, so there’s no need for an unlock statement.
 
-
-```
+```c#
 class Database
 {
-```
-
-
     `public void SaveData(string text)`
 
     `{`
@@ -2631,12 +2503,8 @@ class Database
         `}`
 
     `}`
-
-
-```
 }
 ```
-
 
 The generated Microsoft intermediate language (MSIL), is what’s interesting here. The first thing to look at is the fact that the lock statement actually does generate code to use the Monitor class. The second item of note is that the lock statement resulted in a try..finally block being inserted into our code, preventing us from hanging the system when a Monitor object is left locked.
 
@@ -2645,27 +2513,20 @@ The generated Microsoft intermediate language (MSIL), is what’s interesting he
 The Mutex class—defined in the System.Threading namespace—is a run-time representation of the Win32 system primitive of the same name. You can use a mutex to serialize access to code just as you’d use a monitor lock, but mutexes are much slower because of their increased flexibility.
 
 You can create a mutex in C# with the following three constructors:
-
-
-```
+```c#
 Mutex( )
 Mutex(bool initiallyOwned)
 Mutex(bool initiallyOwned, string mutexName)
 ```
 
-
 The first constructor creates a mutex with no name and makes the current thread the owner of that mutex. Therefore, the current thread locks the mutex. The second constructor takes only a Boolean flag that designates whether the thread creating the mutex wants to own it (lock it). And the third constructor allows you to specify whether the current thread owns the mutex as well as allowing you to specify the name of the mutex.
 
-
-```
+```c#
 using System;
 using System.Threading;
 
 class Database
 {
-```
-
-
     `static Mutex mutex = new Mutex(false);`
 
     `public static void SaveData(string text)`
@@ -2691,36 +2552,26 @@ class Database
         `mutex.Close();`
 
     `}`
-
-
-```
 }
 ```
-
 
 Now the Database class defines a Mutex field. We don’t want the thread to own the mutex just yet because we’d have no way of getting into the SaveData method.
 
 The WaitOne method is also overloaded to provide more flexibility in terms of allowing you to define how much time the thread will wait for the mutex to become available. Here are the overloads:
-
-
-```
+```c#
 WaitOne( )
 WaitOne(TimeSpan time, bool exitContext)
 WaitOne(int milliseconds, bool exitContext)
 ```
 
-
 The basic difference between these overloads is that the first version—used in the example—will wait indefinitely, while the second and third versions will wait for the specified amount of time, expressed with either a TimeSpan value or an int value.
-
 
 ## What is a `delegate`?[#](https://www.educative.io/courses/programming-fundamentals-csharp-dotnet/gkz9V1vPzmj#What-is-a-delegate?)
 
 [https://learn.microsoft.com/en-us/dotnet/csharp/delegates-overview](https://learn.microsoft.com/en-us/dotnet/csharp/delegates-overview)
 
 A `delegate` is a variable that can store a method and can then be passed around as needed.
-
-
-```
+```c#
 public delegate string MathExample(int num1, int num2);
 int number1 = 3;
 int number2 = 7;
@@ -2732,18 +2583,14 @@ static string AddNumbers(int a, int b)
 {
     return $"{a} + {b} = {a + b}";
 }
-
-
+```
 
 ##     What is an event?
-```
-
-
 [https://learn.microsoft.com/en-us/dotnet/csharp/events-overview](https://learn.microsoft.com/en-us/dotnet/csharp/events-overview)
 
-
-```
 Events allow classes to notify other classes when something occurs. One example is when a button is pressed and another class is listening to handle that event. An event needs to be defined inside a class. Using the event keyword enables others to attach to this event. Specify the delegate type for the type of methods that can be attached to the event. In the example below, a predefined delegate called EventHandler is used. The EventHandler delegate returns void and has two parameters (object, EventArgs). The object is the sender (what sent the event) and the EventArgs object(contains basic information about the event).
+
+```c#
 Greetings welcomeMessage = new();
 
 // Attach event handler to event
@@ -2788,10 +2635,7 @@ class Greetings
 }
 ```
 
-
-
 ### Delegate vs Event
-
 
 <table>
   <tr>
@@ -2841,8 +2685,7 @@ class Greetings
 
 In a way, an event is a delegate only. The program code will work even if you remove the event keyword and only use a delegate. However, using the event keyword, we prevent subscribers to register with an event by using = operator and thereby removing all handlers.
 
-
-```
+```c#
 public delegate void Notify(); 
 public Notify MyDelegate; 
 MyDelegate = MyMethod;// valid 
@@ -2853,13 +2696,9 @@ MyEvent = MyEventHandler;// Error
 MyEvent += MyEventHandler;// valid
 ```
 
-
-
 ## Using Delegates as Callback Methods
 
 Used extensively in programming for Microsoft Windows, callback methods enable you to pass a function pointer to another function that will then call you back (via the passed pointer). For example, the Win32 API EnumWindows function enumerates all the top-level windows on the screen, calling the supplied function for each window. Callbacks serve many purposes, but the following are the most common:
-
-
 
 * Asynchronous processing
 
@@ -2874,12 +2713,9 @@ Now let’s look at an example of defining and using a delegate. In this example
 
 To get started, let’s see how you would define a delegate in the class that’s publishing the callback:
 
-
-```
+```c#
 class DBManager
 {
-```
-
 
     `static DBConnection[] activeConnections;`
 
@@ -2903,62 +2739,38 @@ class DBManager
 
     `}`
 
-
-```
 }
 ```
 
 
 The class (server) must perform two steps to define a delegate as a callback. The first step is to define the actual delegate—EnumConnectionsCallback, in this case—that will be the signature of the callback method. The syntax for defining a delegate takes the following form:
-
-
-```
+```c#
 <access modifier> delegate <returnType> MethodName ([parameters])
 ```
-
 
 The second step is to define a method that takes as one of its parameters the delegate. In this case, the EnumConnections method takes as its only parameter an instance of the EnumConnectionsCallback delegate.
 
 Now the user of this class (the client) simply needs to define a method that has the same signature as the delegate and—using the new operator—instantiate the delegate, passing it the name of the method. Here’s an example of that:
-
-
-```
+```c#
 public static void PrintConnections(DBConnection connection)
 {
 }
-```
 
-
- 
-
-
-```
 DBManager.EnumConnectionsCallback printConnections 
+	= new DBManager.EnumConnectionsCallback(PrintConnections);
 ```
-
-
-    `= new DBManager.EnumConnectionsCallback(PrintConnections);`
-
 Finally, the client simply calls the desired class’s method, passing the instantiated delegate:
-
-
-```
+```c#
 DBManager.EnumConnections(printConnections);
 ```
 
-
 That’s all there is to the basic syntax of delegates. Now let’s look at the full example application:
-
-
-```
+```c#
 using System;
 using System.Collections;
 
 class DBConnection
 {
-```
-
-
     `protected static int NextConnectionNbr = 1;`
 
     `protected string connectionName;`
@@ -2986,16 +2798,10 @@ class DBConnection
             `+ DBConnection.NextConnectionNbr++;`
 
     `}`
-
-
-```
 }
 
 class DBManager
 {
-```
-
-
     `protected ArrayList activeConnections;`
 
     `public DBManager()`
@@ -3031,16 +2837,10 @@ class DBManager
         `}`
 
     `}`
-
-
-```
 };
 
 class InstanceDelegate
 {
-```
-
-
     `public static void PrintConnections(DBConnection connection)`
 
     `{`
@@ -3076,38 +2876,27 @@ class InstanceDelegate
         `Console.ReadLine();`
 
     `}`
-
-
-```
 };
 ```
-
 
 If you come from a C++ background, you probably noticed that delegates are very similar to C++ function pointers. In fact, many books describe them as type-safe function pointers.
 
 delegates are better defined as the .NET equivalent of a functor, or function object, concept. Functors are C++ classes that overload the parenthesis operators so that the result looks like a function but is actually a type-safe, polymorphic class.
 
-
 ### Defining Delegates as Static Members
 
 In addition to defining instances of delegates, C# allows you to define as a static class member the method that will be used in the creation of the delegate. Following is the example from the previous section, changed to use this format. Note that the delegate is now defined as a static member of the class named printConnections and that this member can be used in the Main method without the need for the client to instantiate the delegate.
-
-
-```
+```c#
 using System;
 using System.Collections;
 
 class DBConnection
 {
-```
-
-
     `protected static int NextConnectionNbr = 1;`
 
     `protected string connectionName;`
 
     `public string ConnectionName`
-
     `{`
 
         `get`
@@ -3130,14 +2919,10 @@ class DBConnection
 
     `}`
 
-
-```
 }
 
 class DBManager
 {
-```
-
 
     `protected ArrayList activeConnections;`
 
@@ -3176,13 +2961,10 @@ class DBManager
     `}`
 
 
-```
 };
 
 class StaticDelegate
 {
-```
-
 
     `static DBManager.EnumConnectionsCallback printConnections `
 
@@ -3216,12 +2998,8 @@ class StaticDelegate
 
     `}`
 
-
-```
 };
 ```
-
-
 
 ### Multicast Delegates
 
