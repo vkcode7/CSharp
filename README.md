@@ -500,7 +500,7 @@ The int.TryParse function returns a boolean value that can be used in an if stat
   </tr>
 </table>
 
-**Class members are declared <code>private</code> by default, making their access explicit indicates a conscious decision and is self-documenting.</strong>
+***Class members are declared <code>private</code> by default, making their access explicit indicates a conscious decision and is self-documenting***
 
 ```c#
 class A {};
