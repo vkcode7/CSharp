@@ -2352,7 +2352,7 @@ Application state
 
 Code-behind is the default coding model used by Visual Studio 2005. When a new web site is created, Visual Studio automatically creates two files: the content file, with a default name, such as _Default.aspx_, and a code-behind file with a matching name, such as _Default.aspx.cs_ (assuming you are using C# as your programming language). If you change the name of the content file (highly recommended), the code-behind file will automatically assume the new name.
 
-**Protecting Code by Using the Monitor Class**
+#### Protecting Code by Using the Monitor Class
 
 The System.Monitor class enables you to serialize the access to blocks of code by means of locks and signals.
 ```c#
@@ -2361,154 +2361,118 @@ using System.Threading;
 
 class Database
 {
-    public void SaveData(string text)
+public void SaveData(string text)
+{
+    Console.WriteLine("[SaveData] Started");
+
+    try
     {
-        Console.WriteLine("[SaveData] Started");
+        Monitor.Enter(this);
+        Console.WriteLine("[SaveData] Working");
 
-        try
-        {
-            `Monitor.Enter(this);`
-            `Console.WriteLine("[SaveData] Working");`
-            `throw new Exception("ERROR!");`
-            `for (int i = 0; i &lt; 50; i++)`
-            `{`
-                `Thread.Sleep(100);`
-                `Console.Write(text);`
-            `}`
-        `}`
-        `finally`
-        `{`
-            `Monitor.Exit(this);`
-        `}`
+        throw new Exception("ERROR!");
 
-        `Console.WriteLine("\n[SaveData] Ended");`
+        for (int i = 0; i < 50; i++)
+        {
+            Thread.Sleep(100);
+            Console.Write(text);
+        }
     }
-}
-```
+    finally
+    {
+        Monitor.Exit(this);
+    }
 
-```c#
+    Console.WriteLine("\n[SaveData] Ended");
+}
+}
+
 class ThreadMonitor3App
 {
-    `public static Database db = new Database();`
+    public static Database db = new Database();
 
-    `public static void WorkerThreadMethod1()`
+    public static void WorkerThreadMethod1()
+    {
+        Console.WriteLine("[WorkerThreadMethod1] Started");
 
-    `{`
+        Console.WriteLine("[WorkerThreadMethod1] " +
+            "Calling Database.SaveData");
 
-        `Console.WriteLine("[WorkerThreadMethod1] Started");`
+        try
+        {
+            db.SaveData("x");
+        }
+        catch{}
 
-        `Console.WriteLine("[WorkerThreadMethod1] " +`
+        Console.WriteLine("[WorkerThreadMethod1] Finished");
+    }
 
-            `"Calling Database.SaveData");`
+    public static void WorkerThreadMethod2()
+    {
+        Console.WriteLine("[WorkerThreadMethod2] Started");
 
-        `try`
+        Console.WriteLine("[WorkerThreadMethod2] " +
+            "Calling Database.SaveData");
+        try
+        {
+            db.SaveData("o");
+        }
+        catch{}
 
-        `{`
+        Console.WriteLine("[WorkerThreadMethod2] Finished");
+    }
 
-            `db.SaveData("x");`
+    public static void Main()
+    {
+        ThreadStart worker1 =
+            new ThreadStart(WorkerThreadMethod1);
+        ThreadStart worker2 =
+            new ThreadStart(WorkerThreadMethod2);
 
-        `}`
+        Console.WriteLine("[Main] Creating and starting " +
+            "worker threads");
 
-        `catch{}`
+        Thread t1 = new Thread(worker1);
+        Thread t2 = new Thread(worker2);
 
-        `Console.WriteLine("[WorkerThreadMethod1] Finished");`
+        t1.Start();
+        t2.Start();
 
-    `}`
-
-    `public static void WorkerThreadMethod2()`
-
-    `{`
-
-        `Console.WriteLine("[WorkerThreadMethod2] Started");`
-
-        `Console.WriteLine("[WorkerThreadMethod2] " +`
-
-            `"Calling Database.SaveData");`
-
-        `try`
-
-        `{`
-
-            `db.SaveData("o");`
-
-        `}`
-
-        `catch{}`
-
-        `Console.WriteLine("[WorkerThreadMethod2] Finished");`
-
-    `}`
-
-    `public static void Main()`
-
-    `{`
-
-        `ThreadStart worker1 =`
-
-            `new ThreadStart(WorkerThreadMethod1);`
-
-        `ThreadStart worker2 =`
-
-            `new ThreadStart(WorkerThreadMethod2);`
-
-        `Console.WriteLine("[Main] Creating and starting " +`
-
-            `"worker threads");`
-
-        `Thread t1 = new Thread(worker1);`
-
-        `Thread t2 = new Thread(worker2);`
-
-        `t1.Start();`
-
-        `t2.Start();`
-
-        `Console.ReadLine();`
-
-    `}`
+        Console.ReadLine();
+    }
 }
 ```
 
 If you’re going to use the Monitor class, you must be sure to place the Monitor.Exit call in a finally block. Otherwise, you might hang up other threads upon an exception being caught.
 
-**Using Monitor Locks with the C# lock Statement**
+#### Using Monitor Locks with the C# lock Statement
 
 To use the lock statement, simply specify the statement with the code being serialized in braces. The braces indicate the starting point and the stopping point of the code being protected, so there’s no need for an unlock statement.
 
 ```c#
 class Database
 {
-    `public void SaveData(string text)`
+    public void SaveData(string text)
+    {
+        lock(this)
+        {
+            Console.WriteLine("Database.SaveData - Started");
 
-    `{`
+            Console.WriteLine("Database.SaveData - Working");
+            for (int i = 0; i < 100; i++)
+            {
+                Console.Write(text);
+            }
 
-        `lock(this)`
-
-        `{`
-
-            `Console.WriteLine("Database.SaveData - Started");`
-
-            `Console.WriteLine("Database.SaveData - Working");`
-
-            `for (int i = 0; i &lt; 100; i++)`
-
-            `{`
-
-                `Console.Write(text);`
-
-            `}`
-
-            `Console.WriteLine("\nDatabase.SaveData - Ended");`
-
-        `}`
-
-    `}`
+            Console.WriteLine("\nDatabase.SaveData - Ended");
+        }
+    }
 }
 ```
 
 The generated Microsoft intermediate language (MSIL), is what’s interesting here. The first thing to look at is the fact that the lock statement actually does generate code to use the Monitor class. The second item of note is that the lock statement resulted in a try..finally block being inserted into our code, preventing us from hanging the system when a Monitor object is left locked.
 
-**Synchronizing Code by Using the Mutex Class**
+#### Synchronizing Code by Using the Mutex Class
 
 The Mutex class—defined in the System.Threading namespace—is a run-time representation of the Win32 system primitive of the same name. You can use a mutex to serialize access to code just as you’d use a monitor lock, but mutexes are much slower because of their increased flexibility.
 
@@ -2527,31 +2491,24 @@ using System.Threading;
 
 class Database
 {
-    `static Mutex mutex = new Mutex(false);`
+    static Mutex mutex = new Mutex(false);
 
-    `public static void SaveData(string text)`
+    public static void SaveData(string text)
+    {
+        mutex.WaitOne();
 
-    `{`
+        Console.WriteLine("Database.SaveData - Started");
 
-        `mutex.WaitOne();`
+        Console.WriteLine("Database.SaveData - Working");
+        for (int i = 0; i < 100; i++)
+        {
+            Console.Write(text);
+        }
 
-        `Console.WriteLine("Database.SaveData - Started");`
+        Console.WriteLine("\nDatabase.SaveData - Ended");
 
-        `Console.WriteLine("Database.SaveData - Working");`
-
-        `for (int i = 0; i &lt; 100; i++)`
-
-        `{`
-
-            `Console.Write(text);`
-
-        `}`
-
-        `Console.WriteLine("\nDatabase.SaveData - Ended");`
-
-        `mutex.Close();`
-
-    `}`
+        mutex.Close();
+    }
 }
 ```
 
@@ -2716,32 +2673,20 @@ To get started, let’s see how you would define a delegate in the class that’
 ```c#
 class DBManager
 {
+    static DBConnection[] activeConnections;
 
-    `static DBConnection[] activeConnections;`
-
-    `public delegate void EnumConnectionsCallback(`
-
-        `DBConnection connection);`
-
-    `public static void EnumConnections(`
-
-        `EnumConnectionsCallback callback)`
-
-    `{`
-
-        `foreach (DBConnection connection in activeConnections)`
-
-        `{`
-
-            `callback(connection);`
-
-        `}`
-
-    `}`
-
+    public delegate void EnumConnectionsCallback(
+        DBConnection connection);
+    public static void EnumConnections(
+        EnumConnectionsCallback callback)
+    {
+        foreach (DBConnection connection in activeConnections)
+        {
+            callback(connection);
+        }
+    }
 }
 ```
-
 
 The class (server) must perform two steps to define a delegate as a callback. The first step is to define the actual delegate—EnumConnectionsCallback, in this case—that will be the signature of the callback method. The syntax for defining a delegate takes the following form:
 ```c#
@@ -2771,111 +2716,71 @@ using System.Collections;
 
 class DBConnection
 {
-    `protected static int NextConnectionNbr = 1;`
+    protected static int NextConnectionNbr = 1;
 
-    `protected string connectionName;`
+    protected string connectionName;
+    public string ConnectionName
+    {
+        get
+        {
+            return connectionName;
+        }
+    }
 
-    `public string ConnectionName`
-
-    `{`
-
-        `get`
-
-        `{`
-
-            `return connectionName;`
-
-        `}`
-
-    `}`
-
-    `public DBConnection()`
-
-    `{`
-
-        `connectionName = "Database Connection "`
-
-            `+ DBConnection.NextConnectionNbr++;`
-
-    `}`
+    public DBConnection()
+    {
+        connectionName = "Database Connection "
+            + DBConnection.NextConnectionNbr++;
+    }
 }
 
 class DBManager
 {
-    `protected ArrayList activeConnections;`
+    protected ArrayList activeConnections;
+    public DBManager()
+    {
+        activeConnections = new ArrayList();
+        for (int i = 1; i < 6; i++)
+        {
+            activeConnections.Add(new DBConnection());
+        }
+    }
 
-    `public DBManager()`
-
-    `{`
-
-        `activeConnections = new ArrayList();`
-
-        `for (int i = 1; i &lt; 6; i++)`
-
-        `{`
-
-            `activeConnections.Add(new DBConnection());`
-
-        `}`
-
-    `}`
-
-    `public delegate void EnumConnectionsCallback(`
-
-        `DBConnection connection);`
-
-    `public void EnumConnections(EnumConnectionsCallback callback)`
-
-    `{`
-
-        `foreach (DBConnection connection in activeConnections)`
-
-        `{`
-
-            `callback(connection);`
-
-        `}`
-
-    `}`
+    public delegate void EnumConnectionsCallback(
+        DBConnection connection);
+    public void EnumConnections(EnumConnectionsCallback callback)
+    {
+        foreach (DBConnection connection in activeConnections)
+        {
+            callback(connection);
+        }
+    }
 };
 
 class InstanceDelegate
 {
-    `public static void PrintConnections(DBConnection connection)`
+    public static void PrintConnections(DBConnection connection)
+    {
+        Console.WriteLine("[InstanceDelegate.PrintConnections] {0}",
+            connection.ConnectionName);
+    }
 
-    `{`
+    public static void Main()
+    {
+        DBManager dbManager = new DBManager();
 
-        `Console.WriteLine("[InstanceDelegate.PrintConnections] {0}",`
+        Console.WriteLine("[Main] Instantiating the " +
+            "delegate method");
+        DBManager.EnumConnectionsCallback printConnections =
+            new DBManager.EnumConnectionsCallback(
+            PrintConnections);
 
-            `connection.ConnectionName);`
+        Console.WriteLine("[Main] Calling EnumConnections " +
+            "- passing the delegate");
+        dbManager.EnumConnections(printConnections);
 
-    `}`
-
-    `public static void Main()`
-
-    `{`
-
-        `DBManager dbManager = new DBManager();`
-
-        `Console.WriteLine("[Main] Instantiating the " +`
-
-            `"delegate method");`
-
-        `DBManager.EnumConnectionsCallback printConnections =`
-
-            `new DBManager.EnumConnectionsCallback(`
-
-            `PrintConnections);`
-
-        `Console.WriteLine("[Main] Calling EnumConnections " +`
-
-            `"- passing the delegate");`
-
-        `dbManager.EnumConnections(printConnections);`
-
-        `Console.ReadLine();`
-
-    `}`
+        Console.ReadLine();
+    }
 };
 ```
 
@@ -2892,112 +2797,69 @@ using System.Collections;
 
 class DBConnection
 {
-    `protected static int NextConnectionNbr = 1;`
+    protected static int NextConnectionNbr = 1;
 
-    `protected string connectionName;`
+    protected string connectionName;
+    public string ConnectionName
+    {
+        get
+        {
+            return connectionName;
+        }
+    }
 
-    `public string ConnectionName`
-    `{`
-
-        `get`
-
-        `{`
-
-            `return connectionName;`
-
-        `}`
-
-    `}`
-
-    `public DBConnection()`
-
-    `{`
-
-        `connectionName = "Database Connection "`
-
-            `+ DBConnection.NextConnectionNbr++;`
-
-    `}`
-
+    public DBConnection()
+    {
+        connectionName = "Database Connection "
+            + DBConnection.NextConnectionNbr++;
+    }
 }
 
 class DBManager
 {
+    protected ArrayList activeConnections;
+    public DBManager()
+    {
+        activeConnections = new ArrayList();
+        for (int i = 1; i < 6; i++)
+        {
+            activeConnections.Add(new DBConnection());
+        }
+    }
 
-    `protected ArrayList activeConnections;`
-
-    `public DBManager()`
-
-    `{`
-
-        `activeConnections = new ArrayList();`
-
-        `for (int i = 1; i &lt; 6; i++)`
-
-        `{`
-
-            `activeConnections.Add(new DBConnection());`
-
-        `}`
-
-    `}`
-
-    `public delegate void EnumConnectionsCallback(`
-
-        `DBConnection connection);`
-
-    `public void EnumConnections(EnumConnectionsCallback callback)`
-
-    `{`
-
-        `foreach (DBConnection connection in activeConnections)`
-
-        `{`
-
-            `callback(connection);`
-
-        `}`
-
-    `}`
-
-
+    public delegate void EnumConnectionsCallback(
+        DBConnection connection);
+    public void EnumConnections(EnumConnectionsCallback callback)
+    {
+        foreach (DBConnection connection in activeConnections)
+        {
+            callback(connection);
+        }
+    }
 };
 
 class StaticDelegate
 {
+    static DBManager.EnumConnectionsCallback printConnections 
+        = new DBManager.EnumConnectionsCallback(
+        PrintConnections);
 
-    `static DBManager.EnumConnectionsCallback printConnections `
+    public static void PrintConnections(DBConnection connection)
+    {
+        Console.WriteLine("[StaticDelegate.PrintConnections] {0}",
+            connection.ConnectionName);
+    }
 
-        `= new DBManager.EnumConnectionsCallback(`
+    public static void Main()
+    {
+        DBManager dbManager = new DBManager();
 
-        `PrintConnections);`
+        Console.WriteLine("[Main] Calling EnumConnections – " +
+            "passing the delegate");
+        dbManager.EnumConnections(printConnections);
 
-    `public static void PrintConnections(DBConnection connection)`
-
-    `{`
-
-        `Console.WriteLine("[StaticDelegate.PrintConnections] {0}",`
-
-            `connection.ConnectionName);`
-
-    `}`
-
-    `public static void Main()`
-
-    `{`
-
-        `DBManager dbManager = new DBManager();`
-
-        `Console.WriteLine("[Main] Calling EnumConnections – " +`
-
-            `"passing the delegate");`
-
-        `dbManager.EnumConnections(printConnections);`
-
-        `Console.ReadLine();`
-
-    `}`
-
+        Console.ReadLine();
+    }
 };
 ```
 
@@ -3007,210 +2869,126 @@ Combining multiple delegates into a single delegate creates what’s referred to
 
 The twist is that we want two distinct methods to be called if a given part falls below stock: we want to log the event, and then we want to e-mail the purchasing manager. Let’s take a look at how you programmatically create a single aggregate delegate from multiple delegates:
 
-
-```
+```c#
 using System;
 using System.Threading;
 
 class Part
 {
-```
+    public Part(string sku)
+    {
+        this.Sku = sku;
 
+        Random r = new Random(DateTime.Now.Millisecond);
+        double d = r.NextDouble() * 100;
 
-    `public Part(string sku)`
+        this.OnHand = (int)d;
+    }
 
-    `{`
+    protected string sku;
+    public string Sku
+    {
+        get { return this.sku; }
+        set { this.sku = value; }
+    }
 
-        `this.Sku = sku;`
-
-        `Random r = new Random(DateTime.Now.Millisecond);`
-
-        `double d = r.NextDouble() * 100;`
-
-        `this.OnHand = (int)d;`
-
-    `}`
-
-    `protected string sku;`
-
-    `public string Sku`
-
-    `{`
-
-        `get { return this.sku; }`
-
-        `set { this.sku = value; }`
-
-    `}`
-
-    `protected int onHand;`
-
-    `public int OnHand`
-
-    `{`
-
-        `get { return this.onHand; }`
-
-        `set { this.onHand = value; }`
-
-    `}`
-
-
-```
+    protected int onHand;
+    public int OnHand
+    {
+        get { return this.onHand; }
+        set { this.onHand = value; }
+    }
 };
 
 class InventoryManager
 {
-```
+    protected const int MIN_ONHAND = 50;
 
+    public Part[] parts;
+    public InventoryManager()
+    {
+        Console.WriteLine("[InventoryManager.InventoryManager]" +
+            " Adding parts..."); 
 
-    `protected const int MIN_ONHAND = 50;`
+        parts = new Part[5];
+        for (int i = 0; i < 5; i++)
+        {
+            Part part = new Part("Part " + (i + 1));
 
-    `public Part[] parts;`
+            Thread.Sleep(10); // Randomizer is seeded by time.
 
-    `public InventoryManager()`
+            parts[i] = part;
+            Console.WriteLine("\tPart '{0}' on-hand = {1}", 
+                part.Sku, part.OnHand);
+        }
+    }
 
-    `{`
+    public delegate void OutOfStockExceptionMethod(Part part);
+    public void ProcessInventory(
+        OutOfStockExceptionMethod exception)
+    {
+        Console.WriteLine("\n[InventoryManager.ProcessInventory]" +
+            " Processing inventory...");
+        foreach (Part part in parts)
+        {
+            if (part.OnHand < MIN_ONHAND)
+            {
+                Console.WriteLine("\n\t{0} ({1} units) is " +
+                    "below minimum on-hand {2}", 
+                    part.Sku, 
+                    part.OnHand, 
+                    MIN_ONHAND);
 
-        `Console.WriteLine("[InventoryManager.InventoryManager]" +`
-
-            `" Adding parts..."); `
-
-        `parts = new Part[5];`
-
-        `for (int i = 0; i &lt; 5; i++)`
-
-        `{`
-
-            `Part part = new Part("Part " + (i + 1));`
-
-            `Thread.Sleep(10); // Randomizer is seeded by time.`
-
-            `parts[i] = part;`
-
-            `Console.WriteLine("\tPart '{0}' on-hand = {1}", `
-
-                `part.Sku, part.OnHand);`
-
-        `}`
-
-    `}`
-
-    `public delegate void OutOfStockExceptionMethod(Part part);`
-
-    `public void ProcessInventory(`
-
-        `OutOfStockExceptionMethod exception)`
-
-    `{`
-
-        `Console.WriteLine("\n[InventoryManager.ProcessInventory]" +`
-
-            `" Processing inventory...");`
-
-        `foreach (Part part in parts)`
-
-        `{`
-
-            `if (part.OnHand &lt; MIN_ONHAND)`
-
-            `{`
-
-                `Console.WriteLine("\n\t{0} ({1} units) is " +`
-
-                    `"below minimum on-hand {2}", `
-
-                    `part.Sku, `
-
-                    `part.OnHand, `
-
-                    `MIN_ONHAND);`
-
-                `exception(part);`
-
-            `}`
-
-        `}`
-
-    `}`
-
-
-```
+                exception(part);
+            }
+        }
+    }
 };
 
 class CompositeDelegate
 {
-```
+    public static void LogEvent(Part part)
+    {
+        Console.WriteLine("\t[CompositeDelegate.LogEvent] " +
+            "logging event...");
+    }
 
+    public static void EmailPurchasingMgr(Part part)
+    {
+        Console.WriteLine("\t[CompositeDelegate" +
+            ".EmailPurchasingMgr] emailing Purchasing " +
+            "manager...");
+    }
 
-    `public static void LogEvent(Part part)`
+    public static void Main()
+    {
+        InventoryManager mgr = new InventoryManager();
 
-    `{`
+        InventoryManager.OutOfStockExceptionMethod
+            LogEventCallback = new 
+            InventoryManager.OutOfStockExceptionMethod(LogEvent);
 
-        `Console.WriteLine("\t[CompositeDelegate.LogEvent] " +`
+        InventoryManager.OutOfStockExceptionMethod 
+            EmailPurchasingMgrCallback = new 
+            InventoryManager.OutOfStockExceptionMethod(
+            EmailPurchasingMgr);
 
-            `"logging event...");`
+        InventoryManager.OutOfStockExceptionMethod 
+            OnHandExceptionEventsCallback = 
+            EmailPurchasingMgrCallback + LogEventCallback;
 
-    `}`
+        mgr.ProcessInventory(OnHandExceptionEventsCallback);
 
-    `public static void EmailPurchasingMgr(Part part)`
-
-    `{`
-
-        `Console.WriteLine("\t[CompositeDelegate" +`
-
-            `".EmailPurchasingMgr] emailing Purchasing " +`
-
-            `"manager...");`
-
-    `}`
-
-    `public static void Main()`
-
-    `{`
-
-        `InventoryManager mgr = new InventoryManager();`
-
-        `InventoryManager.OutOfStockExceptionMethod`
-
-            `LogEventCallback = new `
-
-            `InventoryManager.OutOfStockExceptionMethod(LogEvent);`
-
-        `InventoryManager.OutOfStockExceptionMethod `
-
-            `EmailPurchasingMgrCallback = new `
-
-            `InventoryManager.OutOfStockExceptionMethod(`
-
-            `EmailPurchasingMgr);`
-
-        `InventoryManager.OutOfStockExceptionMethod `
-
-            `OnHandExceptionEventsCallback = `
-
-            `EmailPurchasingMgrCallback + LogEventCallback;`
-
-        `mgr.ProcessInventory(OnHandExceptionEventsCallback);`
-
-        `Console.ReadLine();`
-
-    `}`
-
-
-```
+        Console.ReadLine();
+    }
 };
 
 Action<T1,T2…T16>(T1,T2…T16), Func<t1,t2…t16,R1> and Predicate<T>
 ```
 
-
-
 #### <span style="text-decoration:underline;">Func delegate with an Anonymous Method: </span>
-
-
-```
 It can have 0 - 16 input parameters.
+```c#
 Func<int,int,int> Addition = delegate (int param1, int param2)    
 {    
     return param1 + param2;    
@@ -3226,54 +3004,43 @@ Func<int, int, int> Addition = (param1, param2) => param1 + param2;
             Console.WriteLine($"Addition = {result}");
 ```
 
-
-
 #### <span style="text-decoration:underline;">Action delegate</span>
-
-
-```
-
-
 Here, method AddNumbers takes 2 parameters but returns nothing. The results are assigned to an instance variable result.
 
-
-Even an ion delegate can have 0 - 16 input parameters.
+Even an Action delegate can have 0 - 16 input parameters.
+```c#
 private static int result;  
-        static void Main(string[] args)  
-        {  
-            Action<int, int> Addition = AddNumbers;  
-            Addition(10, 20);  
-            Console.WriteLine($"Addition = {result}");  
-        }  
+static void Main(string[] args)  
+{  
+    Action<int, int> Addition = AddNumbers;  
+    Addition(10, 20);  
+    Console.WriteLine($"Addition = {result}");  
+}  
 
 
-        private static void AddNumbers(int param1, int param2 )  
-        {  
-            result = param1 + param2;  
-        } 
+private static void AddNumbers(int param1, int param2 )  
+{  
+    result = param1 + param2;  
+} 
 
-Action with an Anonymous method:
+//Action with an Anonymous method:
 private static int result;  
-       static void Main(string[] args)  
-       {  
-           Action<int, int> Addition = delegate (int param1, int param2)  
-           {  
-               result = param1 + param2;  
-           };  
-           Addition(10, 20);  
-           Console.WriteLine($"Addition = {result}");  
-       } 
+static void Main(string[] args)  
+{  
+   Action<int, int> Addition = delegate (int param1, int param2)  
+   {  
+       result = param1 + param2;  
+   };  
+   Addition(10, 20);  
+   Console.WriteLine($"Addition = {result}");  
+} 
 ```
-
-
 
 #### <span style="text-decoration:underline;">Predicate delegate</span>
 
 Syntax difference between predicate & func is that here in predicate, you don't specify a return type because it is always a bool.
-
-
-```
-A predicate with Anonymous method:
+```c#
+//A predicate with Anonymous method:
 Predicate < string > CheckIfApple = delegate(string modelName) {  
     if (modelName == "I Phone X") return true;  
     else return false;  
@@ -3290,38 +3057,27 @@ bool result = CheckIfApple("I Phone X");
 if (result) Console.WriteLine("It's an IPhone");  
 ```
 
-
-
 ## Partial Methods:
 
 A partial method has its signature defined in one part of a partial type, and its implementation defined in another part of the type. Partial methods enable class designers to provide method hooks, similar to event handlers, that developers may decide to implement or not. If the developer does not supply an implementation, the compiler removes the signature at compile time. The following conditions apply to partial methods:
-
-
 
 * Declarations must begin with the contextual keyword [partial](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/partial-type).
 * Signatures in both parts of the partial type must match.
 
 The `partial` keyword isn't allowed on constructors, finalizers, overloaded operators, property declarations, or event declarations.
 
-
 ## Expression Trees: 
 
 Expression trees represent code in a tree-like data structure,
-
 where each node is an expression,
-
-for example, a method call or a binary operation such as x &lt; y.
+for example, a method call or a binary operation such as x < y.
 
 You create expression trees in your code. You build the tree by creating each node and attaching the nodes into a tree structure. You learn how to create expressions in the article on building expression trees.
 
-Expression trees are immutable. If you want to modify an expression tree,
-
-you must construct a new expression tree by copying the existing one and replacing nodes in it.
-
+Expression trees are immutable. If you want to modify an expression tree, you must construct a new expression tree by copying the existing one and replacing nodes in it.
 You use an expression tree visitor to traverse the existing expression tree. 
 
-
-```
+```c#
 var nArgument = Expression.Parameter(typeof(int), "n");
 var result = Expression.Variable(typeof(int), "result");
 
@@ -3353,8 +3109,6 @@ BlockExpression body = Expression.Block(
 );
 ```
 
-
-
 ## == vs Equals
 
 In C#, the [equality operator ==](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/equality-operators) checks whether two operands are equal or not, and the [Object.Equals()](https://docs.microsoft.com/en-us/dotnet/api/system.object.equals?view=net-6.0#system-object-equals(system-object)) method checks whether the two object instances are equal or not.
@@ -3362,25 +3116,20 @@ In C#, the [equality operator ==](https://docs.microsoft.com/en-us/dotnet/csharp
 Internally, == is implemented as the operator overloading method, so the result depends on how that method is overloaded. In the same way, Object.Equals() method is a virtual method and the result depends on the implementation. For example, the == operator and .Equals() compare the values of the two built-in value types variables. if both values are equal then returns true; otherwise returns false.
 
 For the reference type variables, == and .Equals() method by default checks whether two two object instances are equal or not. However, for the string type, == and .Equals() method are implemented to compare values instead of the instances.
+```c#
+A a1 = new A();
+A a2 = new A();
+Console.WriteLine(a1 == a2); //False
+Console.WriteLine(a1.Equals(a2)); //False
 
+Console.WriteLine(object.ReferenceEquals(a1, a2)); //False
 
+A a3 = a1;
+Console.WriteLine(object.ReferenceEquals(a1, a3)); //True
+Console.WriteLine(a1.Equals(a3)); //True
 ```
-        A a1 = new A();
-        A a2 = new A();
-        Console.WriteLine(a1 == a2); //False
-        Console.WriteLine(a1.Equals(a2)); //False
-
-        Console.WriteLine(object.ReferenceEquals(a1, a2)); //False
-
-        A a3 = a1;
-        Console.WriteLine(object.ReferenceEquals(a1, a3)); //True
-        Console.WriteLine(a1.Equals(a3)); //True
-```
-
-
 
 ## [Static](https://www.tutorialsteacher.com/csharp/csharp-static), Readonly, and constant in C#.
-
 
 <table>
   <tr>
@@ -3437,12 +3186,9 @@ Therefore, const variables are used for compile-time constants.
   </tr>
 </table>
 
-
-
 ## Setting default value of a C# property
 
-
-```
+```c#
 // C#6.0 or higher version
 public string Name { get; set; } = "unknown";
 
@@ -3476,14 +3222,10 @@ public string Name
 }
 ```
 
-
-
 ## Indexers
 
 _Indexers_ are similar to properties. In many ways indexers build on the same language features as [properties](https://learn.microsoft.com/en-us/dotnet/csharp/properties). Indexers enable _indexed_ properties: properties referenced using one or more arguments. Those arguments provide an index into some collection of values.
-
-
-```
+```c#
 public int this[string key]
 {
     get { return storage.Find(key); }
@@ -3493,7 +3235,7 @@ public int this[string key]
 var item = someObject["key"];
 someObject["AnotherKey"] = item;
 
-Other examples:
+//Other examples:
    public int this [double x, double y]
    {
 	get {
@@ -3502,7 +3244,7 @@ Other examples:
    }
 
    public Action this[string s]
-    {
+   {
         get
         {
             Action action;
@@ -3512,14 +3254,10 @@ Other examples:
     }
 ```
 
-
-
 ## The object type
 
 The `object` type is an alias for [System.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object) in .NET. In the unified type system of C#, all types, predefined and user-defined, reference types and value types, inherit directly or indirectly from [System.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object). 
-
-
-```
+```c#
 string a = "hello";
 string b = "h";
 // Append to contents of 'b'
@@ -3528,14 +3266,10 @@ Console.WriteLine(a == b); <<-- returns True
 Console.WriteLine(object.ReferenceEquals(a, b)); <<-- returns False
 ```
 
-
-
 ## Conditional ref expression: `condition ? ref consequent : ref alternative`
 
 Like the original conditional operator, a conditional ref expression evaluates only one of the two expressions: either `consequent` or `alternative`.
-
-
-```
+```c#
 var smallArray = new int[] { 1, 2, 3, 4, 5 };
 var largeArray = new int[] { 10, 20, 30, 40, 50 };
 
@@ -3553,13 +3287,9 @@ Console.WriteLine(string.Join(" ", largeArray));
 // 10 20 0 40 50
 ```
 
-
-
 ## when (C# reference)
 
 You use the `when` contextual keyword to specify a filter condition in the following contexts:
-
-
 
 * In a catch clause of a [try-catch](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/exception-handling-statements#the-try-catch-statement) or [try-catch-finally](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/exception-handling-statements#the-try-catch-finally-statement) statement.
 * As a [case guard](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/selection-statements#case-guards) in the [switch statement](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/selection-statements#the-switch-statement).
@@ -3567,8 +3297,7 @@ You use the `when` contextual keyword to specify a filter condition in the follo
 
 `In a try-catch: `The following example uses the `when` keyword to conditionally execute handlers for an [HttpRequestException](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httprequestexception) depending on the text of the exception message.
 
-
-```
+```c#
    public static async Task<string> MakeRequest()
     {
         var client = new HttpClient();
@@ -3593,12 +3322,8 @@ You use the `when` contextual keyword to specify a filter condition in the follo
     }
 ```
 
-
-
 ## Switch statement:
-
-
-```
+```c#
 void DisplayMeasurement(double measurement)
 {
     switch (measurement)
@@ -3622,11 +3347,9 @@ void DisplayMeasurement(double measurement)
 }
 ```
 
-
 **<code><span style="text-decoration:underline;">Case guard using when: </span></code></strong>A case pattern may be not expressive enough to specify the condition for the execution of the switch section. In such a case, you can use a <em>case guard</em>. That is an additional condition that must be satisfied together with a matched pattern. A case guard must be a Boolean expression. You specify a case guard after the <code>when</code> keyword that follows a pattern, as the following example shows:
 
-
-```
+```c#
 DisplayMeasurements(3, 4);  // Output: First measurement is 3, second measurement is 4.
 DisplayMeasurements(5, 5);  // Output: Both measurements are valid and equal to 5.
 
@@ -3649,10 +3372,7 @@ void DisplayMeasurements(int a, int b)
 }
 ```
 
-
 The following C# expressions and statements support pattern matching:
-
-
 
 * [is expression](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/is)
 * [switch statement](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/selection-statements#the-switch-statement)
@@ -3661,8 +3381,7 @@ The following C# expressions and statements support pattern matching:
 
 You use **declaration and type patterns** to check if the run-time type of an expression is compatible with a given type. 
 
-
-```
+```c#
 object greeting = "Hello, World!";
 if (greeting is string message)
 {
@@ -3691,11 +3410,9 @@ if (xNullable is int a && yBoxed is int b)
 }
 ```
 
-
 If you want to check only the type of an expression, you can use a discard `_` in place of a variable's name, as the following example shows:
 
-
-```
+```c#
 public abstract class Vehicle {}
 public class Car : Vehicle {}
 public class Truck : Vehicle {}
@@ -3712,22 +3429,17 @@ public static class TollCalculator
 }
 ```
 
-
 To check for non-null, you can use a [negated](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/patterns#logical-patterns) `null` [constant pattern](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/patterns#constant-pattern), as the following example shows:
 
-
-```
+```c#
 if (input is not null)
 {
     // ...
 }
 ```
 
-
 You use a **_constant pattern_** to test if an expression result equals a specified constant, as the following example shows:
-
-
-```
+```c#
 public static decimal GetGroupTicketPrice(int visitorCount) => visitorCount switch
 {
     1 => 12.0m,
@@ -3742,8 +3454,6 @@ public static decimal GetGroupTicketPrice(int visitorCount) => visitorCount swit
 
 In a constant pattern, you can use any constant expression, such as:
 
-
-
 * an [integer](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types) or [floating-point](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/floating-point-numeric-types) numerical literal
 * a [char](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/char)
 * a [string](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/reference-types#the-string-type) literal.
@@ -3753,9 +3463,7 @@ In a constant pattern, you can use any constant expression, such as:
 * `null`
 
 Beginning with C# 9.0, you use a **_relational pattern_** to compare an expression result with a constant, as the following example shows:
-
-
-```
+```c#
 static string Classify(double measurement) => measurement switch
 {
     < -4.0 => "Too low",
@@ -3765,15 +3473,13 @@ static string Classify(double measurement) => measurement switch
 };
 ```
 
-
 In a **relational pattern**, you can use any of the [relational operators](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/comparison-operators) `&lt;`, `>`, `&lt;=`, or `>=`. The right-hand part of a relational pattern must be a constant expression. The constant expression can be of an [integer](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types), [floating-point](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/floating-point-numeric-types), [char](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/char), or [enum](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/enum) type.
 
 Beginning with C# 9.0, you use the `not`, `and`, and `or` pattern combinators to create the following _logical patterns_:
 
 To check if an expression result is in a certain range, match it against a [conjunctive and pattern](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/patterns#logical-patterns), as the following example shows:
 
-
-```
+```c#
 static string GetCalendarSeason(DateTime date) => date.Month switch
 {
     >= 3 and < 6 => "spring",
@@ -3803,8 +3509,7 @@ Precedence: not, and, or
 
 You use a **_property pattern_** to match an expression's properties or fields against nested patterns, as the following example shows:
 
-
-```
+```c#
 Console.WriteLine(TakeFive("Hello, world!"));  // output: Hello
 Console.WriteLine(TakeFive("Hi!"));  // output: Hi!
 Console.WriteLine(TakeFive(new[] { '1', '2', '3', '4', '5', '6', '7' }));  // output: 12345
@@ -3823,11 +3528,8 @@ static string TakeFive(object input) => input switch
 };
 ```
 
-
 You use a **_positional pattern_** to deconstruct an expression result and match the resulting values against the corresponding nested patterns, as the following example shows:
-
-
-```
+```c#
 public readonly struct Point
 {
     public int X { get; }
@@ -3869,11 +3571,9 @@ static string PrintIfAllCoordinatesArePositive(object point) => point switch
 };
 ```
 
-
 A **<code>var</code> pattern</strong> is useful when you need a temporary variable within a Boolean expression to hold the result of intermediate calculations. You can also use a <code>var</code> pattern when you need to perform more checks in <code>when</code> case guards of a <code>switch</code> expression or statement, as the following example shows:
 
-
-```
+```c#
 public record Point(int X, int Y);
 
 static Point Transform(Point point) => point switch
@@ -3890,11 +3590,8 @@ static void TestTransform()
 }
 ```
 
-
 You use a **_discard pattern_** `_` to match any expression, including `null`, as the following example shows:
-
-
-```
+```c#
 Console.WriteLine(GetDiscountInPercent(DayOfWeek.Friday));  // output: 5.0
 Console.WriteLine(GetDiscountInPercent(null));  // output: 0.0
 Console.WriteLine(GetDiscountInPercent((DayOfWeek)10));  // output: 0.0
@@ -3912,22 +3609,16 @@ static decimal GetDiscountInPercent(DayOfWeek? dayOfWeek) => dayOfWeek switch
 };
 ```
 
-
 **Parenthesized Pattern: **Beginning with C# 9.0, you can put **parentheses** around any pattern. Typically, you do that to emphasize or change the precedence in [logical patterns](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/patterns#logical-patterns), as the following example shows:
-
-
-```
+```c#
 if (input is not (float or double))
 {
     return;
 }
 ```
 
-
 **List patterns: **Beginning with C# 11, you can match an array or a list against a _sequence_ of patterns, as the following example shows:
-
-
-```
+```c#
 int[] numbers = { 1, 2, 3 };
 
 Console.WriteLine(numbers is [1, 2, 3]);  // True
@@ -3947,11 +3638,9 @@ if (numbers is [var first, _, _])
 // The first element of a three-item list is 1.
 ```
 
-
 —--
 
-
-```
+```c#
 Console.WriteLine(new[] { 1, 2, 3, 4, 5 } is [> 0, > 0, ..]);  // True
 Console.WriteLine(new[] { 1, 1 } is [_, _, ..]);  // True
 Console.WriteLine(new[] { 0, 1, 2, 3, 4 } is [> 0, > 0, ..]);  // False
@@ -3972,9 +3661,7 @@ Console.WriteLine(new[] { 1, 0, 1 } is [1, 0, .., 0, 1]);  // False
 A slice pattern matches zero or more elements. You can use at most one slice pattern in a list pattern. The slice pattern can only appear in a list pattern.
 
 You can also nest a subpattern within a slice pattern, as the following example shows:
-
-
-```
+```c#
 void MatchMessage(string message)
 {
     var result = message is ['a' or 'A', .. var s, 'a' or 'A']
@@ -3996,12 +3683,9 @@ Validate(new[] { -1, 0, 1 });  // output: not valid
 Validate(new[] { -1, 0, 0, 1 });  // output: valid
 ```
 
-
-
 ## Pinning and Memory Management
 
 Pinning is one aspect of memory management, and memory management in C# code can be divided into two broad categories: managing object lifetime in cooperation with the common language runtime and accessing memory directly through pointers.
-
 
 ### Garbage Collection
 
@@ -4017,55 +3701,29 @@ A consequence of this last point is that heap memory garbage collection—and, b
 
 The Finalize method is called automatically after an object becomes inaccessible, unless you’ve protected the object against finalization—we’ll see how to do that later in this chapter, in the section “Overriding Finalize.” During the shutdown of an application domain, Finalize is called automatically on all objects that you haven’t protected against finalization, even those that are still accessible. Finalize is called automatically only once on a given instance—unless you reregister the object for finalization. So, we can’t have a destructor in our class, but we’ve inherited a Finalize method, and presumably we can override this—even though it might not look like we can. In fact, to override Finalize, you must write a destructor. Let’s be clear on this. The C# language doesn’t strictly support destructors. On the other hand, it does support overriding the Object.Finalize method. The only twist in the tale is that to override Finalize, you must write a method that’s syntactically identical to a destructor.
 
-
-```
+```c#
 public class Thing
 {
-```
-
-
-    `private string name;`
-
-    `public Thing(string name) { this.name = name; }`
-
-    `override public string ToString() { return name; }`
-
-    `~Thing() { Console.WriteLine("~Thing()"); }`
-
-
-```
+    private string name;
+    public Thing(string name) { this.name = name; }
+    override public string ToString() { return name; }
+    ~Thing() { Console.WriteLine("~Thing()"); }
 }
-```
 
+//So that we’re clear on when the Finalize is called, let’s add another line to the end of Main:
 
-So that we’re clear on when the Finalize is called, let’s add another line to the end of Main:
-
-
-```
 static void Main(string[] args)
 {
-```
-
-
-    `DoSomething();`
-
-    `Console.WriteLine("end of Main");`
-
-
-```
+    DoSomething();
+    Console.WriteLine("end of Main");
 }
 ```
-
-
 This time, when the application runs, we get the following output:
-
-
 ```
 Foo
 end of Main
 ~Thing()
 ```
-
 
 Therefore, in this application, our Finalize method is called as the very last operation before the application terminates. That means, of course, that we can’t assume in our Finalize method that we have access to anything that was alive during the run of the application. This includes variables of all kinds as well as the console—thus, printing a message to the console window is a little risky. Normally, most of your Finalize methods will run at some other point during the run of the application and not at the very end. For a console application, it’s usually safe to assume that we have access to the console as long as the application is running. Nonetheless, the point stands: make sure your Finalize method doesn’t attempt to access anything that might not be available any longer because of the nondeterministic nature of the garbage collection mechanism.
 
@@ -4085,65 +3743,36 @@ It’s very nice that we don’t have to track our object references and make su
 
 <span style="text-decoration:underline;">34</span>
 
-Forcing Garbage Collection
+#### Forcing Garbage Collection
 
 The .NET Framework offers a class that exposes some of the functionality of the garbage collector: the GC class. You can force a garbage collection operation at any time with the GC.Collect method. However, bear in mind that the garbage collector runs finalizers on a separate thread of execution, so even if GC.Collect has returned, it doesn’t mean that a particular finalizer has been called yet. This is really a standard thread-synchronization issue and can be resolved if you call WaitForPendingFinalizers to suspend the current thread until the queue of finalizers waiting to run on that thread is empty. In the following example, we’ll enhance our simple Thing-based application to force a garbage collection:
-
-
-```
+```c#
 public class Thing
 {
-```
-
-
-    `private string name;`
-
-    `public Thing(string name) { this.name = name; }`
-
-    `override public string ToString() { return name; }`
-
-    `~Thing() { Console.WriteLine("~Thing()"); }`
-
-
-```
+    private string name;
+    public Thing(string name) { this.name = name; }
+    override public string ToString() { return name; }
+    ~Thing() { Console.WriteLine("~Thing()"); }
 }
 
 public class ForceCollectApp
 {
-```
+    public static void Main(string[] args)
+    {
+        DoSomething();
+        Console.WriteLine("some stuff");
 
-
-    `public static void Main(string[] args)`
-
-    `{`
-
-        `DoSomething();`
-
-        `Console.WriteLine("some stuff");`
-
-        `GC.Collect();`
-
-        `GC.WaitForPendingFinalizers();`
-
-        `Console.WriteLine("end of Main");`
-
-    `}`
-
-    `public static void DoSomething()`
-
-    `{`
-
-        `Thing t = new Thing("Foo");`
-
-        `Console.WriteLine(t);`
-
-    `}`
-
-
-```
+        GC.Collect();                      //<====
+        GC.WaitForPendingFinalizers();     //<====
+        Console.WriteLine("end of Main");
+    }
+    public static void DoSomething()
+    {
+        Thing t = new Thing("Foo");
+        Console.WriteLine(t);
+    }
 }
 ```
-
 
 The result is that if we force a collection and wait for the finalizers to be called, we can introduce a degree of determinism to our code. However, this arrangement seems a little cumbersome to be useful on a broad scale. Also, the processing involved in actually sweeping heap memory for garbage collection does involve a certain amount of overhead—a performance penalty that you can’t always justify. The normal trigger for a garbage collection sweep is heap exhaustion, and we don’t normally want to force a garbage collection unless we really have to. In addition, if you do override Finalize in your class, you set up some extra work for the runtime to do at an indeterminate point in the future. So is there any other way to control object destruction? The final piece of this particular puzzle is the Dispose pattern.
 
@@ -4155,75 +3784,39 @@ To achieve the necessary explicit control and precise determinism in the destruc
 
 Let’s enhance our previous Thing example with a Dispose method—again, to simulate some cleanup operation, we’ll simply print out an arbitrary message. Clearly, if we plan to dispose of the object, we must do so before we set its reference to null (or before the reference goes out of scope and is lost):
 
-
-```
+```c#
 public class Thing
 {
-```
-
-
-    `private string name;`
-
-    `public Thing(string name) { this.name = name; }`
-
-    `override public string ToString() { return name; }`
-
-    `~Thing() { Console.WriteLine("~Thing()"); }`
-
-    `public void Dispose()`
-
-    `{`
-
-        `Console.WriteLine("Dispose()");`
-
-    `}`
-
-
-```
+    private string name;
+    public Thing(string name) { this.name = name; }
+    override public string ToString() { return name; }
+    ~Thing() { Console.WriteLine("~Thing()"); }
+    public void Dispose()
+    {
+        Console.WriteLine("Dispose()");
+    }
 }
 
 public class GarbageDisposalApp
 {
-```
-
-
-    `public static void Main(string[] args)`
-
-    `{`
-
-        `DoSomething();`
-
-        `Console.WriteLine("end of Main");`
-
-    `}`
-
-    `public static void DoSomething()`
-
-    `{`
-
-        `Thing t = new Thing("Foo");`
-
-        `Console.WriteLine(t);`
-
-        `t.Dispose();`
-
-        `t = null;`
-
-        `GC.Collect();`
-
-        `GC.WaitForPendingFinalizers();`
-
-    `}`
-
-
-```
+    public static void Main(string[] args)
+    {
+        DoSomething();
+        Console.WriteLine("end of Main");
+    }
+    public static void DoSomething()
+    {
+        Thing t = new Thing("Foo");
+        Console.WriteLine(t);
+        t.Dispose();
+        t = null;
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+    }
 }
 ```
 
-
 The output from this code is shown here:
-
-
 ```
 Foo
 Dispose()
@@ -4231,72 +3824,44 @@ Dispose()
 end of Main
 ```
 
-
 Two issues arise from this code. First, if we’ve moved the cleanup operations to the Dispose method, there’s no longer anything meaningful for the finalizer to do, but—as you can see from the output just shown—the finalizer is called anyway. Second, if we now perform our cleanup in the Dispose method, what happens if the object is finalized through some branch of code that bypasses the call to Dispose?
 
 The standard strategy used to resolve the first issue is to add a statement to the Dispose method that will suppress the GC’s call to the Finalize method:
-
-
-```
+```c#
 public void Dispose()
 {
-```
-
-
-    `Console.WriteLine("Dispose()");`
-
-    `GC.SuppressFinalize(this);`
-
-
-```
+    Console.WriteLine("Dispose()");
+    GC.SuppressFinalize(this);
 }
 ```
-
 
 GC.SuppressFinalize will remove the object from the finalization queue, so although the memory for the object will get collected, the Finalize method won’t be called. Note that the parameter passed to this method should be this current object, but the compiler doesn’t enforce this.
 
 Now let’s now address the second issue I mentioned earlier: what happens if the object is finalized—for example, as a result of a conditional branch in our code, or as an exception that gets thrown—and bypasses the call to Dispose? Fixing this little snag is a simple matter: just call the Dispose in the finalizer. Therefore, if the developer has remembered to call Dispose and that branch of the code is executed, all’s well. Equally, if the developer’s explicit call to Dispose is bypassed in some way, the finalizer will be called (because it of course hasn’t been suppressed by the Dispose) and will call the Dispose:
-
-
-```
-~Thing() 
-{ 
-```
-
-
-    `Dispose();`
-
-    `Console.WriteLine("~Thing()"); `
-
-
-```
+```c#
+~Thing() 
+{ 
+    Dispose();
+    Console.WriteLine("~Thing()"); 
 }
 ```
 
-
 It’s possible that after you’ve suppressed finalization of an object, a condition will arise in your application that makes you want to reinstate the garbage collector’s call to Finalize. The GC class supports this (admittedly somewhat remote) possibility through the ReRegisterForFinalize method.
 
+```c#
+    public static void DoSomething()
+    {
+        Thing t = new Thing("Foo");
+        Console.WriteLine(t);
+        t.Dispose();
 
+        // Some condition arises.
+        GC.ReRegisterForFinalize(t);
+        
+
+
+    }
 ```
-public static void DoSomething()
-```
-
-
-    `{`
-
-        `Thing t = new Thing("Foo");`
-
-        `Console.WriteLine(t);`
-
-        `t.Dispose();`
-
-        `// Some condition arises.`
-
-        `GC.ReRegisterForFinalize(t);`
-
-        
-
-    `}`
 
 **The IDisposable Interface**
 
@@ -4308,103 +3873,55 @@ Recall that that when you derive a finalizable class from a finalizable base cla
 
 The following code illustrates this scenario:
 
-
-```
+```c#
 public class Thing : IDisposable
 {
-```
-
-
-    `protected string name;`
-
-    `public Thing(string name) { this.name = name; }`
-
-    `override public string ToString() { return name; }`
-
-    `~Thing() { Dispose(); Console.WriteLine("~Thing()"); }`
-
-    `public void Dispose() `
-
-    `{ `
-
-        `Console.WriteLine("Thing.Dispose()"); `
-
-        `GC.SuppressFinalize(this);`
-
-    `}`
-
-
-```
+    protected string name;
+    public Thing(string name) { this.name = name; }
+    override public string ToString() { return name; }
+    ~Thing() { Dispose(); Console.WriteLine("~Thing()"); }
+    public void Dispose() 
+    { 
+        Console.WriteLine("Thing.Dispose()"); 
+        GC.SuppressFinalize(this);
+    }
 }
 public class SonOfThing : Thing, IDisposable
 {
-```
-
-
-    `public SonOfThing(string name) : base(name) { }`
-
-    `override public string ToString() { return name; }`
-
-    `~SonOfThing() `
-
-    `{ Dispose(); Console.WriteLine("~SonOfThing()"); }`
-
-    `new public void Dispose()`
-
-    `{ `
-
-        `Console.WriteLine("SonOfThing.Dispose()"); `
-
-        `base.Dispose();`
-
-        `GC.SuppressFinalize(this);`
-
-    `}`
-
-
-```
+    public SonOfThing(string name) : base(name) { }
+    override public string ToString() { return name; }
+    ~SonOfThing() 
+    { Dispose(); Console.WriteLine("~SonOfThing()"); }
+    new public void Dispose()
+    { 
+        Console.WriteLine("SonOfThing.Dispose()"); 
+        base.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }
 
 class DerivedDisposeApp
 {
-```
-
-
-    `static void Main(string[] args)`
-
-    `{`
-
-        `DoSomething();`
-
-    `}`
-
-    `static void DoSomething()`
-
-    `{`
-
-        `SonOfThing s = new SonOfThing("Bar");`
-
-        `Console.WriteLine(s);`
-
-        `s.Dispose();`
-
-    `}`
-
-
-```
+    static void Main(string[] args)
+    {
+        DoSomething();
+    }
+    static void DoSomething()
+    {
+        SonOfThing s = new SonOfThing("Bar");
+        Console.WriteLine(s);
+        s.Dispose();
+    }
 }
 ```
 
-
 If you want the derived class to implement the IDisposable interface, you must declare it to do so and implement the Dispose method of that interface—merely relying on the inherited base class implementation isn’t enough. However, this leads to the situation where we have an identically signatured Dispose method in both the base class and the derived class, and the compiler will warn us about this situation unless we add the new keyword to the derived class declaration. You’ll also notice from the output that both the derived class finalizer and base class finalizer are suppressed:
 
-
-```
+```c#
 Bar
 SonOfThing.Dispose()
 Thing.Dispose()
 ```
-
 
 **Protecting Against Double Disposal**
 
@@ -4413,107 +3930,60 @@ Because the developer is responsible for calling Dispose, suppressing finalizati
 The following enhancement to our Thing system illustrates one way to satisfy these requirements. We simply set a Boolean field in our Dispose and test it at the beginning of the method:
 
 
-```
+```c#
 public class Thing : IDisposable
 {
-```
+    private string name;
+    public Thing(string name) { this.name = name; }
+    override public string ToString() { return name; }
 
+    ~Thing() 
+    { 
+        Dispose();
+        Console.WriteLine("~Thing()"); 
+    }
 
-    `private string name;`
+    private bool AlreadyDisposed = false;
 
-    `public Thing(string name) { this.name = name; }`
-
-    `override public string ToString() { return name; }`
-
-    `~Thing() `
-
-    `{ `
-
-        `Dispose();`
-
-        `Console.WriteLine("~Thing()"); `
-
-    `}`
-
-    `private bool AlreadyDisposed = false;`
-
-    `public void Dispose()`
-
-    `{`
-
-        `if (!AlreadyDisposed)`
-
-        `{`
-
-            `AlreadyDisposed = true;`
-
-            `Console.WriteLine("Dispose()");`
-
-            `GC.SuppressFinalize(this);`
-
-        `}`
-
-    `}`
-
-
-```
+    public void Dispose()
+    {
+        if (!AlreadyDisposed)
+        {
+            AlreadyDisposed = true;
+            Console.WriteLine("Dispose()");
+            GC.SuppressFinalize(this);
+        }
+    }
 }
 ```
-
 
 **Language Support for Dispose**
 
 Using conventional coding constructs, the best way to ensure that an object’s lifetime is controlled and that resources are cleaned up deterministically is by enclosing the object in a try and finally block:
 
-
-```
+```c#
 static void Main(string[] args)
 {
-```
-
-
-    `Thing t1 = new Thing("Ethel");`
-
-    `try`
-
-    `{`
-
-        `Console.WriteLine(t1);`
-
-    `}`
-
-    `finally`
-
-    `{`
-
-        `if (t1 != null)`
-
-            `((IDisposable)t1).Dispose();`
-
-    `}`
-
-
-```
+    Thing t1 = new Thing("Ethel");
+    try
+    {
+        Console.WriteLine(t1);
+    }
+    finally
+    {
+        if (t1 != null)
+            ((IDisposable)t1).Dispose();
+    }
 }
 ```
-
 
 This pattern is so standard that the C# language supports it through the use of the using statement. The previous code with a try..finally block can be rewritten as follows:
-
-
-```
-using (Thing t2 = new Thing("JimBob")) 
+```c#
+using (Thing t2 = new Thing("JimBob")) 
 {
-```
-
-
-    `Console.WriteLine(t2);`
-
-
-```
+    Console.WriteLine(t2);
 }
 ```
-
 
 The using statement requires that the class implement IDisposable.
 
@@ -4528,12 +3998,9 @@ Remember that the primary reason for garbage collection is to ensure that suffic
 When would you need to use a weak reference? One obvious use is for objects that are costly to set up and consume lots of memory. Say you’ve set up a large object and then the user switches to a different part of the application where the object isn’t needed. We might want to release the memory, so we destroy all strong references. But what if the user switches back to the original part of the application he or she was using and needs the object again? Remember, it’s costly to set up. So let’s destroy all strong references as we did earlier, but let’s get a weak reference first. Then the GC will collect the memory if we’re low on memory (and won’t collect the memory if we’re not low on memory). And if the user switches back, we can use the weak reference to get back a strong reference, thereby avoiding the cost of setup. Now isn’t that neat?
 
 Recall that when you write a statement such as this
-
-
-```
+```c#
 Thing t = new Thing("Foo");
 ```
-
 
 you’re declaring an instance of the Thing class, for which the runtime will allocate memory on the heap. The t variable isn’t the object itself, but rather a reference to the object. This is what’s known as a strong reference.
 
@@ -4543,68 +4010,39 @@ The common language runtime supports two styles of weak reference: short weak re
 
 In the following example, we create a strong reference, t1, to a Thing and then get a weak reference to it while it’s still alive. From the weak reference, we can create a second strong reference, t2, and print it out. We then destroy both strong references, force a garbage collection, and then test to see whether the weak reference is still alive (which, of course, it isn’t).
 
-
-```
+```c#
 public class WeakRefsApp
 {
-```
+    public static void Main(string[] args)
+    {
+        Thing t1 = new Thing("Foo");
 
+        WeakReference wr = new WeakReference(t1, false);
+        if (wr.IsAlive)
+        {
+            Thing t2 = (Thing) wr.Target;
+            Console.WriteLine("new WeakReference: {0}", t2);
+            t2.Dispose();
+            t2 = null;
+        }
 
-    `public static void Main(string[] args)`
+        t1.Dispose();
+        t1 = null;
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
 
-    `{`
-
-        `Thing t1 = new Thing("Foo");`
-
-        `WeakReference wr = new WeakReference(t1, false);`
-
-        `if (wr.IsAlive)`
-
-        `{`
-
-            `Thing t2 = (Thing) wr.Target;`
-
-            `Console.WriteLine("new WeakReference: {0}", t2);`
-
-            `t2.Dispose();`
-
-            `t2 = null;`
-
-        `}`
-
-        `t1.Dispose();`
-
-        `t1 = null;`
-
-        `GC.Collect();`
-
-        `GC.WaitForPendingFinalizers();`
-
-        `if (wr.IsAlive)`
-
-        `{`
-
-            `Thing t3 = (Thing) wr.Target;`
-
-            `Console.WriteLine("using old WR: {0}", t3);`
-
-        `}`
-
-        `else`
-
-            `Console.WriteLine("WeakReference is dead");`
-
-    `}`
-
-
-```
+        if (wr.IsAlive)
+        {
+            Thing t3 = (Thing) wr.Target;
+            Console.WriteLine("using old WR: {0}", t3);
+        }
+        else
+            Console.WriteLine("WeakReference is dead");
+    }
 }
 ```
 
-
 Here’s the output:
-
-
 ```
 new WeakReference: Foo
 Dispose
@@ -4612,55 +4050,33 @@ Dispose
 WeakReference is dead
 ```
 
-
-
 ### Unsafe Code
 
 Programmers who come to C# from C or C++ are sometimes concerned about the degree of control—or the lack of it—that they might have over memory. If you’re used to dealing with raw pointers, you’ll know how powerful—and potentially dangerous—they can be. The C# language addresses this concern by providing the option to use pointers. The one caveat is that you can use only pointers in code marked unsafe. Despite its ominous name, unsafe code isn’t inherently unsafe or untrustworthy—rather, it’s C# code that bypasses the compiler’s type checking and allows the use of raw pointers. A related concept is unmanaged code: code for which the .NET runtime doesn’t control the allocation and deallocation of memory. Unmanaged code includes code written in earlier versions of Microsoft Visual Basic or in C++ without the managed extensions.
-
-
-```
+```c#
 public class TestUnsafeApp
 {
-```
+    unsafe public static void Swap(int* pi, int* pj)
+    {
+        int tmp = *pi;
+        *pi = *pj;
+        *pj = tmp;
+    }
 
+    public static void Main(string[] args)
+    {
+        int i = 3;
+        int j = 4;
+        Console.WriteLine("BEFORE: i = {0}, j = {1}", i, j);
 
-    `unsafe public static void Swap(int* pi, int* pj)`
+        unsafe { Swap(&i, &j); }
 
-    `{`
-
-        `int tmp = *pi;`
-
-        `*pi = *pj;`
-
-        `*pj = tmp;`
-
-    `}`
-
-    `public static void Main(string[] args)`
-
-    `{`
-
-        `int i = 3;`
-
-        `int j = 4;`
-
-        `Console.WriteLine("BEFORE: i = {0}, j = {1}", i, j);`
-
-        `unsafe { Swap(&i, &j); }`
-
-        `Console.WriteLine("AFTER:  i = {0}, j = {1}", i, j);`
-
-    `}`
-
-
-```
+        Console.WriteLine("AFTER:  i = {0}, j = {1}", i, j);
+    }
 }
 ```
 
-
 Note that the unsafe keyword must be used in both the declaration of the unsafe method and the call to the unsafe method because both the & and * pointer operators can be used only in an unsafe context. Because the call is an otherwise undelimited statement (or block of statements), you must delimit it with a pair of curly braces. All code within these curly braces is considered unsafe. This code needs to be compiled with the /unsafe compiler option.
-
 
 ### Pinning
 
@@ -4669,83 +4085,48 @@ Another technique used in unsafe code is pinning, for which you use the keyword 
 To reduce the degree to which memory becomes fragmented, the .NET runtime moves objects around during garbage collection to try to consolidate used blocks of memory, thereby freeing up larger contiguous blocks. This system is clearly beneficial in making the most efficient use of the memory available. On the other hand, it’s less useful when you have a pointer to a specific memory address and then—unbeknownst to you—the .NET runtime moves the object from that address, leaving you with an invalid pointer. This situation is why you have the option to pin a variable in memory if you want—but bear in mind that the reason the GC moves things around in memory is to increase application efficiency. Thus, you should pin variables only if you can’t avoid doing so.
 
 Note that you need only pin variables that might otherwise be moved by the runtime—therefore, this applies only to reference variables on the heap. The GC doesn’t move value-type variables.
-
-        `unsafe`
-
-        `{`
-
-            `fixed (int* pi = &i.id, pj = &j.id)`
-
-            `{`
-
-                `Swap(pi, pj);`
-
-            `}`
-
-        `}`
-
+```c++
+        unsafe
+        {
+            fixed (int* pi = &i.id, pj = &j.id)
+            {
+                Swap(pi, pj);
+            }
+        }
+```
 
 ### Using stackalloc
 
 As an alternative strategy to pinning, we can allocate data on the stack instead of on the heap by using the keyword stackalloc. This keyword will allocate a block of memory of sufficient size to contain the specified number of elements of the specified type; the address of the block is returned by the expression. Because this memory is on the stack, it isn’t subject to garbage collection and therefore doesn’t have to be pinned. For example, we could modify our earlier application that worked on an array of integers to put this array on the stack by using stackalloc:
 
-    `static void Main(string[] args)`
+```c#
+    static void Main(string[] args)
+    {
+/*        int[] ia = new int[5]{12,34,56,78,90};
 
-    `{`
-
-
-```
-/*        int[] ia = new int[5]{12,34,56,78,90};
-```
-
-
-        `unsafe`
-
-        `{`
-
-            `fixed (int* pa = ia)`
-
-            `{`
-
-                `Foo(pa);`
-
-            `}`
-
-        `}`
-
-
-```
+        unsafe
+        {
+            fixed (int* pa = ia)
+            {
+                Foo(pa);
+            }
+        }
 */
+        unsafe
+        {
+            int* pa = stackalloc int[5];
+            pa[0] = 12;
+            pa[1] = 34;
+            pa[2] = 56;
+            pa[3] = 78;
+            pa[4] = 90;
+            Foo(pa);
+        }
+    }
 ```
-
-
-        `unsafe`
-
-        `{`
-
-            `int* pa = stackalloc int[5];`
-
-            `pa[0] = 12;`
-
-            `pa[1] = 34;`
-
-            `pa[2] = 56;`
-
-            `pa[3] = 78;`
-
-            `pa[4] = 90;`
-
-            `Foo(pa);`
-
-        `}`
-
-    `}`
-
 
 ## Static vs Singleton
-
-
-```
+```c#
 public class VoteMachine
 {
     private static VoteMachine _instance = null;
@@ -4789,14 +4170,10 @@ public class VoteMachine
 }
 ```
 
-
-
 ## <span style="text-decoration:underline;">Singleton Class using Static Constructor</span>
 
 You can create a singleton class by using the static constructor. The static constructor runs only once per app domain when any static member of a class is accessed.
-
-
-```
+```c#
 public class VoteMachine
 {
 	private static readonly VoteMachine _instance = new VoteMachine();
@@ -4834,14 +4211,10 @@ public class VoteMachine
 }
 ```
 
-
-
 ## Singleton Class with Lazy Instantiation
 
 If you use .NET 4 or higher, use [Lazy&lt;T>](https://docs.microsoft.com/en-us/dotnet/api/system.lazy-1) to create an instance only when needed.
-
-
-```
+```c#
 public sealed class VoteMachine
 {
 	private static readonly Lazy<VoteMachine> _instance = new Lazy<VoteMachine>(() => new VoteMachine());
@@ -4925,9 +4298,7 @@ public class Program
 }
 ```
 
-
 So, a static class can be a singleton class. It is thread-safe and performs well because we don't need to use locks.
-
 
 <table>
   <tr>
@@ -4968,29 +4339,20 @@ So, a static class can be a singleton class. It is thread-safe and performs well
   </tr>
 </table>
 
-
-
 ## stackalloc
 
 A `stackalloc` expression allocates a block of memory on the stack. A stack allocated memory block created during the method execution is automatically discarded when that method returns. You can't explicitly free the memory allocated with `stackalloc`. A stack allocated memory block isn't subject to [garbage collection](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/) and doesn't have to be pinned with a [fixed statement](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/fixed).
-
-
-```
+```c#
 stackalloc int[3]				// currently allowed
 stackalloc int[3] { 1, 2, 3 }
 stackalloc int[] { 1, 2, 3 }
 stackalloc[] { 1, 2, 3 }
 ```
-
-
 You can assign the result of a `stackalloc` expression to a variable of one of the following types:
-
-
 
 * [System.Span&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.span-1)<span style="text-decoration:underline;"> or [System.ReadOnlySpan&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.readonlyspan-1), as the following example shows:</span>
 
-
-```
+```c#
 int length = 3;
 Span<int> numbers = stackalloc int[length];
 for (var i = 0; i < length; i++)
@@ -4999,19 +4361,14 @@ for (var i = 0; i < length; i++)
 }
 ```
 
-
-You don't have to use an [unsafe](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/unsafe) context when you assign a stack allocated memory block to a [Span&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.span-1) or [ReadOnlySpan&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) variable.
-
+You don't have to use an unsafe context when you assign a stack allocated memory block to a Span<T> or ReadOnlySpan<T> variable.
+```c#
 int length = 1000;
-
-Span&lt;byte> buffer = length &lt;= 1024 ? stackalloc byte[length] : new byte[length];
-
-
-
-* <span style="text-decoration:underline;">A [pointer type](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/unsafe-code#pointer-types), as the following example shows:</span>
-
-
+Span<byte> buffer = length <= 1024 ? stackalloc byte[length] : new byte[length];
 ```
+A ***pointer type***, as the following example shows:
+
+```c#
 unsafe
 {
     int length = 3;
@@ -5023,22 +4380,19 @@ unsafe
 }
 ```
 
+The content of the newly allocated memory is undefined. You should initialize it before the use. For example, you can use the Span<T>.Clear method that sets all the items to the default value of type T.
 
-The content of the newly allocated memory is undefined. You should initialize it before the use. For example, you can use the [Span&lt;T>.Clear](https://learn.microsoft.com/en-us/dotnet/api/system.span-1.clear) method that sets all the items to the default value of type `T`.
-
-Span&lt;int> first = stackalloc int[3] { 1, 2, 3 };
-
-Span&lt;int> second = stackalloc int[] { 1, 2, 3 };
-
-ReadOnlySpan&lt;int> third = stackalloc[] { 1, 2, 3 };
-
+```c#
+Span<int> first = stackalloc int[3] { 1, 2, 3 };
+Span<int> second = stackalloc int[] { 1, 2, 3 };
+ReadOnlySpan<int> third = stackalloc[] { 1, 2, 3 };
+```
 
 ## Fixed-size buffers
 
 You can use the `fixed` keyword to create a buffer with a fixed-size array in a data structure. Fixed-size buffers are useful when you write methods that interoperate with data sources from other languages or platforms. The fixed-size buffer can take any attributes or modifiers that are allowed for regular struct members. The only restriction is that the array type must be `bool`, `byte`, `char`, `short`, `int`, `long`, `sbyte`, `ushort`, `uint`, `ulong`, `float`, or `double`.
 
-
-```
+```c#
 internal unsafe struct Buffer
 {
     public fixed char fixedBuffer[128];
@@ -5071,12 +4425,8 @@ private static void AccessEmbeddedArray()
 }
 ```
 
-
-
 ## Properties
-
-
-```
+```c#
 initializations
 public class Person
 {
@@ -5135,11 +4485,8 @@ public class Person
 }
 ```
 
-
 Beginning in C# 11, you can _require_ callers to set that property:
-
-
-```
+```c#
 public class Person
 {
     public Person() { }
@@ -5160,11 +4507,8 @@ person = new VersionNinePoint2.Person{ FirstName = "John"};
 //person = new VersionNinePoint2.Person();
 ```
 
-
-Computed properties`:`
-
-
-```
+#### Computed properties
+```c#
 public class Person
 {
     public string? FirstName { get; set; }
@@ -5177,14 +4521,11 @@ public class Person
 }
 ```
 
-
-
 ## Implementing INotifyPropertyChanged
 
-A final scenario where you need to write code in a property accessor is to support the [INotifyPropertyChanged](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged) interface used to notify data binding clients that a value has changed. When the value of a property changes, the object raises the [INotifyPropertyChanged.PropertyChanged](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged.propertychanged) event to indicate the change. The data binding libraries, in turn, update display elements based on that change. 
+A final scenario where you need to write code in a property accessor is to support the INotifyPropertyChanged interface used to notify data binding clients that a value has changed. When the value of a property changes, the object raises the INotifyPropertyChanged.PropertyChanged event to indicate the change. The data binding libraries, in turn, update display elements based on that change.
 
-
-```
+```c#
 public class Person : INotifyPropertyChanged
 {
     public string? FirstName
@@ -5208,16 +4549,13 @@ public class Person : INotifyPropertyChanged
 }
 ```
 
-
 The `?.` operator is called the _null conditional operator_. It checks for a null reference before evaluating the right side of the operator. The end result is that if there are no subscribers to the `PropertyChanged` event, the code to raise the event doesn't execute.
 
 This example also uses the new `nameof` operator to convert from the property name symbol to its text representation. Using `nameof` can reduce errors where you've mistyped the name of the property.
 
-
 ## Using COM Components from C#
 
 Therefore, the .NET Framework does support a feature that allows for complete interoperation between COM components and code written using .NET compilers. This feature—named, appropriately enough, **COM interop**.
-
 
 ### Consuming a COM Component from a .NET Application
 
@@ -5225,21 +4563,17 @@ A .NET application that needs to talk to our COM component can’t directly cons
 
 To generate the metadata wrapper for COM component we’ll use a tool named the Type Library Importer (TLBIMP.EXE). This application ships with the .NET Framework SDK and can be located in the Bin subfolder of your SDK installation.
 
-
-```
+```c#
 TLBIMP AirlineInformation.tlb /out:AirlineMetadata.dll
 ```
-
 
 This command tells the type library importer to read your AirlineInfo COM type library and generate a corresponding metadata wrapper named AirlineMetadata.dll.
 
 If everything went through fine, you should see a message indicating that the metadata proxy has been generated from the type library:
 
-
-```
+```c#
 Type library imported to E:\COMInteropWithDOTNET\AirlineMetadata.dll
 ```
-
 
 Under the hood, the runtime fabricates an RCW, which maps the metadata proxy’s class methods and fields to methods and properties exposed by the interface that the COM object implements. One RCW instance is created for each instance of the COM object. With regards to its interaction with the RCW, the .NET runtime cares only about managing its lifetime and handling garbage collection duties. The RCW takes care of maintaining reference counts on the COM object that the object is mapped to, thereby shielding the .NET runtime from managing the reference counts on the actual COM object.
 
@@ -5249,13 +4583,11 @@ Anytime the COM method raises an error, the COM error is trapped by the RCW and 
 
 If you return standard HRESULT values, the RCW will map them to the corresponding .NET exceptions that are thrown back to the client. For example, if you return an HRESULT of E_NOTIMPL from your COM method, the RCW will map this value to the .NET NotImplementedException exception and throw an exception of that type.
 
-
 ### Dynamic Type Discovery with COM Components
 
 How does the QueryInterface scenario work from the perspective of the .NET client when QueryInterface needs to check whether a COM object implements a specific interface? To call QueryInterface for another interface, you simply cast the object to the interface that you’re querying for, and if the cast succeeds—voilà—your QueryInterface succeeds as well. In case you attempt to cast the object to some arbitrary interface that the object doesn’t support, a System.InvalidCastException exception is thrown, indicating that the QueryInterface call has failed. The process is that simple. Again, the RCW does all the hard work under the covers. It’s similar to the way the Microsoft Visual Basic runtime shields us from having to write any explicit QueryInterface-related code by simply calling QueryInterface for you when you set one object type to an object of another associated type.
 
 An alternate way to check whether the object instance that you’re currently holding supports or implements a specific interface type is to use C#’s is operator.
-
 
 ### Late Binding to COM Objects
 
@@ -5265,107 +4597,60 @@ When late binding to a COM object, you need to know the object’s ProgID or CLS
 
 After creating an instance of the object using Activator.CreateInstance, you can invoke any of the methods and properties supported by the object using the System.Type.InvokeMember method of the Type object that you got back from Type.GetTypeFromProgID or Type.GetTypeFromCLSID. All you need to know is the name of the method or property and the kind of parameters that the method call accepts. The parameters are bundled into a generic System.Object array and passed to the method. You’d also need to set the appropriate binding flags depending on whether you’re invoking a method or getting or setting the value of a property. That’s all there is to late binding to a COM object. Here’s how the code looks:
 
-
-```
+```c#
 try
 {
-```
+    object objAirlineLateBound;
+    Type objTypeAirline;
+   
+    // Create an object array containing the input
+    // parameters for the method.
+    object[] arrayInputParams= { "Air Scooby IC 5678" };
+   
+    // Get the type information from the ProgID.
+    objTypeAirline = Type.GetTypeFromProgID(
+        "AirlineInformation.AirlineInfo");
+   
+    // Here's how you use the COM CLSID to get
+    // the associated .NET System.Type:
+    // objTypeAirline = Type.GetTypeFromCLSID(new Guid(
+    //  "{F29EAEEE-D445-403B-B89E-C8C502B115D8}"));
 
+   
+    // Create an instance of the object.
+    objAirlineLateBound = Activator.CreateInstance(
+        objTypeAirline);
 
-    `object objAirlineLateBound;`
+    // Invoke the GetAirlineTiming method.
+    String str =  (String)objTypeAirline.InvokeMember(
+        "GetAirlineTiming",
+        BindingFlags.Default │ BindingFlags.InvokeMethod, 
+        null, 
+        objAirlineLateBound, 
+        arrayInputParams);
 
-    `Type objTypeAirline;`
+    System.Console.WriteLine("Late Bound Call - Air Scooby " +
+        "Arrives at : {0}",str);
 
-   
+    // Get the value of the LocalTimeAtOrlando property.
+    String strTime = (String)objTypeAirline.InvokeMember(
+        "LocalTimeAtOrlando",
+        BindingFlags.Default │ BindingFlags.GetProperty, 
+        null, 
+        objAirlineLateBound,
+        new object[]{});
 
-    `// Create an object array containing the input`
+    Console.WriteLine ("Late Bound Call - Local Time at " +
+        "Orlando, Florida is: {0}", strTime);
 
-    `// parameters for the method.`
-
-    `object[] arrayInputParams= { "Air Scooby IC 5678" };`
-
-   
-
-    `// Get the type information from the ProgID.`
-
-    `objTypeAirline = Type.GetTypeFromProgID(`
-
-        `"AirlineInformation.AirlineInfo");`
-
-   
-
-    `// Here's how you use the COM CLSID to get`
-
-    `// the associated .NET System.Type:`
-
-    `// objTypeAirline = Type.GetTypeFromCLSID(new Guid(`
-
-    `//  "{F29EAEEE-D445-403B-B89E-C8C502B115D8}"));`
-
-   
-
-    `// Create an instance of the object.`
-
-    `objAirlineLateBound = Activator.CreateInstance(`
-
-        `objTypeAirline);`
-
-    `// Invoke the GetAirlineTiming method.`
-
-    `String str =  (String)objTypeAirline.InvokeMember(`
-
-        `"GetAirlineTiming",`
-
-        `BindingFlags.Default │ BindingFlags.InvokeMethod, `
-
-        `null, `
-
-        `objAirlineLateBound, `
-
-        `arrayInputParams);`
-
-    `System.Console.WriteLine("Late Bound Call - Air Scooby " +`
-
-        `"Arrives at : {0}",str);`
-
-    `// Get the value of the LocalTimeAtOrlando property.`
-
-    `String strTime = (String)objTypeAirline.InvokeMember(`
-
-        `"LocalTimeAtOrlando",`
-
-        `BindingFlags.Default │ BindingFlags.GetProperty, `
-
-        `null, `
-
-        `objAirlineLateBound,`
-
-        `new object[]{});`
-
-    `Console.WriteLine ("Late Bound Call - Local Time at " +`
-
-        `"Orlando, Florida is: {0}", strTime);`
-
-
-```
 }/* end try */
 catch(COMException e)
 {
-```
-
-
-    `System.Console.WriteLine("Error code : {0},`
-
-        `Error message : {1}", `
-
-        `e.ErrorCode, e.Message);`
-
-
-```
+    System.Console.WriteLine("Error code : {0},
+        Error message : {1}", 
+        e.ErrorCode, e.Message);
 }/* end catch */
 ```
-
-
 
 ### A .NET View on COM Threading Models and Apartments
 
@@ -5375,8 +4660,7 @@ By default, the calling thread in a managed application chooses to live in an MT
 
 You can override the default choice of apartment for a managed thread in a .NET application by using the ApartmentState property of the System.Threading.Thread class. The ApartmentState property takes one of the following enumeration values: MTA, STA, or Unknown. The ApartmentState.Unknown value is equivalent to the default MTA behavior. You’ll need to specify the ApartmentState for the calling thread before you make any calls to the COM object. It’s not possible to change the ApartmentState after the COM object has been created. Therefore, it makes sense to set the thread’s ApartmentState as early as possible in your code, as shown here:
 
-
-```
+```c#
 // Set the client thread's ApartmentState to enter an STA.
 Thread.CurrentThread.ApartmentState = ApartmentSTate.STA;
 
@@ -5385,55 +4669,37 @@ MySTA objSTA = new MySTA();
 objSTA.MyMethod()
 ```
 
-
 You can also tag your managed client’s Main entry point method with the STAThread attribute or the MTAThread attribute to start the client with the desired threading affiliation for consuming COM components. For example, take a look at this code snippet:
 
-
-```
+```c#
 public class HelloThreadingModelApp {
-```
 
+    [STAThread]
+    static public void Main(String[] args) {
+  
+        System.Console.WriteLine("The apartment state is: {0}", 
+            Thread.CurrentThread.ApartmentState.ToString());
 
-    `[STAThread]`
+    }/* end Main */
 
-    `static public void Main(String[] args) {`
-
-  
-
-        `System.Console.WriteLine("The apartment state is: {0}", `
-
-            `Thread.CurrentThread.ApartmentState.ToString());`
-
-    `}/* end Main */`
-
-
-```
 }/* end class */
 ```
 
 
 Here’s the output from this program:
-
-
 ```
 The apartment state is: STA 
 ```
 
-
 If you set the MTAThread attribute, the client’s ApartmentState property is set to MTA. If no thread state attribute is specified in the client’s Main entry point or if the ApartmentState property isn’t set for the thread from which the COM component is created, the ApartmentState property is set to Unknown, which defaults to MTA behavior.
-
-**Chapter 22 skipped from Inside C#**
-
 
 ### Code Access Security
 
 Code access security (CAS) is a feature of the .NET Framework that allows you to establish and enforce security restrictions on assemblies and the code within them. As it loads an assembly, the .NET Framework grants that assembly a set of permissions to access system resources—such as the file system, the Registry, printers, the environment table, and so on. A group of permissions is known as a permission set, and these permissions are based on security policy. There’s a standard set of permission sets, and an administrator can create new permission sets. There’s also a standard set of code groups, and an administrator can create new code groups. A code group maps assemblies to permission sets. This mapping is done by gathering evidence about an assembly, including its strong-named identity. The result is that an assembly with a particular identity is mapped to a specific set of access permissions. The security policy system is entirely open-ended and configurable through administrative tools supplied with the .NET Framework SDK. Your code can also make programmatic checks and requests for permissions.
 
-
 ### Configuring Security
 
 Two tools shipped with the .NET Framework SDK allow you to configure security: CASpol.exe and MSCorCfg.msc. The first is a command-line utility, the second a Microsoft Management Console (MMC) snap-in. The graphical user interface of the MSCorCfg MMC snap-in is easier to use and allows you to visualize the overall security configuration more readily. CASpol is quicker and can be used in scripts or batch files. To explore the use of these tools, we’ll set up a new permission set and a new code group hierarchy and test this structure with a specific assembly. We’ll do this test first with MSCorCfg and then tear the structure down and set it up again with CASpol.
-
 
 ## Assemblies
 
@@ -5447,13 +4713,11 @@ An assembly's version can be checked, so that the CLR can insure that the same a
 
 Although there is often a one-to-one correspondence between namespace and assembly, an assembly may contain multiple namespaces, and one namespace may be distributed among multiple assemblies. While there is often a one-to-one correspondence between assembly and binary code file (i.e., DLL or EXE), one assembly can span multiple binary code files. An assembly is the unit of deployment; an application is the unit of configuration.
 
-
 ### Manifests
 
 As part of its metadata, every assembly has a manifest . This describes what is in the assembly: identification information (name, version, etc.), a list of the types and resources in the assembly, a list of modules, a map to connect public types with the implementing code, and a list of assemblies referenced by this assembly.
 
 Even the simplest program has a manifest. You can examine that manifest using `ILDasm`, which is provided as part of your development environment.
-
 
 ### Multimodule Assemblies
 
@@ -5471,7 +4735,6 @@ All the assemblies you've built so far are private. By default, when you compile
 
 A private assembly can have any name you choose. It doesn't matter if that name clashes with assemblies in another application; the names are local only to a single application.
 
-
 ## LINQ
 
 [https://learn.microsoft.com/en-us/dotnet/csharp/linq/query-a-collection-of-objects](https://learn.microsoft.com/en-us/dotnet/csharp/linq/query-a-collection-of-objects)
@@ -5483,49 +4746,31 @@ Add NUnit and NUnit3TestAdapter.
 Create a NUnit type project
 
 Add code:
-
+```c#
 namespace NUnitTestProject;
 
 public class Tests
-
 {
-
     [SetUp]
-
     public void Setup()
-
     {
-
     }
 
     [Test]
-
     public void Test1()
-
     {
-
         string myString = "Test 123 \n \t.";
-
         string result = myString.ToUpper();
-
         Assert.AreEqual("TEST 123 \n \t.", result);
-
     }
 
     [Test]
-
     public void Test2()
-
     {
-
         string myString = "Test 1234 \n \t.";
-
         string result = myString.ToUpper();
-
         Assert.AreEqual("TEST 1231 \n \t.", result);
-
     }
-
 }
-
+```
 Run from console using: “dotnet test”.
