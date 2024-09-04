@@ -564,7 +564,7 @@ finally
 
 C# provides a class <strong><code>SpinLock</code></strong> which makes a thread wait in a loop repeatedly checking until the lock becomes available.
 
-The **<code>SpinWait</code></strong> class can be used to busy wait. Note that <strong><code>SpinWait</code></strong> is not simply an empty loop. It is carefully implemented to provide correct spinning behavior for the general case, and will itself initiate context switches if it spins long enough. The idea behind spin wait is to spend a few cycles spinning for a resource to become available. If it does then we will have saved ourselves several thousand cycles that would have otherwise been expended in context-switching and kernel transitions.
+The <strong><code>SpinWait</code></strong> class can be used to busy wait. Note that <strong><code>SpinWait</code></strong> is not simply an empty loop. It is carefully implemented to provide correct spinning behavior for the general case, and will itself initiate context switches if it spins long enough. The idea behind spin wait is to spend a few cycles spinning for a resource to become available. If it does then we will have saved ourselves several thousand cycles that would have otherwise been expended in context-switching and kernel transitions.
 
 ```c#
 // The sw variable is a SpinWait object
@@ -611,7 +611,7 @@ A <strong><code>ThreadLocal&lt;T></code></strong> object creates a copy of the t
 
 Tasks fall under the realm of parallel programming.<br>
 
-Over the years as processor speeds peaked, multicore systems have become ubiquitous. Having more than one processor on a system allows two threads of a process to execute in parallel, i.e. programs can be parallel and concurrent at the same time. With a single processor, a multithreaded program can only be concurrent. The APIs in the **<code>System.Threading.Tasks</code></strong> namespace facilitate programming on multicore machines and makes more efficient use of the thread pool. <br>
+Over the years as processor speeds peaked, multicore systems have become ubiquitous. Having more than one processor on a system allows two threads of a process to execute in parallel, i.e. programs can be parallel and concurrent at the same time. With a single processor, a multithreaded program can only be concurrent. The APIs in the <strong><code>System.Threading.Tasks</code></strong> namespace facilitate programming on multicore machines and makes more efficient use of the thread pool. <br>
 
 There are two ways to divide work amongst threads:<br>
 * Data Parallelism: Divide the data among threads to work on and combine the partial results at the end to get the final outcome. Usually, all the threads run the same algorithm on distinct pieces of data.
@@ -624,7 +624,7 @@ Some of the reasons to use the task API vs the threading API are:
 
 * Tasks can have parent/child relationships between themselves.
 * Tasks are tuned for high performance on multicore machines.
-* When creating tasks, we can specify one of the **<code>TaskCreationOptions</code></strong> enum values to hint the scheduler how we want the task run.
+* When creating tasks, we can specify one of the </strong><code>TaskCreationOptions</code></strong> enum values to hint the scheduler how we want the task run.
 * We can wait for tasks to complete without requiring any signaling primitives. For instance, if we wait for a parent task to complete, we indirectly wait for all its child tasks to complete. Additionally, static methods <strong><code>Task.WaitAll()</code></strong> and <strong><code>Task.WaitAny()</code></strong> can be used to wait for more than one task.
 * We can create a cascading chain of tasks using continuations. 
 * Exceptions occurring in tasks can be propagated to the parent task or to continuations. A spawned thread can't seamlessly forward an exception it experiences to the thread that spawned it.
@@ -763,7 +763,7 @@ This lesson introduces the async and await keywords and works through an example
 
 The language keywords <strong><code>async</code></strong> and <strong><code>await</code></strong> are at the center of asynchronous programming in C#.<br>
 
-The **<code>async</code></strong> keyword can be added to the signature of a method. It is syntactic sugar that hides away a lot of complexity that gets added for an <strong><code>async</code></strong> marked method. Under the hood, the compiler creates a state machine for an async method. We'll shortly explain the working of the state machine.<br>
+The <strong><code>async</code></strong> keyword can be added to the signature of a method. It is syntactic sugar that hides away a lot of complexity that gets added for an <strong><code>async</code></strong> marked method. Under the hood, the compiler creates a state machine for an async method. We'll shortly explain the working of the state machine.<br>
 
 A method marked async has restrictions on what it can return. We can return the following from an <strong><code>async</code></strong> method:
 * void
@@ -844,7 +844,9 @@ Main thread id 1 program execution took = 3.009 seconds
 ```
 
 Note that the part in the async sleep method up until the await call is executed by the same thread that executes the main thread. That verifies that the execution of an asyn method is synchronous up until the first await it encounters. The print statement in the async sleep method after the Task.Delay() is executed by a different thread from the thread pool. The thread that executes the rest of an async method after an await expression is governed by the synchronization context concept, which we'll discuss later.<br>
+
 Lastly, we use the blocking sleepTask.Wait() call in the main method. <br>
+
 Continuing with our example from the previous lesson, we'll now make changes to return a string from the async sleep() method. Earlier, the return type of the method was set to Task, we'll now change it to Task<String> and add a return statement. The changes appear as highlighted lines in the code widget below:
 ```c#
 class Demonstration
@@ -875,7 +877,7 @@ class Demonstration
 
 Now we'll add more than one <strong><code>await</code></strong> statement to our sleep method. We'll break the three-second wait into three await calls to wait for one second each. The main method will still take three seconds to execute because it waits for the async sleep method to finish, which only finishes when it reaches the end of its function body after executing each of the await expressions.<br>
 
-If you run the code widget below enough times, you'll notice that a different thread may execute the portion of the method after each **<code>await</code></strong> expression. Though this may not always happen.<br>
+If you run the code widget below enough times, you'll notice that a different thread may execute the portion of the method after each <strong><code>await</code></strong> expression. Though this may not always happen.<br>
 ```c#
 class Demonstration
 {
@@ -913,6 +915,7 @@ Thread id 5
 Main thread id 1 program execution took = 3.01 seconds
 ```
 Next, we'll make multiple invocations of the async sleep() method from within the main method. Each invocation will returns us a task that we'll wait on.<br>
+
 Note that when we run the code widget, the execution time is still three seconds even though the main method invokes the async sleep method three times, which in case of synchronous execution would amount to nine seconds. The three asynchronous calls don't block the main thread and happen in parallel thus the total execution time is still three seconds.
 ```c#
     static void Main()
@@ -998,7 +1001,6 @@ Thread id 6
 Main thread id 1 program execution took = 3.011 seconds
 ```
 The System.Threading.Task namespace provides convenience static methods such as Tasks.WhenAny() and Tasks.WhenAll() for easing operations on several task objects.
-
 
 # Awaitable
 This lesson explains the awaitable concept in C#.<br>
