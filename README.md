@@ -1898,11 +1898,11 @@ anotherIntegerVariable );
 }
 }
 ```
-
+```
 Output:
 myObjectVariable: 123
 anotherIntegerVariable: 123
-
+```
 ## What is a Thread?
 Threads let us run multiple sections of code simultaneously. Threading allows the code to run on multiple processors, boosting performance.
 
