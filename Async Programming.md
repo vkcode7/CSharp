@@ -300,9 +300,9 @@ class Demonstration
 
 Threadpools are an abstraction offered by several programming languages to manage and handle threads on behalf of the user. Imagine an application that creates threads to undertake several thousand short-lived tasks. The application would incur a performance penalty for first creating hundreds of threads and then tearing down the allocated resources for each thread at the ends of its life. The general way programming frameworks solve this problem is by creating a pool of threads, which are handed out to execute each concurrent task and once completed, the thread is returned to the pool.<br>
 
-Threadpools in C# are tunable in that they allow a user to specify the maximum and the minimum number of threads. However, the caveat with using a thread pool is that all threads in the pool are background threads and therefore if all the foreground threads of an application exit, the application exits too whether or not the threads in the pool have completed. A thread is considered a background thread if the property **<code>IsBackground</code></strong> is set to true.<br>
+Threadpools in C# are tunable in that they allow a user to specify the maximum and the minimum number of threads. However, the caveat with using a thread pool is that all threads in the pool are background threads and therefore if all the foreground threads of an application exit, the application exits too whether or not the threads in the pool have completed. A thread is considered a background thread if the property <strong><code>IsBackground</code></strong> is set to true.<br>
 
-We use **<code>QueueUserWorkItem()</code></strong> method of the <strong><code>ThreadPool</code></strong> class to enqueue a method to execute. Specifically, the method <strong><code>QueueUserWorkItem()</code></strong> takes in a delegate parameter of type <strong><code>WaitCallback</code></strong>. This is defined as:
+We use <strong><code>QueueUserWorkItem()</code></strong> method of the <strong><code>ThreadPool</code></strong> class to enqueue a method to execute. Specifically, the method <strong><code>QueueUserWorkItem()</code></strong> takes in a delegate parameter of type <strong><code>WaitCallback</code></strong>. This is defined as:
 ```c#
 public delegate void WaitCallback(object state);
 ```
@@ -361,7 +361,6 @@ public class ThreadAbortExample
 
     void childThread()
     {
-
         try
         {
             Thread.Sleep(Timeout.Infinite);
@@ -375,13 +374,11 @@ public class ThreadAbortExample
             // empty block
         }
         Console.WriteLine("Child thread exiting");
-
     }
 
 
     public void runTest()
     {
-
         Thread child = new Thread(() =>
         {
             childThread();
@@ -406,13 +403,13 @@ public class ThreadAbortExample
 
 ## **Managed vs Unmanaged Threads**
 
-Threads created under the CLR are managed threads and represented by the class **<code>Thread</code></strong>. We can have a situation where threads created in unmanaged code execute managed code. The runtime monitors all the threads in its process that have ever executed code within the managed execution environment. It does not track any other threads. 
+Threads created under the CLR are managed threads and represented by the class <strong><code>Thread</code></strong>. We can have a situation where threads created in unmanaged code execute managed code. The runtime monitors all the threads in its process that have ever executed code within the managed execution environment. It does not track any other threads. 
 
 ## **Mutex**
 
-A **<code>Mutex</code></strong> object can be acquired by a thread to exercise mutual exclusion. Protected resources or critical sections can be guarded by a <strong><code>Mutex</code></strong> object to allow a single thread to access a protected resource or execute within a critical section.
+A <strong><code>Mutex</code></strong> object can be acquired by a thread to exercise mutual exclusion. Protected resources or critical sections can be guarded by a <strong><code>Mutex</code></strong> object to allow a single thread to access a protected resource or execute within a critical section.
 
-The most important characteristic of the **<code>Mutex</code></strong> class is that it enforces thread identity. A mutex can be released only by the thread that acquired it. By contrast, the <strong><code>Semaphore</code></strong> class does not enforce thread identity. A mutex can also be passed across application domain boundaries and used for interprocess synchronization.
+The most important characteristic of the <strong><code>Mutex</code></strong> class is that it enforces thread identity. A mutex can be released only by the thread that acquired it. By contrast, the <strong><code>Semaphore</code></strong> class does not enforce thread identity. A mutex can also be passed across application domain boundaries and used for interprocess synchronization.
 ```c#
         // Class variable mutex
         Mutex mutex = new Mutex();
@@ -435,7 +432,7 @@ The most important characteristic of the **<code>Mutex</code></strong> class is 
 
 If there's an exception in the critical section, the acquired mutex will not be released and if the thread that locked it, is still alive, no other thread will be able to acquire the mutex, potentially causing a deadlock.<br>
 
-Remember to always unlock the mutex in a **<code>finally</code></strong> block when appropriate.
+Remember to always unlock the mutex in a <strong><code>finally</code></strong> block when appropriate.
 
 ### **Named Mutex**
 
@@ -471,7 +468,7 @@ class Demonstration
 
 ## **Semaphore**
 
-A semaphore is nothing more than an atomic counter that gets incremented by one whenever **<code>Release()</code></strong> is invoked and decremented by one whenever <strong><code>WaitOne()</code></strong> is called. The semaphore is initialized with an initial count value. The count value specifies the maximum permits available to give out.
+A semaphore is nothing more than an atomic counter that gets incremented by one whenever <strong><code>Release()</code></strong> is invoked and decremented by one whenever <strong><code>WaitOne()</code></strong> is called. The semaphore is initialized with an initial count value. The count value specifies the maximum permits available to give out.
 ```c#
 Semaphore semaphore = new Semaphore(0, 1);
 ```
@@ -485,7 +482,7 @@ There are two types of semaphores:
 
 Local semaphores are only visible within a process and can be used to coordinate amongst the threads of the same process. Named system semaphores are visible throughout the operating system and can be used to synchronize the activities of processes.<br>
 
-One of the constructors of the **<code>Semaphore</code></strong> class takes in a string as the third parameter and creates a named system semaphore with the passed-in name.
+One of the constructors of the <strong><code>Semaphore</code></strong> class takes in a string as the third parameter and creates a named system semaphore with the passed-in name.
 
 ## **Interlocked**
 
@@ -543,7 +540,7 @@ public class QuizQuestion
 ```
 
 ## **lock Statement**
-The lock statement is really just syntactic sugar over idiomatic **<code>Monitor</code></strong> usage. Starting in C# 4.0 a lock statement such as below:
+The lock statement is really just syntactic sugar over idiomatic <strong><code>Monitor</code></strong> usage. Starting in C# 4.0 a lock statement such as below:
 ```c#
 lock(myObj) {
     // ... critical section
@@ -567,7 +564,7 @@ finally
 
 ## **SpinLock & SpinWait**
 
-C# provides a class **<code>SpinLock</code></strong> which makes a thread wait in a loop repeatedly checking until the lock becomes available.
+C# provides a class <strong><code>SpinLock</code></strong> which makes a thread wait in a loop repeatedly checking until the lock becomes available.
 
 The **<code>SpinWait</code></strong> class can be used to busy wait. Note that <strong><code>SpinWait</code></strong> is not simply an empty loop. It is carefully implemented to provide correct spinning behavior for the general case, and will itself initiate context switches if it spins long enough. The idea behind spin wait is to spend a few cycles spinning for a resource to become available. If it does then we will have saved ourselves several thousand cycles that would have otherwise been expended in context-switching and kernel transitions.
 
@@ -592,7 +589,7 @@ void ping()
 }
 ```
 
-The **<code>SpinWait</code></strong> class also offers static methods that can be used to wait for a condition to become true. For instance the method <strong><code>SpinUntil()</code></strong> accepts a delegate that is executed over and over again until it returns true.
+The <strong><code>SpinWait</code></strong> class also offers static methods that can be used to wait for a condition to become true. For instance the method <strong><code>SpinUntil()</code></strong> accepts a delegate that is executed over and over again until it returns true.
 ```c#
    private volatile bool flag = false;
 
@@ -610,7 +607,7 @@ The **<code>SpinWait</code></strong> class also offers static methods that can b
 
 ## **ThreadLocal**
 
-A **<code>ThreadLocal&lt;T></code></strong> object creates a copy of the type parameter <strong><code>T</code></strong> for every thread that accesses it. Since each thread receives a copy of its own to manipulate, no locking constructs are required when a thread mutates its own copy. However, the <strong><code>ThreadLocal&lt;T></code></strong> class does offer methods to make each copy accessible across all threads.
+A <strong><code>ThreadLocal&lt;T></code></strong> object creates a copy of the type parameter <strong><code>T</code></strong> for every thread that accesses it. Since each thread receives a copy of its own to manipulate, no locking constructs are required when a thread mutates its own copy. However, the <strong><code>ThreadLocal&lt;T></code></strong> class does offer methods to make each copy accessible across all threads.
 
 ## **Tasks**
 
@@ -645,7 +642,7 @@ A <strong><code>Task</code></strong> object can be defined as an asynchronous op
 ```
 
 ### **Passing Arguments and Returning Values**
-It is easy to pass arguments and retrieve results from tasks. Recall, that threads don't return values. The **<code>Task&lt;TResult></code></strong> class can be used to have tasks return values. The following example demonstrates this capability.
+It is easy to pass arguments and retrieve results from tasks. Recall, that threads don't return values. The <strong><code>Task&lt;TResult></code></strong> class can be used to have tasks return values. The following example demonstrates this capability.
 ```c#
 using System;
 using System.Threading;
@@ -681,7 +678,7 @@ public class TaskExample
 }
 ```
 
-Note that in the above code, asking for a task's **<code>Result</code></strong> property blocks the calling thread until the asynchronous operation is complete. It is equivalent of invoking <strong><code>Wait()</code></strong> on the task.<br>
+Note that in the above code, asking for a task's <strong><code>Result</code></strong> property blocks the calling thread until the asynchronous operation is complete. It is equivalent of invoking <strong><code>Wait()</code></strong> on the task.<br>
 
 We can also use the **<code>Task.Factory</code></strong> static object to start tasks as the following example demonstrates:
 ```c#
@@ -766,22 +763,22 @@ We'll now delve into task-based asynchronous programming model in the next few l
 
 This lesson introduces the async and await keywords and works through an example using the two.<br>
 
-The language keywords **<code>async</code></strong> and <strong><code>await</code></strong> are at the center of asynchronous programming in C#.<br>
+The language keywords <strong><code>async</code></strong> and <strong><code>await</code></strong> are at the center of asynchronous programming in C#.<br>
 
 The **<code>async</code></strong> keyword can be added to the signature of a method. It is syntactic sugar that hides away a lot of complexity that gets added for an <strong><code>async</code></strong> marked method. Under the hood, the compiler creates a state machine for an async method. We'll shortly explain the working of the state machine.<br>
 
-A method marked async has restrictions on what it can return. We can return the following from an **<code>async</code></strong> method:
+A method marked async has restrictions on what it can return. We can return the following from an <strong><code>async</code></strong> method:
 * void
 * Task
 * Task&lt;T>
 * Starting in C# 7.0, we can also return generic types that satisfy the requirements for a type to be awaitable (more on that later).<br>
 
-Asynchronous methods either return tasks or nothing. Tasks are awaitable. Note that when a type is said to be awaitable, it implies that it can be legally used as an argument to the **<code>await</code></strong> expression.
+Asynchronous methods either return tasks or nothing. Tasks are awaitable. Note that when a type is said to be awaitable, it implies that it can be legally used as an argument to the <strong><code>await</code></strong> expression.
 
 ### **State Machine for Async Methods**
 
-When the compiler comes across a method marked as **<code>async</code></strong>, it generates a state machine for the method. The state machine does the following:
-* Synchronously execute the method up until the first occurrence of **<code>await</code></strong>.
+When the compiler comes across a method marked as <strong><code>async</code></strong>, it generates a state machine for the method. The state machine does the following:
+* Synchronously execute the method up until the first occurrence of <strong><code>await</code></strong>.
 * Check if the method being awaited is complete or not.
 * If the awaited method is complete, then carry-on executing the rest of the method
 * If the method isn't completed yet then the control is yielded back to the caller of the <strong><code>async</code></strong> method. The rest of the <strong><code>async</code></strong> method will get executed as a continuation once the awaited method is complete.
@@ -878,7 +875,7 @@ class Demonstration
 
 ### **Multiple await**
 
-Now we'll add more than one **<code>await</code></strong> statement to our sleep method. We'll break the three-second wait into three await calls to wait for one second each. The main method will still take three seconds to execute because it waits for the async sleep method to finish, which only finishes when it reaches the end of its function body after executing each of the await expressions.<br>
+Now we'll add more than one <strong><code>await</code></strong> statement to our sleep method. We'll break the three-second wait into three await calls to wait for one second each. The main method will still take three seconds to execute because it waits for the async sleep method to finish, which only finishes when it reaches the end of its function body after executing each of the await expressions.<br>
 
 If you run the code widget below enough times, you'll notice that a different thread may execute the portion of the method after each **<code>await</code></strong> expression. Though this may not always happen.<br>
 ```c#
@@ -1128,7 +1125,7 @@ We can now await the above task as follows:
     await MySnippet();
 ```
 
-Using **<code>Task</code></strong> or <strong><code>Task&lt;TResult></code></strong> is by far the easiest way to create an awaitable.<br>
+Using <strong><code>Task</code></strong> or <strong><code>Task&lt;TResult></code></strong> is by far the easiest way to create an awaitable.<br>
 
 Caveats:<br>
 
@@ -1140,7 +1137,7 @@ However, it should be obvious that if we run CPU bound operations in a task then
 
 **SynchronizationContext**
 
-The last item we'll briefly touch upon is the **<code>SynchronizationContext</code></strong>. Every thread is associated with an object of class <strong><code>SynchronizationContext</code></strong>, which can be accessed using the property <strong><code>SynchronizationContext.Current</code></strong>. If you run the code widget below, the context for the thread will be printed null. If a thread’s current <strong><code>SynchronizationContext</code></strong> is null, then it implicitly has a default synchronization context and runs on a threadpool thread.
+The last item we'll briefly touch upon is the <strong><code>SynchronizationContext</code></strong>. Every thread is associated with an object of class <strong><code>SynchronizationContext</code></strong>, which can be accessed using the property <strong><code>SynchronizationContext.Current</code></strong>. If you run the code widget below, the context for the thread will be printed null. If a thread’s current <strong><code>SynchronizationContext</code></strong> is null, then it implicitly has a default synchronization context and runs on a threadpool thread.
 ```c#
 using System;
 using System.Threading;
