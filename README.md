@@ -865,7 +865,7 @@ unsafe
 }
 ```
 
-## For an expression `p` of a pointer type, a pointer element access of the form `p[n]` is evaluated as `*(p + n)`
+***For an expression `p` of a pointer type, a pointer element access of the form `p[n]` is evaluated as `*(p + n)`***
 
 A `stackalloc` expression allocates a block of memory on the stack. A stack allocated memory block created during the method execution is automatically discarded when that method returns. You can't explicitly free the memory allocated with `stackalloc`. A stack allocated memory block isn't subject to [garbage collection](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/) and doesn't have to be pinned with a [fixed statement](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/fixed).
 
@@ -1858,9 +1858,7 @@ Boxing and unboxing are the processes that enable value types (such as, integers
 
 Boxing is an implicit conversion of a value type to the type `Object`. Boxing a value allocates an instance of `Object` and copies the value into the new object instance.
 
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-![alt_text](images/image1.png "image_tooltip")
+![alt_text](boxing.png "boxinga and unboxing illustrated")
 
 Boxing is implicit when you provide a value type where a reference is expected. The runtime notices that you've provided a value type and silently boxes it within an object. You can, of course, first cast the value type to a reference type, as in the following:
 ```c#
