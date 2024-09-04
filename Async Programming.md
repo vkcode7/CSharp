@@ -1150,3 +1150,474 @@ class Demonstration
     }
 }
 ```
+
+# Thread Examples
+
+
+```c#
+class CThreads
+{
+   static void ThreadExample()
+   {
+       Stopwatch sw = Stopwatch.StartNew();
+       Thread thread = new Thread(() =>
+       {
+           long sum = 0;
+           for (int i = 0; i < int.MaxValue; i++)
+               sum += i;
+
+
+           WriteLine("Sum is: " + sum.ToString());
+       });
+
+
+       thread.Start();
+       thread.Join();
+
+
+       sw.Stop();
+       WriteLine("ThreadExample: Elapsed Time: " + sw.ElapsedMilliseconds);
+   }
+
+
+   static void ThreadExampleWithParams(int k)
+   {
+       Stopwatch sw = Stopwatch.StartNew();
+
+
+       Action<object?> sumTo = delegate (object? to)
+       {
+           long sum = 0;
+           for (int i = 0; i < (int?)to; i++)
+               sum += i;
+
+
+           WriteLine("Sum is: " + sum.ToString());
+       };
+
+
+       ParameterizedThreadStart pts = new ParameterizedThreadStart(sumTo);
+
+
+       Thread thread = new Thread(pts);
+
+
+       thread.Start(k);
+       thread.Join();
+
+
+       sw.Stop();
+       WriteLine("ThreadExampleWithParams: Elapsed Time: " + sw.ElapsedMilliseconds);
+   }
+
+
+   public static Task<long> TaskExample(int start, int end)
+   {
+       long sum = 0;
+
+
+       Task<long> task = new Task<long>(() =>
+       {
+           for (int i = start; i < end; i++)
+               sum += i;
+
+
+           WriteLine("TaskExample: Sum is: " + sum.ToString());
+
+
+           return sum;
+       });
+
+
+       task.Start();
+       return task;
+   }
+
+
+   public static Task<long> TaskFactoryStartNewExample(int start, int end)
+   {
+       Func<object?, long> taskAction = (t) =>
+       {
+           WriteLine(t?.ToString());
+           long sum = 0;
+
+
+           for (int i = start; i < end; i++)
+               sum += i;
+
+
+           WriteLine("TaskFactoryStartNewExample: Sum is: " + sum.ToString());
+
+
+           return sum;
+       };
+
+
+       Task<long> task = Task.Factory.StartNew<long>(taskAction, DateTime.Now.ToLongTimeString());
+       return task;
+   }
+
+
+   public static void Main()
+   {
+       //ThreadExample();
+       ThreadExampleWithParams(int.MaxValue / 2);
+
+
+       Stopwatch sw = Stopwatch.StartNew();
+
+
+       Task<long> l1 = TaskExample(0, int.MaxValue / 2);
+       Task<long> l2 = TaskExample(1+ (int.MaxValue / 2), int.MaxValue);
+
+
+       WriteLine("TaskExample: Total Sum is: " + (l1.Result + l2.Result));
+
+
+       sw.Stop();
+       WriteLine("ThreadExample: Elapsed Time: " + sw.ElapsedMilliseconds);
+
+
+       Stopwatch sw2 = Stopwatch.StartNew();
+
+
+       Task<long> l11 = TaskFactoryStartNewExample(0, int.MaxValue / 2);
+       Task<long> l22 = TaskFactoryStartNewExample(1 + (int.MaxValue / 2), int.MaxValue);
+
+
+       WriteLine("TaskFactoryStartNewExample: Total Sum is: " + (l11.Result + l22.Result));
+
+
+       sw2.Stop();
+       WriteLine("TaskFactoryStartNewExample: Elapsed Time: " + sw2.ElapsedMilliseconds);
+
+
+   }
+}
+```
+
+### Example 1: Using Thread and Lambda (no argos and return value)
+```c#
+    void runSingleThreadTest()
+    {
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        Thread thread = new Thread(() =>
+        {
+            long result = sum(START, END);
+            Console.WriteLine(String.Format("Single thread summed to {0}", result));
+        });
+
+        thread.Start();
+        thread.Join();
+
+        stopwatch.Stop();
+        Console.WriteLine(String.Format("Single thread took {0} milliseconds to complete", stopwatch.ElapsedMilliseconds));
+    }
+
+//Thread with one parameter
+Thread aThread = new Thread(CountTo);
+aThread.Start(45); // 1 parameter 
+
+static void CountTo(object count)
+{ 
+    for (int i = 1; i <= (int) count; i++)
+    { 
+        Console.WriteLine(i); 
+    }
+}
+```
+
+### Example 2: Threads - Passing Arguments with Type Safety
+One way to deliver data to the method we want executed is to bundle the method and the data together in a separate class. 
+```c#
+using System;
+using System.Threading;
+
+class Demonstration
+{
+    static void Main()
+    {
+        GreetingClass gc = new GreetingClass("Fahim");
+        ThreadStart ts = new ThreadStart(gc.sayHello);
+        Thread thread = new Thread(ts);
+        thread.Start();
+        thread.Join();
+    }
+}
+
+public class GreetingClass {
+
+    private String name;
+
+    public GreetingClass(String name) {
+      this.name = name;
+    }
+
+    public void sayHello()
+    {
+        Console.WriteLine("Hello " + name + " from instance method");
+    }
+}
+```
+
+### Mutex Example
+```c#
+    // Class variable mutex
+    Mutex mutex = new Mutex();
+
+    // snippet within some method
+    mutex.WaitOne();
+    try {
+        // ...
+        // ... Critical Section
+        // ...
+    }
+    catch (Exception e) {
+        // Handle exception
+    }
+    finally {
+        // Unlock in a finally block
+        mutex.ReleaseMutex();
+    }
+```
+
+### Monitor Example
+```c#
+public class QuizQuestion
+{
+    private readonly Object obj = new Object();
+
+    public void enterTwice()
+    {
+        Monitor.Enter(obj);
+        Console.WriteLine("Hello");
+        Monitor.Exit(obj);
+    }
+
+    public void run()
+    {
+        Thread thread = new Thread(new ThreadStart(enterTwice));
+        thread.Start();
+        thread.Join();
+    }
+}
+```
+
+### lock Statement
+The lock statement is really just syntactic sugar over idiomatic Monitor usage. Starting in C# 4.0 a lock statement such as below:
+```c#
+lock(myObj) {
+    // ... critical section
+}
+```
+is translated as follows:
+```c#
+object myObj = x;
+bool wasLockTaken = false;
+
+try
+{
+    System.Threading.Monitor.Enter(myObj, ref wasLockTaken);
+    // ... crtiical section
+}
+finally
+{
+    if (wasLockTaken) System.Threading.Monitor.Exit(myObj);
+}
+```
+
+### Simple Task Example
+```c#
+    Task task = new Task(()=> {
+        Console.WriteLine("Hello World");
+    });
+
+    task.Start();
+    task.Wait();
+```
+
+### Task / Task.Factory.StartNew / Task.Run
+```c#
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class Example
+{
+    static void Main()
+    {
+        Action<object> action = (object obj) =>
+                                {
+                                   Console.WriteLine("Task={0}, obj={1}, Thread={2}",
+                                   Task.CurrentId, obj,
+                                   Thread.CurrentThread.ManagedThreadId);
+                                };
+
+        // Create a task but do not start it.
+        Task t1 = new Task(action, "alpha");
+
+        // Construct a started task
+        Task t2 = Task.Factory.StartNew(action, "beta");
+        // Block the main thread to demonstrate that t2 is executing
+        t2.Wait();
+
+        // Launch t1 
+        t1.Start();
+        Console.WriteLine("t1 has been launched. (Main Thread={0})",
+                          Thread.CurrentThread.ManagedThreadId);
+        // Wait for the task to finish.
+        t1.Wait();
+
+        // Construct a started task using Task.Run.
+        String taskData = "delta";
+        Task t3 = Task.Run( () => {Console.WriteLine("Task={0}, obj={1}, Thread={2}",
+                                                     Task.CurrentId, taskData,
+                                                      Thread.CurrentThread.ManagedThreadId);
+                                   });
+        // Wait for the task to finish.
+        t3.Wait();
+
+        // Construct an unstarted task
+        Task t4 = new Task(action, "gamma");
+        // Run it synchronously
+        t4.RunSynchronously();
+        // Although the task was run synchronously, it is a good practice
+        // to wait for it in the event exceptions were thrown by the task.
+        t4.Wait();
+    }
+}
+// The example displays output like the following:
+//       Task=1, obj=beta, Thread=3
+//       t1 has been launched. (Main Thread=1)
+//       Task=2, obj=alpha, Thread=4
+//       Task=3, obj=delta, Thread=3
+//       Task=4, obj=gamma, Thread=1
+
+public class TaskExample
+{
+    public void runTest()
+    {
+
+        Task<String> task = new Task<String>((Object obj) =>
+        {
+            String name = (String)obj;
+            Console.WriteLine("Hello " + name);
+            Thread.Sleep(5000);
+            return "Task Completed Successfully";
+        }, "Reader", TaskCreationOptions.None);
+
+        task.Start();
+        Console.WriteLine(task.Result);
+    }
+}
+
+class ProcessTasks
+{
+    static async Task<string> ToastBreadAsync(int slices)
+    {
+        for (int slice = 0; slice < slices; slice++)
+        {
+            Console.WriteLine("Putting a slice of bread in the toaster");
+        }
+        Console.WriteLine("Start toasting...");
+        await Task.Delay(2000);
+        Console.WriteLine("Fire! Toast is ruined!");
+        await Task.Delay(1000);
+        Console.WriteLine("Remove toast from toaster");
+
+        return "Toast is ready";
+    }
+
+    static async Task DelayTask(int time)
+    {
+        await Task.Delay(time);
+    }
+
+    static public void TasksDemo()
+    {
+        List<Task<string>> tasks = new List<Task<string>>();
+
+        //public delegate TResult Func<in T, out TResult> (T arg);
+        Func<object?, string> taskAction = (t) =>
+        {
+            Task delayT = DelayTask((int)t * 1000);
+            delayT.Wait();
+
+            return t.ToString() + ":" + DateTime.Now.ToLongTimeString();
+        };
+
+        for (int i = 0; i < 10; i++)
+        {
+            Task<string> task = Task.Factory.StartNew<string>(taskAction, i);
+            tasks.Add(task);
+        }
+
+        /*
+        for (int i = 0; i < 10; i++)
+        {
+            Task<string> task = Task.Factory.StartNew<string>((t) =>
+            {
+                Task delayT = DelayTask((int)t * 1000);
+                delayT.Wait();
+
+                return t.ToString() + ":" + DateTime.Now.ToLongTimeString();
+            }, i);
+            tasks.Add(task);
+        }
+        */
+
+        //Task.WaitAll(tasks.ToArray()); <- Not needed as t.Result will do the same
+
+        foreach (var t in tasks)
+            Console.WriteLine(t.Result);
+    }
+
+    public static void DemoMain()
+    {
+        Console.WriteLine("initiating sleep tasks");
+
+        Task<string> t = ToastBreadAsync(10);
+
+        Console.WriteLine("initiating toast");
+
+        Console.WriteLine(t.Result);
+
+        TasksDemo();
+
+        Console.WriteLine("done with sleep tasks");
+
+    }
+}
+```
+
+```
+initiating sleep tasks
+Putting a slice of bread in the toaster
+Putting a slice of bread in the toaster
+Putting a slice of bread in the toaster
+Putting a slice of bread in the toaster
+Putting a slice of bread in the toaster
+Putting a slice of bread in the toaster
+Putting a slice of bread in the toaster
+Putting a slice of bread in the toaster
+Putting a slice of bread in the toaster
+Putting a slice of bread in the toaster
+Start toasting...
+initiating toast
+Fire! Toast is ruined!
+Remove toast from toaster
+Toast is ready
+0:12:09:20 PM
+1:12:09:21 PM
+2:12:09:22 PM
+3:12:09:23 PM
+4:12:09:24 PM
+5:12:09:25 PM
+6:12:09:26 PM
+7:12:09:27 PM
+8:12:09:28 PM
+9:12:09:29 PM
+done with sleep tasks
+```
+
+
