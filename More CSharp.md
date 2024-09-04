@@ -80,11 +80,7 @@ namespace LambdaExamples
    }
 }
 ```
-
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.jpg). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image1.jpg "image_tooltip")
+![alt_text](linq.png "image_tooltip")
 
 
 ### Async Programming
@@ -161,13 +157,9 @@ string s = "Hello Extension Methods";
 int i = s.WordCount();
 ```
 
-
-
 ### c# Indexer
 
 Indexers allow instances of a class or struct to be indexed just like arrays. The indexed value can be set or retrieved without explicitly specifying a type or instance member. Indexers resemble [properties](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/properties) except that their accessors take parameters.
-
-
 ```c#
 using System;
 
@@ -207,28 +199,19 @@ public T this[int i]
 public T this[float i]
 ```
 
-
-
 ### **Make a Visual C# class usable in a foreach statement**
-
 This article demonstrates how to use the `IEnumerable` and the `IEnumerator` interfaces to create a class that you can use in a `foreach` statement.
-
 
 ### **IEnumerator interface**
 
 `IEnumerable` and `IEnumerator` are frequently used together. Although these interfaces are similar (and have similar names), they have different purposes.
 
 The `IEnumerator` interface provides iterative capability for a collection that is internal to a class. `IEnumerator` requires that you implement three methods:
-
-
-
 * The `MoveNext` method, which increments the collection index by 1 and returns a bool that indicates whether the end of the collection has been reached.
 * The `Reset` method, which resets the collection index to its initial value of -1. This invalidates the enumerator.
 * The `Current` method, which returns the current object at `position`.
 
 The `IEnumerable` interface permits enumeration by using a `foreach` loop. In summary, the use of `IEnumerable` requires that the class implement `IEnumerator`. If you want to provide support for `foreach`, implement both interfaces.
-
-
 ```c#
 using System;
 using System.Collections;
@@ -295,12 +278,9 @@ namespace ConsoleEnum
 }
 ```
 
-
-
 ### Boxing and Unboxing:
 
 Boxing is the process of converting a [value type](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types) to the type `object` or to any interface type implemented by this value type. When the common language runtime (CLR) boxes a value type, it wraps the value inside a [System.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object) instance and stores it on the managed heap. Unboxing extracts the value type from the object. Boxing is implicit; unboxing is explicit. The concept of boxing and unboxing underlies the C# unified view of the type system in which a value of any type can be treated as an object.
-
 
 ```c#
 int i = 123;
@@ -311,11 +291,7 @@ o = 123;
 i = (int)o;  // unboxing
 ```
 
-
-
 ### C# Arrays:
-
-
 ```c#
        // Declare a single-dimensional array of 5 integers.
         int[] array1 = new int[5];
@@ -334,10 +310,7 @@ i = (int)o;  // unboxing
 
         // Declare a jagged array.
 ```
-
-
-`	  //`A jagged array is an array whose elements are arrays, possibly of different sizes. A jagged array is sometimes called an "array of arrays." 
-
+A jagged array is an array whose elements are arrays, possibly of different sizes. A jagged array is sometimes called an "array of arrays." 
 
 ```c#
         int[][] jaggedArray = new int[6][];
@@ -345,32 +318,23 @@ i = (int)o;  // unboxing
         // Set the values of the first array in the jagged array structure.
         jaggedArray[0] = new int[4] { 1, 2, 3, 4 };
 
-ArrayList: Not sorted by default. Make sure to call sort() before calling binarysearch on that.
+        //ArrayList: Not sorted by default. Make sure to call sort() before calling binarysearch on that.
 
-// Creates and initializes a new ArrayList.
+      // Creates and initializes a new ArrayList.
       ArrayList myAL = new ArrayList();
       myAL.Add("Hello");
       myAL.Add("World");
       myAL.Add("!");
 ```
-
-
 `ArrayList` belongs to the days that C# didn't have generics. It's deprecated in favor of `List&lt;T>`. ArrayList can have a mix of data types.
 
-
 ### IComparable: 
-
 Defines a generalized type-specific comparison method that a value type or class implements to order or sort its instances. This interface is implemented by types whose values can be ordered or sorted. It requires that implementing types define a single method, [CompareTo(Object)](https://learn.microsoft.com/en-us/dotnet/api/system.icomparable.compareto?view=net-6.0#system-icomparable-compareto(system-object)).
 
-
 ### C# string is immutable
-
 C# string is immutable. Instances of immutable types are inherently thread-safe, since no thread can modify it, the risk of a thread modifying it in a way that interferes with another is removed (the reference itself is a different matter).
 
-
 ### Delegate vs Events
-
-
 <table>
   <tr>
    <td>Delegate
@@ -397,8 +361,6 @@ C# string is immutable. Instances of immutable types are inherently thread-safe,
    </td>
   </tr>
 </table>
-
-
 
 ```c#
 // Define a custom delegate that has a string parameter and returns void.
@@ -454,12 +416,8 @@ class TestClass
 }
 ```
 
-
-
 ### ThreadStatic attribute:
-
 Indicates that the value of a static field is unique for each thread.
-
 
 ```c$
 using System;
@@ -478,11 +436,7 @@ public class Example
 };
 ```
 
-
-
 ### Access Modifiers:
-
-
 <table>
   <tr>
    <td><strong>Caller's location</strong>
@@ -582,56 +536,36 @@ public class Example
   </tr>
 </table>
 
-
-
 ### Finalizer aka Destructor, FInalize:
-
-
 ```
 https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/finalizers?source=recommendations
 ```
-
-
 Finalizers (historically referred to as **destructors**) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector. 
-
-
-
 * Finalizers cannot be defined in structs. They are only used with classes.
 * A class can only have one finalizer.
 * Finalizers cannot be inherited or overloaded.
 * Finalizers cannot be called. They are invoked automatically.
 * A finalizer does not take modifiers or have parameters.
 
-
 ### Satellite Assemblies:
-
-
-
 1. A satellite assembly is a compiled library (DLL) that contains “localizable” resources specific to a given culture such as strings, bitmaps, etc.
 2. You are likely to use satellite assemblies when creating a multilingual UI application. They are used to deploy applications in multiple cultures, with 1 satellite assembly per culture (default behavior)
 
-
 ### ReferenceEquals vs Equals
-
 For **reference types** **<code>object.ReferenceEquals(a, b) </code></strong>returns <code>true </code>if and only if <code>a</code> and <code>b</code> have the same underlying memory address.
 
-
-```
+```c#
 a.Equals(b): 
 ```
-
 
 **Value Types: **For value types this method is overridden to do a value (equivalence) comparison. In particular, `System.ValueType `itself, the root of all value types, contains an override that will compare two objects by reflecting over their internal fields to see if they are all equal. If you inherit this (by setting up a struct) your struct will get this override by default. 
 
 **Reference Types: **For reference types, as discussed above, the situation is trickier. In general we expect `Equals() `for reference types to do an identity comparison (to check whether the objects actually are the same in memory).
 
-
 ### Const vs readonly:
-
 Apart from the apparent difference of
 * having to declare the value at the time of a definition for a const VS readonly values can be computed dynamically but need to be assigned before the constructor exits.. after that it is frozen.
 * const's are implicitly static. You use a ClassName.ConstantName notation to access them.
-
 
 ### Constants
 * Constants are static by default
@@ -641,7 +575,6 @@ Apart from the apparent difference of
 * Can be used in attributes
 
 ### Readonly instance fields
-
 * Must have set value, by the time constructor exits
 * Are evaluated when instance is created
 
@@ -651,133 +584,86 @@ Answer: YES but you need to make sure that all your constructors call the base c
 Example:
 ```c#
 class A
-
 {
-
     public A(int x, int y)
-
     {
-
         // do something
-
     }
-
 }
 
 class A2 : A
-
 {
-
     public A2() : base(1, 5)
-
     {
-
         // do something
-
     }
 
     public A2(int x, int y) : base(x, y)
-
     {
-
         // do something
-
     }
 
     // This would not compile:
-
     public A2(int x, int y)
-
     {
-
         // the compiler will look for a constructor A(), which doesn't exist
-
     }
-
 }
-
+```
 You can also use **this** keyword to invoke a constructor from another constructor
-
+```c#
 class sample
-
 {
-
     public int x;
-
     public sample(int value) 
-
     {
-
         x = value;
-
     }
 
     public sample(sample obj) : **this(obj.x) **
-
     {
-
     }
-
 }
 ```
 
 ### Anonymous Types:
-
- Anonymous types provide a convenient way to encapsulate a set of read-only properties into a single object without having to explicitly define a type first. 
+Anonymous types provide a convenient way to encapsulate a set of read-only properties into a single object without having to explicitly define a type first. 
 
 You create anonymous types by using the [new](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator) operator together with an object initializer. 
 
 **var v = new { Amount = 108, Message = "Hello" };**
-
+```c#
 // Rest the mouse pointer over v.Amount and v.Message in the following
-
 // statement to verify that their inferred types are int and string.
-
 Console.WriteLine(v.Amount + v.Message);
-
+```
 So, the properties of anonymous type are read-only means **you cannot change their values**.
 
-
 ### C# Generics
-
 Generic is a class which **allows the user to define classes and methods with the placeholder**. Generics were added to version 2.0 of the C# language. The basic idea behind using Generic is to allow type (Integer, String, … etc and user-defined types) to be a parameter to methods, classes, and interfaces.
 
-
 ### Explicit Interface implementation: 
-
 **Explicitly telling the compiler that a particular member belongs to that particular interface is called Explicit interface implementation. **
-
-
 ```c#
 // C# Program to show the use of
 // Explicit interface implementation
 using System;
 
-
 interface I1 {
-
-
     void printMethod();
 }
-
 
 interface I2 {
-
-
     void printMethod();
 }
-
 
 // class C implements two interfaces
 class C : I1, I2 {
-
-
     // Explicitly implements method of I1
     void I1.printMethod()
     {
         Console.WriteLine("I1 printMethod");
     }
-
 
     // Explicitly implements method of I2
     void I2.printMethod()
@@ -788,18 +674,14 @@ class C : I1, I2 {
 
 // Driver Class
 class GFG {
-
-
     // Main Method
     static void Main(string[] args)
     {
         I1 i1 = new C();
         I2 i2 = new C();
 
-
         // call to method of I1
-        i1.printMethod();
-
+        i1.printMethod()
 
         // call to method of I2
         i2.printMethod();
@@ -807,45 +689,29 @@ class GFG {
 }
 ```
 
-
-
 ### [AggregateException](https://learn.microsoft.com/en-us/dotnet/api/system.aggregateexception?view=net-7.0) 
-
 is used to consolidate multiple failures into a single, throwable exception object. It is used extensively in the [Task Parallel Library (TPL)](https://learn.microsoft.com/en-us/dotnet/standard/parallel-programming/task-parallel-library-tpl) and [Parallel LINQ (PLINQ)](https://learn.microsoft.com/en-us/dotnet/standard/parallel-programming/parallel-linq-plinq). 
 
-
 ### Types of Threads
-
 Basically, there are two types of threads which fall into:
-
-
-
 * Foreground Thread
 * Background Thread
 
-
 ### Foreground Thread
 
-Foreground threads are threads which will continue to run until the last foreground thread is terminated. In another way, the application is closed when all the foreground threads are stopped.
-
-So the application won't wait until the background threads are completed, but it will wait until all the foreground threads are terminated. 
-
-By default, the threads are foreground threads. So when we create a thread the default value of IsBackground property would be false.
-
+Foreground threads are threads which will continue to run until the last foreground thread is terminated. In another way, the application is closed when all the foreground threads are stopped.<br>
+So the application won't wait until the background threads are completed, but it will wait until all the foreground threads are terminated. <br>
+By default, the threads are foreground threads. So when we create a thread the default value of IsBackground property would be false.<br>
 
 ### Background Thread
-
 Background threads are threads which will get terminated when all foreground threads are closed. The application won't wait for them to be completed.
 
 We can create a background thread like following:
-
 1. <code>Thread backgroundThread = <strong>new</strong> Thread(threadStart);  </code>
 2. <code>backgroundThread.IsBackground = <strong>true</strong>;  </code>
 3. <code>backgroundThread.Start(); </code>
 
-
 ### ThreadPool
-
 Threadpool is suitable only when you use it for operations that takes less time to complete. Threadpool threads are not suitable for long running operations, as it can easily lead to thread starvation. 
 
 If you require your thread to have a specific priority, then threadpool thread is not suitable. 
@@ -861,68 +727,41 @@ Unhandled exceptions that are thrown by user code that is running inside a task 
 To propagate all the exceptions back to the calling thread, the Task infrastructure wraps them in an [AggregateException](https://learn.microsoft.com/en-us/dotnet/api/system.aggregateexception) instance. The [AggregateException](https://learn.microsoft.com/en-us/dotnet/api/system.aggregateexception) exception has an [InnerExceptions](https://learn.microsoft.com/en-us/dotnet/api/system.aggregateexception.innerexceptions) property that can be enumerated to examine all the original exceptions that were thrown, and handle (or not handle) each one individually. You can also handle the original exceptions by using the [AggregateException.Handle](https://learn.microsoft.com/en-us/dotnet/api/system.aggregateexception.handle) method.
 ```c#
 public static partial class Program
-
 {
-
     public static void HandleThree()
-
     {
-
         var task = Task.Run(
-
             () => throw new CustomException("This exception is expected!"));
 
         try
-
         {
-
             task.Wait();
-
         }
-
         catch (AggregateException ae)
-
-        {
-
+        
             foreach (var ex in ae.InnerExceptions)
-
             {
-
                 // Handle the custom exception.
-
                 if (ex is CustomException)
-
                 {
-
                     Console.WriteLine(ex.Message);
-
                 }
 
                 // Rethrow any other exception.
-
                 else
-
                 {
-
                     throw ex;
-
                 }
-
             }
-
         }
-
     }
-
 }
 
 // The example displays the following output:
-
 //        This exception is expected!
 ```
 
 ### Running a task on UI thread
-
 Just use **InvokeAsync** instead of Invoke then return the Task&lt;int> inside the DispatcherOperation&lt;int> the function returns.
 
 ```c#
@@ -930,9 +769,7 @@ Just use **InvokeAsync** instead of Invoke then return the Task&lt;int> inside t
 
 public Task&lt;int> RunOnUiAsync(Func&lt;int> f)
 {
-
     var dispatcherOperation = Application.Current.Dispatcher.InvokeAsync(f);
-
     return dispatcherOperation.Task;
 }
 ```
@@ -945,7 +782,6 @@ The problem with Windows is that a waiting thread can be "borrowed" by the syste
 
 Practically speaking the functional difference between an Event and a Mutex is that, an event is generally used in situations where one thread performs some initialization work, and then signals other threads to perform rest of the work.
 On the other hand, a mutex is generally used when we need to safeguard a common resource against simultaneous read/write operations from multiple threads. Hence the concept of ownership by a thread. The thread which ows the mutex (which means the threadID field of the mutex structure is set to the threadId of the calling thread) has exclusive rights to read/write on the common resource, while other thread wait for bieng scheduled.
-
 
 ### Lazy&lt;T> vs LazyInitializer:
 Lazy&lt;T> ([MSDN](http://msdn.microsoft.com/en-us/library/dd642331.aspx)) is a generic wrapper which allows creating an instance of T on demand by holding a T factory method (Func&lt;T>) and calling it when Value property getter is accessed.
@@ -961,81 +797,52 @@ The [Dependency Injection pattern](https://www.dotnettricks.com/learn/dependency
 For example, Suppose your Client class needs to use two service classes, then the best you can do is to make your Client class aware of abstraction i.e. IService interface rather than implementation i.e. Service1 and Service2 classes. In this way, you can change the implementation of the IService interface at any time (and for how many times you want) without changing the client class code.
 ```c#
 public interface IService {
-
  void Serve();
-
 }
 
 public class Service1 : IService {
-
  public void Serve() { 
-
- Console.WriteLine("Service1 Called"); 
-
+    Console.WriteLine("Service1 Called"); 
  }
-
 }
 
 public class Service2 : IService {
-
  public void Serve() { 
-
- Console.WriteLine("Service2 Called"); 
-
+    Console.WriteLine("Service2 Called"); 
  }
-
 }
 
 public class Client {
-
  private IService _service;
-
  public Client(IService service) {
-
- this._service = service;
-
+    this._service = service;
  }
 
  public ServeMethod() { 
-
- this._service.Serve(); 
-
+    this._service.Serve(); 
  }
-
 }
 
 class Program
-
 {
-
  static void Main(string[] args)
-
  {
-
- //creating object
-
- Service1 s1 = new Service1(); 
-
- //passing dependency
-
- Client c1 = new Client(s1);
-
- //TO DO:
-
- c1.ServeMethod();
-
- 
-
- Service2 s2 = new Service2(); 
-
- //passing dependency
-
- c1 = new Client(s2);
-
- //TO DO:
-
- c1.ServeMethod();
-
+    //creating object
+    Service1 s1 = new Service1();
+   
+    //passing dependency
+    Client c1 = new Client(s1);
+   
+    //TO DO:
+    c1.ServeMethod();
+   
+    Service2 s2 = new Service2(); 
+   
+    //passing dependency
+    c1 = new Client(s2);
+   
+    //TO DO:
+    c1.ServeMethod();
  }
 }
 ```
@@ -1219,7 +1026,6 @@ foreach( KeyValuePair<string, string> kvp in openWith )
 Represents a strongly typed list of objects that can be accessed by index. Provides methods to search, sort, and manipulate lists. The [List&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0) class is the generic equivalent of the [ArrayList](https://learn.microsoft.com/en-us/dotnet/api/system.collections.arraylist?view=net-6.0) class. It implements the [IList&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1?view=net-6.0) generic interface by using an array whose size is dynamically increased as required.
 
 You can add items to a [List&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0) by using the [Add](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.add?view=net-6.0) or [AddRange](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.addrange?view=net-6.0) methods.
-
 
 ```c#
         // Create a list of parts.
