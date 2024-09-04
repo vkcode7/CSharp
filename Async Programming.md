@@ -307,7 +307,7 @@ We use <strong><code>QueueUserWorkItem()</code></strong> method of the <strong><
 public delegate void WaitCallback(object state);
 ```
 
-It implies that whatever method you enqueue to be executed on the thread pool must match the signature of the **<code>WaitCallback</code></strong> delegate. Additionally, an argument of type <strong><code>Object</code></strong> can also be passed-in to the <strong><code>QueueUserWorkItem()</code></strong> method, which in turn passes it on to the method intended to run on the thread pool.
+It implies that whatever method you enqueue to be executed on the thread pool must match the signature of the <strong><code>WaitCallback</code></strong> delegate. Additionally, an argument of type <strong><code>Object</code></strong> can also be passed-in to the <strong><code>QueueUserWorkItem()</code></strong> method, which in turn passes it on to the method intended to run on the thread pool.
 
 Consider the example below:
 ```c#
@@ -341,7 +341,7 @@ public class ThreadPoolExample
 
 ## Pausing and Interrupting Threads
 
-Threads can be paused using the static **<code>Thread.Sleep()</code></strong> method. The method accepts an integer representing the number of milliseconds to sleep or an object of type <strong><code>TimeSpan</code></strong>.<br>
+Threads can be paused using the static <strong><code>Thread.Sleep()</code></strong> method. The method accepts an integer representing the number of milliseconds to sleep or an object of type <strong><code>TimeSpan</code></strong>.<br>
 
 We can also interrupt a blocked thread by either interrupting or aborting it.
 ```c#
@@ -358,7 +358,6 @@ class AbrotDemonstration
 
 public class ThreadAbortExample
 {
-
     void childThread()
     {
         try
@@ -375,7 +374,6 @@ public class ThreadAbortExample
         }
         Console.WriteLine("Child thread exiting");
     }
-
 
     public void runTest()
     {
