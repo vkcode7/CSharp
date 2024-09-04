@@ -385,7 +385,6 @@ The #region directive is used to indicate a certain block of code. This keeps ou
 Below is a list of preprocessor directives:
 
 **Conditional compilation:** #if, #else, #elif, #endif, #define, and #undef
-
 **Other:** #warning, #error, #line, #region, #endregion, #pragma, #pragma warning, and #pragma checksum
 
 ## Namespace
@@ -404,20 +403,19 @@ using System; // C# 10 comes with ImplicitUsings, meaning the most popular using
 ```
 
 ### Global in C#
-```c#
 Global usings were introduced in C# version 10. When the word global appears before the using directive, that using statement applies to the entire project. It's common to create a GlobalUsings.cs file and include all the global usings in one location.
 global using System.Console;
-```
 
 ### Using static directive
-```c#
 The static members of a static class can be accessed without specifying the type name, so Console.WriteLine() can be simplified to WriteLine(). This is done with the using static directive. You can combine both modifiers (global and static) to import the static members from a type in all source files in your project.
+```c#
 using static System.Console;
 global using static System.Console;
+```
 You can also create an alias for a namespace or a type with a using alias directive
+```c#
 using aliasname = PC.MyCompany.Project;
 ```
-
 
 _The following example shows how to define a <code>using</code> directive and a <code>using</code> alias for a class:</em>
 ```c#
