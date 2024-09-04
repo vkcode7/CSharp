@@ -384,7 +384,7 @@ The #region directive is used to indicate a certain block of code. This keeps ou
 
 Below is a list of preprocessor directives:
 
-**Conditional compilation:** #if, #else, #elif, #endif, #define, and #undef
+**Conditional compilation:** #if, #else, #elif, #endif, #define, and #undef<br>
 **Other:** #warning, #error, #line, #region, #endregion, #pragma, #pragma warning, and #pragma checksum
 
 ## Namespace
