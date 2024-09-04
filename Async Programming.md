@@ -8,7 +8,7 @@ Threads can give the illusion of multitasking even though the CPU is executing o
 2. Responsive applications that give the illusion of multitasking.
 3. Efficient utilization of resources. Note that thread creation is lightweight in comparison to spawning a brand new process. 
 
-Example: As a concrete example, consider the example code below. The task is to **_compute the sum of all the integers from 0 to <code>Int32.MaxValue</code></em></strong>. In the first scenario, we have a single thread doing the summation while in the second scenario, we split the range into two parts and have one thread sum for each range.
+Example: As a concrete example, consider the example code below. The task is to ***compute*** the sum of all the integers from 0 to <strong><em><code>Int32.MaxValue</code></em></strong>. In the first scenario, we have a single thread doing the summation while in the second scenario, we split the range into two parts and have one thread sum for each range.
 
 ```c#
 using System;
