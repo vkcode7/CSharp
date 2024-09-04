@@ -1,9 +1,6 @@
-## Links:
-
+### Links:
 [https://dotnettutorials.net/lesson/multithreading-in-csharp/](https://dotnettutorials.net/lesson/multithreading-in-csharp/)
-
 [https://www.tutorialsteacher.com/ioc/ioc-container](https://www.tutorialsteacher.com/ioc/ioc-container)
-
 
 ## C# Application Types
 
