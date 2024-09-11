@@ -514,7 +514,7 @@ internal class A {}
 
 If you explicitly want to specify the access modifier, you can use `public`, `private`, `protected`, `internal`, or `protected internal`, depending on the desired visibility and accessibility of the class.
 
-In C#, a **<code>private class A {}</code></strong> declaration means that the class <code>A</code> is only accessible within the containing class or struct. This is a rarely used construct in C# because nested private classes are typically used for implementation details that should not be exposed outside of their containing class.
+In C#, a <strong><code>private class A {}</code></strong> declaration means that the class <code>A</code> is only accessible within the containing class or struct. This is a rarely used construct in C# because nested private classes are typically used for implementation details that should not be exposed outside of their containing class.
 
 Here's a brief explanation of how it works:
 
