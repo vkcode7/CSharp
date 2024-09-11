@@ -133,6 +133,18 @@ if numbers is null, initialize it. Then, add 5 to numbers, otherwise keep the nu
 ```c#
 (numbers ??= new List<int>()).Add(5);
 ```
+
+#### Nullable ?
+```c#
+int i = 23;
+object iBoxed = i;
+int? jNullable = 7; //Nullable int; means null can be assigned to it
+if (iBoxed is int a && jNullable is int b)
+{
+    Console.WriteLine(a + b);  // output 30
+}
+```
+
 #### Pointer related operators - &, *, ->, [] 
 ```c#
 unsafe
@@ -187,4 +199,124 @@ unsafe
 // Output:
 // Uppercase letters: ABCDEFGHIJKLMNOPQRSTUVWXYZ
 ```
+
+#### Arrays
+```c#
+string[] drinks = new string[5] { "Pepsi", "Sprite", "", "", "" };
+// The additional "" are holding the place for the remaining 3 items
+
+string[] cars = new string[] { "Ford", "Toyota" };
+
+int [,] myRectangularArray = new int[2,3];
+
+// imply a 4x3 array
+int[,] rectangularArray =
+{
+{0,1,2}, {3,4,5}, {6,7,8}, {9,10,11}
+};
+
+\\ Jagged Arrays
+const int rows = 2;
+
+// declare the jagged array as 2 rows high
+int[][] jaggedArray = new int[rows][];
+
+// the first row has 5 elements
+jaggedArray[0] = new int[5];
+
+// a row with 2 elements
+jaggedArray[1] = new int[2];
+```
+
+#### Operator overloading - predefined unary, arithmetic, equality and comparison operators
+Use the operator keyword to declare an operator. An operator declaration must satisfy the following rules:
+
+It includes both a public and a static modifier.
+A unary operator has one input parameter. A binary operator has two input parameters. In each case, at least one parameter must have type T or T? where T is the type that contains the operator declaration.
+
+```c#
+public readonly struct Fraction
+{
+    private readonly int num;
+    private readonly int den;
+
+    public Fraction(int numerator, int denominator)
+    {
+        if (denominator == 0)
+        {
+            throw new ArgumentException("Denominator cannot be zero.", nameof(denominator));
+        }
+        num = numerator;
+        den = denominator;
+    }
+
+    public static Fraction operator +(Fraction a) => a;
+    public static Fraction operator -(Fraction a) => new Fraction(-a.num, a.den);
+
+    public static Fraction operator +(Fraction a, Fraction b)
+        => new Fraction(a.num * b.den + b.num * a.den, a.den * b.den);
+
+    public static Fraction operator -(Fraction a, Fraction b)
+        => a + (-b);
+
+    public static Fraction operator *(Fraction a, Fraction b)
+        => new Fraction(a.num * b.num, a.den * b.den);
+
+    public static Fraction operator /(Fraction a, Fraction b)
+    {
+        if (b.num == 0)
+        {
+            throw new DivideByZeroException();
+        }
+        return new Fraction(a.num * b.den, a.den * b.num);
+    }
+
+    public override string ToString() => $"{num} / {den}";
+}
+```
+
+#### Named arguments
+
+```c#
+// TIP: Method arguments can be entered on multiple lines for additional clarity
+// Order does NOT matter
+
+CharacterDescription(
+   height: 72,
+   level: 61,
+   name: "Bob",
+   age: 42
+   );
+
+static void CharacterDescription(string name, int age, int height, int level)
+{
+   Console.WriteLine($"{name}: level {level}, {age} years old, and height of {height} inches.");
+}
+```
+
+#### Parameter arrays (params)
+The parameter tagged with the params keyword must be an array type, and it must be the last parameter in the method's parameter list.
+
+```c#
+    string fromMultipleArguments = GetVowels("apple", "banana", "pear");
+
+    string fruits[] = new string[] {"apple", "banana", pear"};
+    string fromArray = GetVowels(fruits);
+    string fromNull = GetVowels(null);
+
+    static string GetVowels(params string[] input)
+    {
+	//
+    }
+```
+
+#### Passing Arrays
+```c#
+   public static void DoubleValues(int[] arr) //passed as address
+   {
+      for (int ctr = 0; ctr <= arr.GetUpperBound(0); ctr++)
+         arr[ctr] = arr[ctr] * 2; //caller will now see the updated values
+   }
+```
+
 
