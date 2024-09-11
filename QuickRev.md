@@ -74,7 +74,8 @@ public class OuterClass
 }
 ```
 
-Other KeyWords that can be used while declaring a class in c#: static, unsafe, abstract, sealed, partial. <strong><code>public static class A {}</code></strong>
+Other KeyWords that can be used while declaring a class in c#: static, unsafe, abstract, sealed, partial. <strong><code>public static class A {}</code></strong><br>
+If one or more methods in a calss are abstract, the class definition must also be marked abstract as in <strong><code>abstract public class Window {}</code></strong>
 
 #### Keywords for class members:
 
@@ -317,6 +318,266 @@ The parameter tagged with the params keyword must be an array type, and it must 
       for (int ctr = 0; ctr <= arr.GetUpperBound(0); ctr++)
          arr[ctr] = arr[ctr] * 2; //caller will now see the updated values
    }
+```
+
+# Expression Lambdas
+```c#
+public Point Move(int dx, int dy) => new Point(x + dx, y + dy);
+public void Print() => Console.WriteLine(First + " " + Last);
+// Works with operators, properties, and indexers too.
+public static Complex operator +(Complex a, Complex b) => a.Add(b);
+public string Name => First + " " + Last;
+public Customer this[long id] => store.LookupCustomer(id);
+```
+
+#### get/set
+```c#
+public class Vehicle{
+   private string car;
+   public string Car
+   {
+       get { return car; }
+       set { car = value; }
+   }
+}
+
+// Auto implemented property =>
+public string MyProperty{ get; set; } = 5;
+
+// Get Only property (or readonly)=>
+public string MyProperty{ get; }
+
+Private set => public int CarID { get; private set; }
+```
+
+#### Calling Base Class Constructors
+```c#
+public ListBox( int theTop, int theLeft, string theContents):
+base(theTop, theLeft) // call base constructor
+```
+
+### What are generics?
+**Generics** define _type-safe classes_ without committing to any specific data types. They’re essentially a placeholder until a specified data type is declared. There are many prebuilt classes that use generics. 
+
+**Generic type names** are usually a single capital letter, `T` being the most common, or a simple name starting with `T`, such as `TKey` or `TValue`.
+```c#
+AGenericClass<int> intExample = new(5);
+// Output: The value is 5 and is a System.Int32
+
+class AGenericClass<T>
+{
+   private T aVariable;
+
+   public AGenericClass(T aValue)
+   {
+       aVariable = aValue;
+       Console.WriteLine($"The value is {aVariable} and is a {typeof(T).ToString()}");
+        // Output: The value is 5 and is a System.Int32
+   }
+
+   public void DisplayTypeOnly(T aValue)
+   {
+       Console.WriteLine($"A {typeof(T).ToString()}"); // Output: A System.String
+   }
+}
+```
+
+### What’s an extension method?
+
+**Extension methods** are those that appear to belong to a class, but they don’t actually. Extension methods must be defined in static classes and be static methods.
+
+Extension method parameters must start with the this keyword followed by the type that’s being created, in our example, this is the string data type.
+```c#
+string aWord= "Hello";
+aWord.ToStarBox();
+// Output:
+// *******
+// *Hello*
+// *******
+
+public static class StringExtensionExample
+{
+   public static void ToStarBox(this string text)
+   {
+       string starLine= "**";
+       for (int i = 0; i < text.Length; i++)
+       {
+           starLine += "*";
+       }
+       Console.WriteLine(starLine);
+       Console.WriteLine($"*{text}*");
+       Console.WriteLine(starLine);
+   }
+}
+```
+
+#### Interface
+```c#
+// here is where the interface is defined
+interface IFood
+{
+    void Prepare();
+}
+
+// interface is implemented in class Cake
+public class Cake : IFood
+{
+    public void Prepare()
+    {
+        Console.WriteLine("Bake cake 20 mins");
+        Console.WriteLine("Frost Cake"); 
+    }
+}
+```
+
+The `interfaces` can only contain declarations, and all members are implicitly abstract and public. Beginning with **C# version 8.0**, however, an interface may define default implementations for some or all of its members.
+
+C# doesn’t allow for multiple inheritances in classes but multiple interfaces are allowed. If interfaces are added to a class that’s also inheriting from a base class, the interfaces must follow the base class.
+
+```c#
+public class DeckOfCards : ABaseClass, IInterface, IAnotherInterface
+{
+  // Empty Class
+}
+```
+
+#### Iterators
+An iterator is an object that traverses a container, particularly lists.
+
+The return type of an iterator can be IEnumerable, IEnumerable<T>, IAsyncEnumerable<T>, IEnumerator, or IEnumerator<T>.
+
+##### The IEnumerable and IEnumerator
+There are useful built-in interfaces, such as IEnumerable, IList, IDictionary, and IComparable. Adding the interface, IEnumerable, to a class means that it will iterate. The class must now also contain IEnumerator. In the example below, a class for a deck of cards is created and iterated over.
+
+```c#
+using System.Collections; 
+
+DeckOfCards theDeck = new();
+
+foreach (Card itemCard in theDeck)
+{
+  Console.WriteLine($"Card: {itemCard.Suit} {itemCard.Name} ({itemCard.Value})");
+}
+
+class Card
+{ // Setup the properties of a playing card
+  public string Name { get; set; } 
+  public int Value { get; set; } 
+  public string Suit { get; set; }
+
+  public Card(string name, int value, string suit)
+  {
+    Name = name; 
+    Value = value; 
+    Suit = suit;
+  } 
+}
+
+class DeckOfCards : IEnumerable // This class can now be iterated over to display a deck of cards
+{
+  private List<Card> deckList = new();
+
+  public DeckOfCards()
+  {
+    deckList.Add(new Card("Two", 2, "Spade")); 
+    deckList.Add(new Card("Three", 3, "Spade")); 
+    deckList.Add(new Card("Four", 4, "Spade"));
+  }
+
+  // IEnumerator must be used, because DeckOfCards inherits IEnumerable
+  public IEnumerator GetEnumerator()
+  {
+    return deckList.GetEnumerator();
+  } 
+}
+```
+
+#### Yield 
+The yield return and yield break are used when implementing an iterator (IEnumerable). The yield return statement returns the next element in the sequence, whereas yield break ends the iteration.
+```c#
+Console.WriteLine( "Output all numbers greater than 5, stop if number is 7");
+
+List<int > MyNumbers = new() { 9, 4, 20, 3, 7, 12 };
+
+foreach (int item in GreaterThan5StopIf7())
+{ 
+  Console.Write( $" {item} "); // Output: 9 20 
+}
+
+IEnumerable<int> GreaterThan5StopIf7() 
+{ 
+  foreach (int item in MyNumbers)
+  { 
+    if (item == 7)
+    { 
+      yield break; // End iteration
+    }
+    else if (item > 5)
+    { 
+      yield return item; // Return element and continue iteration
+    }
+  }
+}
+```
+
+#### What is a struct?
+
+Unlike classes, structs are value types, not reference types.
+
+A struct can be declared without using the new keyword. All value types (int, char, bool) are structs, which is why we can declare them without using the new keyword.
+
+Structs inherit from System.ValueType, cannot be inherited from another Struct or Class, and cannot be a base class. A null value can be assigned to a struct as it can be used as a nullable type.
+
+#### What is a record?
+A record (C# 9) is a reference type that makes it easier to create immutable reference types and provides equality comparisons. C# 10 introduces record struct types too.
+
+It’s important to point out that, when records are created in the above manner, they’re immutable, meaning that they cannot be changed. This can be seen in the following code:
+```c#
+Student student1 = new("Pablo", "Exam 1", 97);
+
+student1.Grade = 98; // Error because the value can not be changed
+Console.WriteLine(student1);
+
+public record Student(string Name, string Assignment, int Grade);
+```
+Records can also use the ***deconstruct*** method to separate the record into component properties.
+```c#
+var (studentName, studentAssignment, studentGrade) = student1; // Deconstruct
+```
+A method can be added to the record class. These methods are similar to class methods and are called with record objects. Records can inherit from other records too.
+```c#
+Student student1 = new("Pablo", "Exam 1", 97);        
+student1.DisplayMessage(); // Output: Hello
+
+public record Student(string Name, string Assignment, int Grade)
+{
+    public void DisplayMessage()
+    {
+        Console.WriteLine("Hello");
+    }
+}
+```
+
+#### List
+```c#
+// Methods: Add, Remove, Insert, RemoveAt, Sort, Clear, ToArray
+
+List<string> foods = new(); 
+foods.Add("Pizza"); 
+foods.Add("Burger");
+
+Console.WriteLine(foods[0]); // Output: Pizza
+Console.WriteLine(foods[1]); // Output: Burger
+
+List<int> evenNumbers = new() {2, 4, 6, 8, 10};
+Console.WriteLine(evenNumbers[2]); // Output: 6
+// looping through a list
+foreach(var number in evenNumbers)
+{
+   Console.WriteLine(number);
+}
+
+string[] foodsArray = foods.ToArray();
 ```
 
 
