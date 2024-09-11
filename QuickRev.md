@@ -580,4 +580,92 @@ foreach(var number in evenNumbers)
 string[] foodsArray = foods.ToArray();
 ```
 
+### A LinkedList 
+is generally slower than a regular list, but it can be beneficial when adding or removing items in the middle of a list.<br>
+Key methods are AddFirst, AddLast, AddBefore, AddAfter, Contains, Find, Remove, RemoveFirst, RemoveLast. Every node in a LinkedList<T> object is of the type LinkedListNode<T>
+```c#
 
+        // Using LinkedList class
+        LinkedList<String> my_list = new LinkedList<String>();
+
+
+        // Adding elements in the LinkedList
+        // Using AddLast() method
+        my_list.AddLast("Zoya");
+        my_list.AddLast("Shilpa");
+```
+
+#### What is a dictionary?
+A dictionary consists of a key and a value. In an array, the key is created automatically (0, 1, and so on). With dictionaries, the key name can be set to something meaningful. As with lists, dictionaries use generics
+```c#
+Dictionary <string , int> myInventory = new(); 
+myInventory.Add( "Pens", 7); 
+myInventory.Add( "Computers", 2);
+
+Console.WriteLine($"myInventory[\"Pens\"]: {myInventory["Pens"]}");
+// Output: myInventory["Pens"]: 7
+Console.WriteLine($"myInventory[\"Computers\"]: {myInventory["Computers"]}");
+// Output: myInventory["Computers"]: 2
+
+// Instantiate and assign items to a dictionary
+Dictionary <int , string > dayNames = new()
+{ 
+    { 1, "Monday" },
+    { 2, "Tuesday" },
+    { 3, "Wednesday" },
+    { 4, "Thursday" },
+    { 5, "Friday" },
+    { 6, "Saturday" },
+    { 7, "Sunday" }
+};
+
+Console.WriteLine($"dayNames[3]: {dayNames[3]}");
+// Output: dayNames[3]: Wednesday
+foreach (KeyValuePair<string, int> theItem in myInventory)
+{
+   Console.WriteLine($"{theItem.Key}: quantity {theItem.Value} ");
+}
+```
+
+#### What is a tuple?
+A Tuple can be thought of much like an array, but a Tuple collection can contain different data types. Classes of the Tuple type are generic containers and can hold 1-8 items.
+```c#
+// Instantiate a 3-Item Tuple: Int, String, and an Array of Ints
+Tuple<int,string,int[]> myTuple = Tuple.Create(101, "Hello", new int[] { 41, 52 });
+
+// Access a Tuple item 
+Console.WriteLine(myTuple.Item1); // Output: 101 
+Console.WriteLine(myTuple.Item2); // Output: Hello
+
+foreach (int theNumber in myTuple.Item3)
+{ 
+    Console.Write( $"{theNumber} "); // Output: 41 52
+}
+```
+We can use a Tuple as the return type in a method. 
+```c#
+int num1 = 10;
+int num2 = 4;
+
+Tuple <int , int > answer = DivideGetQuotientAndRemainder(num1, num2);
+Console.WriteLine( $"{num1} / {num2} = {answer.Item1} , with remainder of {answer.Item2} "); 
+// Output: 10 / 4 = 2, with remainder of 2
+
+static Tuple <int , int> DivideGetQuotientAndRemainder(int dividend, int divisor) 
+{ 
+  int quotient = dividend / divisor;
+  int remainder = dividend % divisor; // Uses the modulus operator (%) to get remainder 
+  return Tuple.Create(quotient, remainder);
+}
+```
+
+```c#
+public (string FName, string MName, string LName, int Age) GetPersonalInfo(string id)
+{
+    PersonInfo per = PersonInfo.RetrieveInfoById(id);
+    return (per.FirstName, per.MiddleName, per.LastName, per.Age);
+}
+
+var person = GetPersonalInfo("111111111");
+Console.WriteLine($"{person.FName} {person.LName}: age = {person.Age}");
+```
