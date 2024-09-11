@@ -1998,7 +1998,7 @@ static async Task SecondMethodAsync()
 // First Task Finished
 ```
 
-### The `async Task &lt;T Result>` method
+### The `async Task<Result>` method
 ```c#
 FirstMethodAsync(); 
 Console.WriteLine("System is not Frozen"); 
@@ -2011,7 +2011,7 @@ static async void FirstMethodAsync()
     Console.WriteLine("First Task Finished")
 }
 
-static async Task&lt;**string**> SecondMethodAsync()
+static async Task<**string**> SecondMethodAsync()
 {
     await Task.Delay(3000); // Delays the method for 3 seconds
     return ("Second Task Finished");
@@ -2071,7 +2071,7 @@ the compiler assumes you mean the implicitly implemented interface for `IStorabl
 ITalk itDoc = theDoc as ITalk;
 if (itDoc != null)
 {
-itDoc.Read( );
+  itDoc.Read( );
 }
 ```
 
@@ -2089,60 +2089,62 @@ type this [type argument ]{get; set;}
 ```c#
 namespace SimpleIndexer
 {
-// a simplified ListBox control
-public class ListBoxTest
-{
-::
-::
-public string this[int index]
-{
-    get
-    {
-        if ( index < 0 || index >= strings.Length )
-        {
-        // handle bad index
-        }
-        return strings[index];
-    }
-    set
-    {
-        // add only through the add method
-        if ( index >= ctr )
-        {
-        // handle error
-        }
-        Else {
-        strings[index] = value;
-        }
-    }
+	// a simplified ListBox control
+	public class ListBoxTest
+	{
+		::
+		::
+		public string this[int index]
+		{
+		    get
+		    {
+		        if ( index < 0 || index >= strings.Length )
+		        {
+		        // handle bad index
+		        }
+		        return strings[index];
+		    }
+		    set
+		    {
+		        // add only through the add method
+		        if ( index >= ctr )
+		        {
+		        // handle error
+		        }
+		        Else {
+		        strings[index] = value;
+		        }
+		    }
+		}
+	}
 }
 ```
 
 ```c#
 public class Tester
 {
-static void Main( )
-{
-// create a new list box and initialize
-ListBoxTest lbt =
-new ListBoxTest( "Hello", "World" );
-
-// add a few strings
-lbt.Add( "Proust" );
-lbt.Add( "Faulkner" );
-lbt.Add( "Mann" );
-lbt.Add( "Hugo" );
-
-// test the access
-string subst = "Universe";
-lbt[1] = subst;
-
-// access all the strings
-for ( int i = 0; i < lbt.GetNumEntries( ); i++ )
-{
-Console.WriteLine( "lbt[{0}]: {1}", i, lbt[i] );
-}
-}
+	static void Main( )
+	{
+		// create a new list box and initialize
+		ListBoxTest lbt =
+		new ListBoxTest( "Hello", "World" );
+		
+		// add a few strings
+		lbt.Add( "Proust" );
+		lbt.Add( "Faulkner" );
+		lbt.Add( "Mann" );
+		lbt.Add( "Hugo" );
+		
+		// test the access
+		string subst = "Universe";
+		lbt[1] = subst;
+		
+		// access all the strings
+		for ( int i = 0; i < lbt.GetNumEntries( ); i++ )
+		{
+			Console.WriteLine( "lbt[{0}]: {1}", i, lbt[i] );
+		}
+	}
 }
 ```
 
