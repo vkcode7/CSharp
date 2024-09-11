@@ -745,6 +745,55 @@ if (handler != null)
 }
 ```
 
+## ! (null-forgiving) operator
+
+The unary postfix `!` operator is the null-forgiving, or null-suppression, operator. In an enabled [nullable annotation context](https://learn.microsoft.com/en-us/dotnet/csharp/nullable-references#nullable-contexts), you use the null-forgiving operator to suppress all nullable warnings for the preceding expression but at runtime it will throw exceptions as expected for null cases.
+
+```c#
+#nullable enable
+public class Person
+{
+    public Person(string name) => Name = name ?? throw new ArgumentNullException(nameof(name));
+
+    public string Name { get; }
+}
+
+[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+public void NullNameShouldThrowTest()
+{
+    var person = new Person(null!);
+}
+```
+
+Without the null-forgiving operator, the compiler generates the following warning for the preceding code: `Warning CS8625: Cannot convert null literal to non-nullable reference type`. By using the null-forgiving operator, you inform the compiler that passing `null` is expected and shouldn't be warned about.
+
+## ?? and ??= operators - the null-coalescing operators
+
+The null-coalescing operator `??` returns the value of its left-hand operand if it isn't `null`; otherwise, it evaluates the right-hand operand and returns its result. 
+```c#
+private static void Display<T>(T a, T backup)
+{
+    Console.WriteLine(a ?? backup);
+}
+
+List<int> numbers = null;
+int? a = null;
+
+Console.WriteLine((numbers is null)); // expected: true
+// if numbers is null, initialize it. Then, add 5 to numbers
+(numbers ??= new List<int>()).Add(5);
+Console.WriteLine(string.Join(" ", numbers));  // output: 5
+Console.WriteLine((numbers is null)); // expected: false        
+
+Console.WriteLine((a is null)); // expected: true
+Console.WriteLine((a ?? 3)); // expected: 3 since a is still null 
+// if a is null then assign 0 to a and add a to the list
+numbers.Add(a ??= 0);
+Console.WriteLine((a is null)); // expected: false        
+Console.WriteLine(string.Join(" ", numbers));  // output: 5 0
+Console.WriteLine(a);  // output: 0	    
+```
+
 ### Index from end operator ^ (System.Index)
 
 The `^` operator indicates the element position from the end of a sequence.
@@ -887,55 +936,6 @@ unsafe
 }
 // Output:
 // Uppercase letters: ABCDEFGHIJKLMNOPQRSTUVWXYZ
-```
-
-## ! (null-forgiving) operator
-
-The unary postfix `!` operator is the null-forgiving, or null-suppression, operator. In an enabled [nullable annotation context](https://learn.microsoft.com/en-us/dotnet/csharp/nullable-references#nullable-contexts), you use the null-forgiving operator to suppress all nullable warnings for the preceding expression but at runtime it will throw exceptions as expected for null cases.
-
-```c#
-#nullable enable
-public class Person
-{
-    public Person(string name) => Name = name ?? throw new ArgumentNullException(nameof(name));
-
-    public string Name { get; }
-}
-
-[TestMethod, ExpectedException(typeof(ArgumentNullException))]
-public void NullNameShouldThrowTest()
-{
-    var person = new Person(null!);
-}
-```
-
-Without the null-forgiving operator, the compiler generates the following warning for the preceding code: `Warning CS8625: Cannot convert null literal to non-nullable reference type`. By using the null-forgiving operator, you inform the compiler that passing `null` is expected and shouldn't be warned about.
-
-## ?? and ??= operators - the null-coalescing operators
-
-The null-coalescing operator `??` returns the value of its left-hand operand if it isn't `null`; otherwise, it evaluates the right-hand operand and returns its result. 
-```c#
-private static void Display<T>(T a, T backup)
-{
-    Console.WriteLine(a ?? backup);
-}
-
-List<int> numbers = null;
-int? a = null;
-
-Console.WriteLine((numbers is null)); // expected: true
-// if numbers is null, initialize it. Then, add 5 to numbers
-(numbers ??= new List<int>()).Add(5);
-Console.WriteLine(string.Join(" ", numbers));  // output: 5
-Console.WriteLine((numbers is null)); // expected: false        
-
-Console.WriteLine((a is null)); // expected: true
-Console.WriteLine((a ?? 3)); // expected: 3 since a is still null 
-// if a is null then assign 0 to a and add a to the list
-numbers.Add(a ??= 0);
-Console.WriteLine((a is null)); // expected: false        
-Console.WriteLine(string.Join(" ", numbers));  // output: 5 0
-Console.WriteLine(a);  // output: 0	    
 ```
 
 ## nameof
