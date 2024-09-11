@@ -327,7 +327,7 @@ var watch = new System.Diagnostics.Stopwatch();
 watch.Start(); 
 for (int i = 0; i < 1000; i++) 
 { 
-Console.Write(i); 
+	Console.Write(i); 
 } 
 watch.Stop(); 
 Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
@@ -340,9 +340,9 @@ The base-type is the underlying type for the enumeration. You might specify that
 ```c#
 enum ServingSizes : uint
 {
-Small = 1,
-Regular = 2,
-Large = 3
+	Small = 1,
+	Regular = 2,
+	Large = 3
 }
 ```
 
@@ -358,10 +358,10 @@ Each constant in an enumeration corresponds to a numerical value. If you don't s
 ```c#
 enum SomeValues
 {
-First,
-Second,
-Third = 20,
-Fourth
+	First,
+	Second,
+	Third = 20,
+	Fourth
 }
 ```
 
@@ -535,11 +535,11 @@ Here's how it works:
 ```c#
 public class OuterClass
 {
- protected class A
- {
- // This is a protected nested class A.
- // It can only be accessed from within OuterClass or its derived classes.
- }
+	 protected class A
+	 {
+		 // This is a protected nested class A.
+		 // It can only be accessed from within OuterClass or its derived classes.
+	 }
 }
 ```
 
@@ -588,19 +588,19 @@ public unsafe class Example
 
 1. **static**: Indicates that the member belongs to the type itself, rather than to instances of the type.
 2. **readonly**: Specifies that the member can only be assigned a value during initialization or in a constructor and cannot be modified afterwards.
-3. <code>public <strong>readonly</strong> int ReadOnlyField = 10;</code>
-4. <strong>const</strong>: Declares a constant member whose value cannot be changed.
-5. <code>public <strong>const</strong> int ConstField = 100;</code>
-6. <strong>abstract</strong>: Indicates that the member does not have implementation in the current class and must be implemented by derived classes.
-7. <strong>virtual</strong>: Allows the member to be overridden in derived classes.
-8. <strong><code>public virtual void VirtualMethod(){...}</code></strong>
-9. <strong>override</strong>: Overrides a virtual member inherited from a base class.
-10. <strong><code>public override void VirtualMethod(){...}</code></strong>
-11. <strong>extern</strong>: Specifies that the method is implemented externally in native code (usually used in conjunction with DllImport).
-12. <strong>unsafe</strong>: Indicates that the member contains unsafe code that uses pointer types and performs unsafe operations.
-13. <strong>volatile</strong>: Indicates that the member may be modified by multiple threads that are executing at the same time. 
-14. <code>private <strong>volatile</strong> bool isRunning = true;</code>
-15. <code>volatile</code> ensures visibility of the most up-to-date value across threads, you still need synchronization mechanisms to ensure atomicity for compound operations.
+   <code>public <strong>readonly</strong> int ReadOnlyField = 10;</code>
+3. <strong>const</strong>: Declares a constant member whose value cannot be changed.
+   <code>public <strong>const</strong> int ConstField = 100;</code>
+4. <strong>abstract</strong>: Indicates that the member does not have implementation in the current class and must be implemented by derived classes.
+5. <strong>virtual</strong>: Allows the member to be overridden in derived classes.
+   <strong><code>public virtual void VirtualMethod(){...}</code></strong>
+6. <strong>override</strong>: Overrides a virtual member inherited from a base class.
+   <strong><code>public override void VirtualMethod(){...}</code></strong>
+7. <strong>extern</strong>: Specifies that the method is implemented externally in native code (usually used in conjunction with DllImport).
+8. <strong>unsafe</strong>: Indicates that the member contains unsafe code that uses pointer types and performs unsafe operations.
+9. <strong>volatile</strong>: Indicates that the member may be modified by multiple threads that are executing at the same time. 
+    <code>private <strong>volatile</strong> bool isRunning = true;</code>
+    <code>volatile</code> ensures visibility of the most up-to-date value across threads, you still need synchronization mechanisms to ensure atomicity for compound operations.
 
 ```c#
 public class ExternalClass
