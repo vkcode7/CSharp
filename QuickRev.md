@@ -669,3 +669,80 @@ public (string FName, string MName, string LName, int Age) GetPersonalInfo(strin
 var person = GetPersonalInfo("111111111");
 Console.WriteLine($"{person.FName} {person.LName}: age = {person.Age}");
 ```
+
+
+### Threads
+#### Thread with a Join (no arg)
+```c#
+Thread aThread = new Thread(CountTo200); 
+Thread bThread = new Thread(CountTo200); 
+
+aThread.Start();
+aThread.Join(); // Wait until aThread is finished 
+
+bThread.Start();
+bThread.Join(); // Wait until bThread is finished 
+
+static void CountTo200()
+{ 
+    for (int i = 1; i <= 200; i++)
+    { 
+        Console.WriteLine(i); 
+    }
+}
+```
+
+#### Thread with an arg
+```c#
+Thread aThread = new Thread(CountTo);
+aThread.Start(45); // 1 parameter 
+
+static void CountTo(object count)
+{ 
+    for (int i = 1; i <= (int) count; i++)
+    { 
+        Console.WriteLine(i); 
+    }
+}
+```
+
+#### async/await
+The two main components of asynchronous programming are the keyword modifiers, async and await. A method using the async modifier enables the use of the await operator, which now must be included at least once within the method. The original caller method continues when the await operator is reached, and the async method processes until it's completed. The async methods must have a return type of void, Task, Task, or any other type that has a GetAwaiter method. The naming convention for async methods is to append them with an async suffix.
+
+```c#
+using System.Threading.Tasks;
+
+FirstMethodAsync();
+Console.WriteLine( "System is not Frozen"); 
+
+Console.ReadLine();
+
+static async void FirstMethodAsync()
+{ 
+
+    Console.WriteLine( "Task Started"); 
+    await SecondMethodAsync();
+    Console.WriteLine( "First Task Finished"); 
+}
+
+static async Task SecondMethodAsync()
+{ 
+    await Task.Delay(3000); // Delays the method for 3 seconds 
+    Console.WriteLine( "Second Task Finished");
+    Console.WriteLine(await ThirdMethodAsync()); 
+}
+
+static async Task<string> ThirdMethodAsync()
+{
+    await Task.Delay(3000); // Delays the method for 3 seconds
+    return ("Third Task Finished");
+}
+
+/* Output:
+Task Started
+System is not Frozen
+Second Task Finished
+Third Task Finished
+First Task Finished
+*/
+```
