@@ -712,6 +712,259 @@ catch (RuntimeWrappedException e)
 }
 ```
 
+#### Delegates and Events
+A ***delegate*** is a variable that can store a method and can then be passed around as needed. Mainly used for Async processing passing callback to async method and for injecting custom code in a class's code path.
+
+```c#
+public delegate string MathExample(int num1, int num2);
+int number1 = 3;
+int number2 = 7;
+
+MathExample calculateMath = AddNumbers; // Store method AddNumbers
+Console.WriteLine(calculateMath(number1, number2)); // Output: 3 + 7
+
+static string AddNumbers(int a, int b)
+{
+    return $"{a} + {b} = {a + b}";
+}
+```
+
+***Events*** allow classes to notify other classes when something occurs. In the example below, a predefined delegate called EventHandler is used. The EventHandler delegate returns void and has two parameters (object, EventArgs). The object is the sender (what sent the event) and the EventArgs object(contains basic information about the event).
+```c#
+Greetings welcomeMessage = new();
+
+// Attach event handler to event
+welcomeMessage.WelcomeChanged += welcomeMessage.HandleWelcomeChanged; 
+
+welcomeMessage.TheMessage = "Adam";
+Console.WriteLine(welcomeMessage.TheMessage);
+
+class Greetings
+{
+    private string theMessage; 
+    public string TheMessage 
+    {
+        get
+        {
+            return theMessage;
+        }
+        set
+        {
+            theMessage= $"Hello, {value}";
+            OnWelcomeChanged(); // Call OnWelcomeChanged when the value is changed }
+        }
+    }
+
+    public event EventHandler WelcomeChanged; // Define the event
+    //Public delegate void EventHandler(object, EventArgs);
+    // EventHandler is a predefined delegate that returns void and has 2 parameters. 
+    // The first parameter is an object and the second is an EventArgs object
+
+    public void OnWelcomeChanged() // Methods that raise events usually start with the "On"
+    {
+        // The code below raises the event if the event is not null (verifies an event handler 
+        // is attached to the event)
+        WelcomeChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    // This method handles what to do when the change is detected
+    public void HandleWelcomeChanged(object sender, EventArgs eventArgs)
+    {
+        Console.WriteLine("The welcome message has changed!!");
+    } 
+}
+```
+
+#### Delegate vs Event
+
+<table>
+  <tr>
+   <td>Delegate
+   </td>
+   <td>Event
+   </td>
+  </tr>
+  <tr>
+   <td>Delegate is a function pointer. It holds the reference of one or more methods at runtime.
+   </td>
+   <td>The event is a notification mechanism that depends on delegates
+   </td>
+  </tr>
+  <tr>
+   <td>Delegate is independent and not dependent on events.
+   </td>
+   <td>An event is dependent on a delegate and cannot be created without delegates. Event is a wrapper around delegate instance to prevent users of the delegate from resetting the delegate and its invocation list and only allows adding or removing targets from the invocation list.
+   </td>
+  </tr>
+  <tr>
+   <td>Delegate includes Combine() and Remove() methods to add methods to the invocation list.
+   </td>
+   <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.eventinfo?view=netframework-4.8">EventInfo</a> class inspect events and to hook up event handlers that include methods AddEventHandler() and RemoveEventHandler() methods to add and remove methods to invocation list, respectively.
+   </td>
+  </tr>
+  <tr>
+   <td>A delegate can be passed as a method parameter.
+   </td>
+   <td><strong>An event is raised but cannot be passed as a method parameter.</strong>
+   </td>
+  </tr>
+  <tr>
+   <td>= operator is used to assigning a single method, and += operator is used to assign multiple methods to a delegate.
+   </td>
+   <td>= operator cannot be used with events, and only += and -= operator can be used with an event that adds or remove event handler. These methods internally call AddEventHandler and RemoveEventHandler methods.
+   </td>
+  </tr>
+</table>
+
+In a way, an event is a delegate only. The program code will work even if you remove the event keyword and only use a delegate. However, using the event keyword, we prevent subscribers to register with an event by using = operator and thereby removing all handlers.
+
+```c#
+public delegate void Notify(); 
+public Notify MyDelegate; 
+MyDelegate = MyMethod;// valid 
+MyDelegate += MyMethod;// valid 
+public delegate void Notify(); 
+public event Notify MyEvent; 
+MyEvent = MyEventHandler;// Error 
+MyEvent += MyEventHandler;// valid
+```
+
+#### Multicast Delegates
+Combining multiple delegates into a single delegate creates what’s referred to as a multicast delegate.
+
+#### Func<t1,t2…t16,R1>
+Func delegate with an anonymous method (can have 1-16 args)
+```c#
+Func<int,int,int> Addition = delegate (int param1, int param2)    
+{    
+    return param1 + param2;    
+};    
+
+int result = Addition(10, 20);    
+Console.WriteLine($"Addition = {result}"); 
+
+
+Func with Lambda Expression:
+Func<int, int, int> Addition = (param1, param2) => param1 + param2;  
+            int result = Addition(10, 20);  
+            Console.WriteLine($"Addition = {result}");
+```
+
+#### Action<T1,T2…T16>(T1,T2…T16) <= same as Func but no return value
+```c#
+private static int result;  
+static void Main(string[] args)  
+{  
+    Action<int, int> Addition = AddNumbers;  
+    Addition(10, 20);  
+    Console.WriteLine($"Addition = {result}");  
+}  
+
+
+private static void AddNumbers(int param1, int param2 )  
+{  
+    result = param1 + param2;  
+} 
+```
+
+#### Predicate<T> <= Return type is always bool
+```c#
+//A predicate with Anonymous method:
+Predicate <string> CheckIfApple = delegate(string modelName) {  
+    if (modelName == "I Phone X") return true;  
+    else return false;  
+};  
+
+bool result = CheckIfApple("I Phone X");  
+if (result) Console.WriteLine("It's an IPhone");   
+\\ A predicate with Lambda expressions:
+Predicate <string> CheckIfApple = modelName => {  
+    if (modelName == "I Phone X") return true;  
+    else return false;  
+};
+
+bool result = CheckIfApple("I Phone X");  
+if (result)
+	Console.WriteLine("It's an IPhone");
+```
+
+#### == vs Equals
+In C#, the equality operator == checks whether two operands are equal or not, and the Object.Equals() method checks whether the two object instances are equal or not.
+
+Internally, == is implemented as the operator overloading method, so the result depends on how that method is overloaded. In the same way, Object.Equals() method is a virtual method and the result depends on the implementation. For example, the == operator and .Equals() compare the values of the two built-in value types variables. if both values are equal then returns true; otherwise returns false.
+
+For the reference type variables, == and .Equals() method by default checks whether two two object instances are equal or not. However, for the string type, == and .Equals() method are implemented to compare values instead of the instances.
+
+```c#
+A a1 = new A();
+A a2 = new A();
+Console.WriteLine(a1 == a2); //False
+Console.WriteLine(a1.Equals(a2)); //False
+
+Console.WriteLine(object.ReferenceEquals(a1, a2)); //False
+
+A a3 = a1;
+Console.WriteLine(object.ReferenceEquals(a1, a3)); //True
+Console.WriteLine(a1.Equals(a3)); //True
+```
+
+#### IDisposable
+```c#
+public class Thing : IDisposable
+{
+    private string name;
+    public Thing(string name) { this.name = name; }
+    override public string ToString() { return name; }
+
+    ~Thing() 
+    { 
+        Dispose();
+        Console.WriteLine("~Thing()"); 
+    }
+
+    private bool AlreadyDisposed = false;
+
+    public void Dispose()
+    {
+        if (!AlreadyDisposed)
+        {
+            AlreadyDisposed = true;
+            Console.WriteLine("Dispose()");
+            GC.SuppressFinalize(this);
+        }
+    }
+}
+```
+
+#### Language Support for Dispose
+
+Using conventional coding constructs, the best way to ensure that an object’s lifetime is controlled and that resources are cleaned up deterministically is by enclosing the object in a try and finally block:
+```c#
+static void Main(string[] args)
+{
+    Thing t1 = new Thing("Ethel");
+    try
+    {
+        Console.WriteLine(t1);
+    }
+    finally
+    {
+        if (t1 != null)
+            ((IDisposable)t1).Dispose();
+    }
+}
+```
+This pattern is so standard that the C# language supports it through the use of the using statement. The previous code with a try..finally block can be rewritten as follows:
+
+```c#
+using (Thing t2 = new Thing("JimBob")) 
+{
+    Console.WriteLine(t2);
+}
+```
+The using statement requires that the class implement IDisposable.
+
+
 
 ### Threads
 #### Thread with a Join (no arg)
