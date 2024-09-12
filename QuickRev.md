@@ -411,6 +411,22 @@ public static class StringExtensionExample
 }
 ```
 
+#### Indexer property
+```c#
+type this [type argument ]{get; set;}
+
+public string this[int index]
+{
+    get
+    {
+	return strings[index];
+    }
+    set
+    {
+	strings[index] = value;
+    }
+```
+
 #### Interface
 ```c#
 // here is where the interface is defined
@@ -670,6 +686,32 @@ var person = GetPersonalInfo("111111111");
 Console.WriteLine($"{person.FName} {person.LName}: age = {person.Age}");
 ```
 
+#### Throwing Exceptions -> throw new System.Exception();
+All exceptions are either of type System.Exception or of types derived from System.Exception
+
+***finally***: A finally block can be created with or without catch blocks, but a finally block requires a try block to execute. It is an error to exit a finally block with break, continue, return, or goto.
+
+#### How to catch a non-CLS exception?
+Within a catch(RuntimeWrappedException e) block, access the original exception through the RuntimeWrappedException.WrappedException property.
+```c#
+// Class library written in C++/CLI.
+var myClass = new ThrowNonCLS.Class1();
+try
+{
+    // throws gcnew System::String(  
+    // "I do not derive from System.Exception!");  
+    myClass.TestThrow();
+}
+catch (RuntimeWrappedException e)
+{
+    String s = e.WrappedException as String;
+    if (s != null)
+    {
+        Console.WriteLine(s);
+    }
+}
+```
+
 
 ### Threads
 #### Thread with a Join (no arg)
@@ -746,3 +788,57 @@ Third Task Finished
 First Task Finished
 */
 ```
+
+#### Using Monitor Locks with the C# lock Statement
+To use the lock statement, simply specify the statement with the code being serialized in braces. The braces indicate the starting point and the stopping point of the code being protected, so there’s no need for an unlock statement.
+```c#
+class Database
+{
+    public void SaveData(string text)
+    {
+        lock(this)   \\ equivalent to=> Monitor.Enter(this);
+        {
+            Console.WriteLine("Database.SaveData - Started");
+
+            Console.WriteLine("Database.SaveData - Working");
+            for (int i = 0; i < 100; i++)
+            {
+                Console.Write(text);
+            }
+
+            Console.WriteLine("\nDatabase.SaveData - Ended");
+        } \\ Monitor.Exit(this);
+    }
+}
+```
+
+#### Using Mutex
+```c#
+using System;
+using System.Threading;
+
+class Database
+{
+    static Mutex mutex = new Mutex(false);
+
+    public static void SaveData(string text)
+    {
+        mutex.WaitOne();
+
+        Console.WriteLine("Database.SaveData - Started");
+
+        Console.WriteLine("Database.SaveData - Working");
+        for (int i = 0; i < 100; i++)
+        {
+            Console.Write(text);
+        }
+
+        Console.WriteLine("\nDatabase.SaveData - Ended");
+
+        mutex.Close();
+    }
+}
+```
+
+
+
