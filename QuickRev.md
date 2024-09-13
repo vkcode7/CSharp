@@ -936,8 +936,133 @@ public class Thing : IDisposable
 }
 ```
 
-#### Language Support for Dispose
+#### Finalize
+You can’t be absolutely sure when the GC will run and therefore when your object will finally be destroyed. This behavior leads to the one disadvantage of the GC: if your object is holding some unmanaged resources (window handles, database connections, and so on), you must be very careful to release these resources before your last reference to the object is lost. In C++, this type of behavior was traditionally the job of the class destructor, and you triggered this behavior in a deterministic manner by using the delete operator on the object reference. But in C# we don’t have a delete operator.
 
+The Finalize method is called automatically after an object becomes inaccessible, unless you’ve protected the object against finalization (GC.SuppressFinalize(this);)<br>
+
+To override Finalize, you must write a destructor. Let’s be clear on this. The C# language doesn’t strictly support destructors. On the other hand, it does support overriding the Object.Finalize method. The only twist in the tale is that to override Finalize, you must write a method that’s syntactically identical to a destructor.
+
+```c#
+public class Thing
+{
+    private string name;
+    public Thing(string name) { this.name = name; }
+    override public string ToString() { return name; }
+    ~Thing() { Console.WriteLine("~Thing()"); }
+}
+
+//So that we’re clear on when the Finalize is called, let’s add another line to the end of Main:
+
+static void Main(string[] args)
+{
+    DoSomething();
+    Console.WriteLine("end of Main");
+}
+
+/* Output:
+Foo
+end of Main
+~Thing()
+*/
+```
+
+We’ve been insisting that the ~Thing method isn’t a destructor but an override of Finalize, even though it looks like a destructor. To clear this up, let’s look at the metadata for this application
+
+The ~Thing method isn’t listed in the type metadata, but Finalize is. If we also examine the Microsoft intermediate language (MSIL) for this Finalize method, we’ll see that it’s in fact the MSIL for our ~Thing method. Indeed, it’s common to call the Finalize method either a destructor or a finalizer. The mechanism works very well, and the compiler supports it with some behind-the-scenes cleverness.
+
+#### Forcing GC
+The GC runs finalizers on a separate thread of execution, so even if GC.Collect has returned, it doesn’t mean that a particular finalizer has been called yet. This is really a standard thread-synchronization issue and can be resolved if you call WaitForPendingFinalizers to suspend the current thread until the queue of finalizers waiting to run on that thread is empty. 
+```c#
+    public static void Main(string[] args)
+    {
+        DoSomething();
+        Console.WriteLine("some stuff");
+
+        GC.Collect();                      //<====
+        GC.WaitForPendingFinalizers();     //<====
+        Console.WriteLine("end of Main");
+    }
+```
+
+if you do override Finalize (aka ~destructor) in your class, you set up some extra work for the runtime to do at an indeterminate point in the future. So is there any other way to control object destruction? The final piece of this particular puzzle is the Dispose pattern.
+
+#### Language Support for Dispose (via IDisposable::Dispose())
+
+Class instances often encapsulate control over resources not managed by the runtime. The .NET Framework supports both an implicit (via Finalize) and an explicit (via Dispose) way to free those resources. 
+
+Unlike the finalizer, the Dispose method is arbitrary—in terms of its name, signature, access modifiers, and attributes. In other words, you can invent any method you want that internally will clean up unmanaged resources the way that a C++ destructor traditionally would. You then can let everyone know what this method does and encourage developers using your class to call this method when they’ve finished with an instance of your class. Clearly, if every author of a class were to invent a different method to do this job, we’d be little further along in the development of reusable classes. For this reason, you’re encouraged to use a public nonstatic method named Dispose, with a void return and no parameters. This is only a convention, but it’s a sensible convention that most people are happy to adopt. Moreover—and interestingly—the C# language has explicit support for this arbitrary method.
+
+First, since moved the cleanup operations to the Dispose method, there’s no longer anything meaningful for the finalizer to do, but the finalizer is called anyway. Second, if we now perform our cleanup in the Dispose method, what happens if the object is finalized through some branch of code that bypasses the call to Dispose?
+
+The standard strategy used to resolve the first issue is to add a statement to the Dispose method that will suppress the GC’s call to the Finalize method:
+```c#
+public void Dispose()
+{
+    Console.WriteLine("Dispose()");
+    GC.SuppressFinalize(this);
+}
+```
+GC.SuppressFinalize will remove the object from the finalization queue
+
+What happens if the object is finalized—for example, as a result of a conditional branch in our code, or as an exception that gets thrown—and bypasses the call to Dispose? Fixing this little snag is a simple matter: just call the Dispose in the finalizer.
+
+```c#
+~Thing() 
+{ 
+    Dispose(); //<== Call Dispose(), ~Thing only will be called if Dispose() wasnt called explicitly (see above, it suppresses Finalize)
+    Console.WriteLine("~Thing()"); 
+}
+```
+
+#### Derived Disposable Classes
+So, if you adopt the Dispose pattern and put your cleanup code in the Dispose method, you might end up in a situation where both your base class and derived class are independently holding some unmanaged resources that need cleaning up. In this case, you’d have to be careful to call the Dispose base class at an appropriate point during the execution of the Dispose derived class.
+
+```c#
+public class SonOfThing : Thing, IDisposable
+{
+    new public void Dispose()
+    { 
+        Console.WriteLine("SonOfThing.Dispose()"); 
+        base.Dispose(); \\ Calling Thing::Dispose() <- Thing is a base calss that has its own Dispose()
+        GC.SuppressFinalize(this);
+    }
+}
+```
+
+#### Protecting Against Double Disposal
+
+Because the developer is responsible for calling Dispose, suppressing finalization if he or she has called Dispose, calling Dispose from the class finalizer, and perhaps calling the base class Dispose, he or she is also responsible for ensuring that Dispose doesn’t get called more than once per object. If Dispose is called more than once, the developer must ensure that there are no consequences.
+
+The following enhancement to our Thing system illustrates one way to satisfy these requirements. We simply set a Boolean field in our Dispose and test it at the beginning of the method:
+```c#
+public class Thing : IDisposable
+{
+    private string name;
+    public Thing(string name) { this.name = name; }
+    override public string ToString() { return name; }
+
+    ~Thing() 
+    { 
+        Dispose();
+        Console.WriteLine("~Thing()"); 
+    }
+
+    private bool AlreadyDisposed = false;
+
+    public void Dispose()
+    {
+        if (!AlreadyDisposed)
+        {
+            AlreadyDisposed = true;
+            Console.WriteLine("Dispose()");
+            GC.SuppressFinalize(this);
+        }
+    }
+}
+```
+
+#### Language Support for Dispose
 Using conventional coding constructs, the best way to ensure that an object’s lifetime is controlled and that resources are cleaned up deterministically is by enclosing the object in a try and finally block:
 ```c#
 static void Main(string[] args)
@@ -963,8 +1088,6 @@ using (Thing t2 = new Thing("JimBob"))
 }
 ```
 The using statement requires that the class implement IDisposable.
-
-
 
 ### Threads
 #### Thread with a Join (no arg)
