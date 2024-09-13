@@ -1124,6 +1124,48 @@ static void CountTo(object count)
 }
 ```
 
+#### Tasks Demo
+```c#
+    static public void TasksDemo()
+    {
+        List<Task<string>> tasks = new List<Task<string>>();
+
+        //public delegate TResult Func<in T, out TResult> (T arg);
+        Func<object?, string> taskAction = (t) =>
+        {
+            Task delayT = DelayTask((int)t * 1000);
+            delayT.Wait();
+
+            return t.ToString() + ":" + DateTime.Now.ToLongTimeString();
+        };
+
+        for (int i = 0; i < 10; i++)
+        {
+            Task<string> task = Task.Factory.StartNew<string>(taskAction, i);
+            tasks.Add(task);
+        }
+
+        /*
+        for (int i = 0; i < 10; i++)
+        {
+            Task<string> task = Task.Factory.StartNew<string>((t) =>
+            {
+                Task delayT = DelayTask((int)t * 1000);
+                delayT.Wait();
+
+                return t.ToString() + ":" + DateTime.Now.ToLongTimeString();
+            }, i);
+            tasks.Add(task);
+        }
+        */
+
+        //Task.WaitAll(tasks.ToArray()); <- Not needed as t.Result will do the same
+
+        foreach (var t in tasks)
+            Console.WriteLine(t.Result);
+    }
+```
+
 #### async/await
 The two main components of asynchronous programming are the keyword modifiers, async and await. A method using the async modifier enables the use of the await operator, which now must be included at least once within the method. The original caller method continues when the await operator is reached, and the async method processes until it's completed. The async methods must have a return type of void, Task, Task, or any other type that has a GetAwaiter method. The naming convention for async methods is to append them with an async suffix.
 
