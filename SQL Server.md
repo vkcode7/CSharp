@@ -37,6 +37,16 @@ SELECT TOP 1 salary FROM CTE WHERE RANK = 5
 //5th Highest
 ```
 
+***Partition***
+Order the records by Marks
+```sql
+SELECT 
+  name, 
+  marks, 
+  DENSE_RANK() OVER(PARTITION BY name ORDER BY marks) as Rank
+FROM T1
+ORDER BY name, rank
+```
 
 ### INNER JOIN
 
