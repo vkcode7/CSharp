@@ -1166,6 +1166,57 @@ static void CountTo(object count)
     }
 ```
 
+```c#
+class Demonstration
+{
+    static void Main()
+    {
+        TaskExample te = new TaskExample();
+        te.runTest();
+
+        Console.WriteLine("Done");
+    }
+}
+
+public class TaskExample
+{
+    public void runTest()
+    {
+        string Message = "Jack Daniels";
+        
+        Func<Object?, string> tAction = (obj) => {
+            String name = (String)obj;
+            Console.WriteLine("Hello from func: " + name);
+            Thread.Sleep(5000);
+            return "Func Task example Completed Successfully";
+        };
+        
+        Task<String> lambdaTask = new Task<String>((Object obj) =>
+        {
+            String name = (String)obj;
+            Console.WriteLine("Hello from lambda: " + name);
+            Thread.Sleep(5000);
+            return "Lambda Task example Completed Successfully";
+        }, Message);
+
+        Task<string> funcTask = new Task<string>(tAction, Message);
+
+        lambdaTask.Start();
+        funcTask.Start();
+       
+        Console.WriteLine(funcTask.Result);
+        Console.WriteLine(lambdaTask.Result);
+    }
+}
+
+/*Output:
+Hello from lambda: Jack Daniels
+Hello from func: Jack Daniels
+Func Task example Completed Successfully
+Lambda Task example Completed Successfully
+Done
+*/
+```
 #### async/await
 The two main components of asynchronous programming are the keyword modifiers, async and await. A method using the async modifier enables the use of the await operator, which now must be included at least once within the method. The original caller method continues when the await operator is reached, and the async method processes until it's completed. The async methods must have a return type of void, Task, Task, or any other type that has a GetAwaiter method. The naming convention for async methods is to append them with an async suffix.
 
