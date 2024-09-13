@@ -15,6 +15,29 @@ Full join = inner join
                 + fetch additional records from the left table which are not present in right table
                 + fetch additional records from the right table which are not present in left table.
 
+### Quick Recap
+```sql
+SELECT c1, c2
+FROM T1
+INNER/LEFT/RIGHT/OUTER JOIN T2
+ON T1.col = T2.col
+WHERE condition
+```
+***Nth Highest***
+```sql
+WITH CTE AS
+(
+  SELECT
+    salary,
+    DENSE_RANK() OVER (ORDER BY salary) as Rank
+  FROM Employee
+)
+
+SELECT TOP 1 salary FROM CTE WHERE RANK = 5
+//5th Highest
+```
+
+
 ### INNER JOIN
 
 The `INNER JOIN` keyword selects records that have matching values in both tables.
