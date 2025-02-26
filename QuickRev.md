@@ -17,6 +17,26 @@ using aliasname = PC.MyCompany.Project;
 WriteLine("No need to use Console.WriteLine because of static keyword");
 ```
 
+```c#
+using static System.Console;
+using SC = System.Console;
+
+namespace ConsoleAppCSharp
+{
+    internal class Program
+    {
+        enum Dir {N,S,E,W};
+        static void Main(string[] args)
+        {
+            Dir d1 = Dir.N;
+            Console.WriteLine("Hello, World!");
+            WriteLine("Works because of using static...");
+            SC.WriteLine("Dir is " + d1);
+        }
+    }
+}
+```
+
 #### Access modifiers
 <table>
   <tr>
