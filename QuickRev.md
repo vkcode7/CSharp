@@ -37,18 +37,18 @@ namespace ConsoleAppCSharp
 }
 ```
 
-#### Access modifiers
+#### Class Members Access modifiers
 <table>
   <tr>
    <td><code>internal</code>
    </td>
-   <td>The members in class A that are marked <code>internal</code> are accessible to methods of any class in A's assembly. An assembly is a collection of files that appear to the programmer as a single executable or DLL.
+   <td>Aaccessible to methods of any class in A's assembly.
    </td>
   </tr>
   <tr>
    <td><code>protected internal</code>
    </td>
-   <td>In same assembly any class can access it (being internal). Outside of assembly only derived class can access it.
+   <td>In same assembly any class can access it (being internal). Outside only derived class can access it.
    </td>
   </tr>
   <tr>
