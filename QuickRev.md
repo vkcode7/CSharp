@@ -336,6 +336,22 @@ int[,] rectangularArray =
 {0,1,2}, {3,4,5}, {6,7,8}, {9,10,11}
 };
 
+int[,] ra = new int[2, 3];
+for (int c = 0; c < 3; c++)
+    for (int r = 0; r < 2; r++)
+	ra[r, c] = (r + 1) * 10 + (c + 1);
+
+for (int r = 0; r < 2; r++)
+{
+    for (int c = 0; c < 3; c++)
+	Console.Write(ra[r, c] + ", ");
+    Console.WriteLine("");
+}
+
+/*
+11, 12, 13,
+21, 22, 23,
+*/
 \\ Jagged Arrays
 const int rows = 2;
 
