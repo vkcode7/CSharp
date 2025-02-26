@@ -249,6 +249,10 @@ Console.WriteLine((numbers is null)); // expected: true
 if numbers is null, initialize it. Then, add 5 to numbers, otherwise keep the numbers as is.
 ```c#
 (numbers ??= new List<int>()).Add(5);
+
+Animal my = null;
+my??= new Dog(); //initializes
+my.MakeSound();
 ```
 
 #### Nullable ?
