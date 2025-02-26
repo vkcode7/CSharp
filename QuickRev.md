@@ -107,8 +107,7 @@ If one or more methods in a calss are abstract, the class definition must also b
 4. <strong>abstract</strong>: Indicates that the member does not have implementation in the current class and must be implemented by derived classes.
 5. <strong>virtual</strong>: Allows the member to be overridden in derived classes.
    <strong><code>public virtual void VirtualMethod(){...}</code></strong>
-6. <strong>override</strong>: Overrides a virtual member inherited from a base class.
-   <strong><code>public override void VirtualMethod(){...}</code></strong>
+6. <strong>override</strong>: Overrides a virtual member inherited from a base class. Without it derived member wont be called. Also you cant use virtual and override together. Cant use virtual in derived too. <strong><code>public override void VirtualMethod(){...}</code></strong>
 7. <strong>extern</strong>: Specifies that the method is implemented externally in native code (usually used in conjunction with DllImport).
 8. <strong>unsafe</strong>: Indicates that the member contains unsafe code that uses pointer types and performs unsafe operations.
 9. <strong>volatile</strong>: Indicates that the member may be modified by multiple threads that are executing at the same time. 
