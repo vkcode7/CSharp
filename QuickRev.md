@@ -114,6 +114,103 @@ If one or more methods in a calss are abstract, the class definition must also b
     <code>private <strong>volatile</strong> bool isRunning = true;</code>
     <code>volatile</code> ensures visibility of the most up-to-date value across threads, you still need synchronization mechanisms to ensure atomicity for compound operations.
 
+```c++
+using System;
+
+// Abstract base class
+public abstract class Animal
+{
+    // Const field
+    public const string Kingdom = "Animalia";
+
+    // Readonly field
+    public static readonly string Phylum = "Chordata";
+
+    // Virtual method
+    public virtual void MakeSound()
+    {
+        Console.WriteLine("The animal makes a sound.");
+    }
+
+    // Abstract method
+    public abstract void Move();
+
+    // Static method
+    public static void DisplayPhylum()
+    {
+        Console.WriteLine($"Phylum: {Phylum}");
+    }
+}
+
+// Derived class
+public class Dog : Animal
+{
+    // Volatile field
+    private volatile bool isHungry = true;
+
+    // Override the virtual method
+    public override void MakeSound()
+    {
+        Console.WriteLine("The dog barks.");
+    }
+
+    // Implement the abstract method
+    public override void Move()
+    {
+        Console.WriteLine("The dog runs.");
+    }
+
+    // Unsafe method
+    public unsafe void UnsafeMethod()
+    {
+        int* ptr = stackalloc int[10];
+        for (int i = 0; i < 10; i++)
+        {
+            ptr[i] = i * 2;
+        }
+        Console.WriteLine($"Unsafe method: ptr[5] = {ptr[5]}");
+    }
+
+    // Extern method declaration
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    public static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
+}
+
+class Program
+{
+    static void Main()
+    {
+        // Create an instance of the derived class
+        Dog myDog = new Dog();
+
+        // Call the overridden method
+        myDog.MakeSound(); // Output: The dog barks.
+
+        // Call the implemented abstract method
+        myDog.Move(); // Output: The dog runs.
+
+        // Call the static method
+        Animal.DisplayPhylum(); // Output: Phylum: Chordata
+
+        // Call the unsafe method
+        myDog.UnsafeMethod(); // Output: Unsafe method: ptr[5] = 10
+
+        // Call the extern method
+        Dog.MessageBox(IntPtr.Zero, "Hello, World!", "Message", 0);
+
+        // Access the const field
+        Console.WriteLine($"Kingdom: {Animal.Kingdom}"); // Output: Kingdom: Animalia
+    }
+}
+
+/* output:
+The dog barks.
+The dog runs.
+Phylum: Chordata
+Unsafe method: ptr[5] = 10
+Kingdom: Animalia
+*/
+```
 
 #### Null-conditional operators ?. and ?[]
 * If `a` evaluates to `null`, the result of `a?.x` or `a?[x]` is `null`.
