@@ -271,6 +271,30 @@ var result = Array.Find(names, element => element.Length >= 5);
 
 Notice that the `Array.Find()` method only returns the first occurrence and not all matching elements. Use the `Array.FindAll()` method to retrieve all matching elements.
 
+### IComparable vs ICompare
+IComparable provides default sort order.
+
+The role of IComparable is to provide a method of comparing two objects of a particular type. It's necessary if you want to provide any ordering capability for your object. Think of IComparable as providing a default sort order for your objects.
+
+```c#
+   public class Car : IComparable
+   {
+      // Implement IComparable CompareTo to provide default sort order.
+      int IComparable.CompareTo(object obj)
+      {
+         Car c=(Car)obj;
+         return String.Compare(this.make,c.make);
+      }
+   }
+```
+
+You can create multiple classes (based on name, age, salary etc) derived from IComparer and pass it in Sort(). When you dont pass it in Sort() default from IComparable is used (implemented above).
+
+**IComparer:**
+The role of IComparer is to provide more comparison mechanisms. For example, you might want to provide ordering of your class on several fields or properties, ascending and descending order on the same field, or both.
+
+Using IComparer is a two-step process. First, declare a class that implements IComparer, and then implement the Compare method:
+
 ```c#
 //comparer class
 class PersonComparer : IComparer 
