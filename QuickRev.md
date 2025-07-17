@@ -683,6 +683,10 @@ A struct can be declared without using the new keyword. All value types (int, ch
 
 Structs inherit from System.ValueType, cannot be inherited from another Struct or Class, and cannot be a base class. A null value can be assigned to a struct as it can be used as a nullable type.
 
+When you create a struct object using the new operator, it gets created and the appropriate constructor is called. Unlike classes, structs can be instantiated without using the new operator. If you do not use new, the fields will remain unassigned and the object cannot be used until all of the fields are initialized.
+
+In essence, the new() operator itself doesn't guarantee heap allocation for structs. Instead, it signifies a call to the struct's constructor to initialize its values. The actual memory location depends on the context of the struct's declaration. For local variables, structs benefit from the speed of stack allocation, while as class members, they reside on the heap alongside the class instance. 
+
 #### What is a record?
 A record (C# 9) is a reference type that makes it easier to create immutable reference types and provides equality comparisons. C# 10 introduces record struct types too.
 
