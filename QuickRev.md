@@ -548,8 +548,10 @@ public static class StringExtensionExample
 ```
 
 #### Indexer property
+An indexer is a C# construct that allows you to treat a class as if it were an array. 
+
 ```c#
-type this [type argument ]{get; set;}
+type this [type argument]{get; set;}
 
 public string this[int index]
 {
@@ -561,6 +563,7 @@ public string this[int index]
     {
 	strings[index] = value;
     }
+}
 ```
 
 #### Interface
