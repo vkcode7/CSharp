@@ -692,12 +692,15 @@ A record (C# 9) is a reference type that makes it easier to create immutable ref
 
 It’s important to point out that, when records are created in the above manner, they’re immutable, meaning that they cannot be changed. This can be seen in the following code:
 ```c#
+public record Person(string FirstName, string LastName, int Age);
+var person = new Person("Alice", "Smith", 30);
+Console.WriteLine(person.FirstName); // Output: Alice
+
+public record Student(string Name, string Assignment, int Grade);
 Student student1 = new("Pablo", "Exam 1", 97);
 
 student1.Grade = 98; // Error because the value can not be changed
 Console.WriteLine(student1);
-
-public record Student(string Name, string Assignment, int Grade);
 ```
 Records can also use the ***deconstruct*** method to separate the record into component properties.
 ```c#
@@ -715,6 +718,12 @@ public record Student(string Name, string Assignment, int Grade)
         Console.WriteLine("Hello");
     }
 }
+```
+
+Records support inheritance, allowing you to create hierarchies of data models. 
+```
+public record Animal(string Species, int Age);
+public record Dog(string Species, int Age, string Breed) : Animal(Species, Age);
 ```
 
 #### List
