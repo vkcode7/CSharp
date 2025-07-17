@@ -883,48 +883,42 @@ static string AddNumbers(int a, int b)
 
 ***Events*** allow classes to notify other classes when something occurs. In the example below, a predefined delegate called EventHandler is used. The EventHandler delegate returns void and has two parameters (object, EventArgs). The object is the sender (what sent the event) and the EventArgs object(contains basic information about the event).
 ```c#
-Greetings welcomeMessage = new();
 
-// Attach event handler to event
-welcomeMessage.WelcomeChanged += welcomeMessage.HandleWelcomeChanged; 
-
-welcomeMessage.TheMessage = "Adam";
-Console.WriteLine(welcomeMessage.TheMessage);
-
-class Greetings
+class Button
 {
-    private string theMessage; 
-    public string TheMessage 
+    // Declare the event using EventHandler
+    public event EventHandler Clicked;
+
+    public void Click()
     {
-        get
-        {
-            return theMessage;
-        }
-        set
-        {
-            theMessage= $"Hello, {value}";
-            OnWelcomeChanged(); // Call OnWelcomeChanged when the value is changed }
-        }
+        Console.WriteLine("Button was clicked.");
+        // Raise the event
+        Clicked?.Invoke(this, EventArgs.Empty);
     }
-
-    public event EventHandler WelcomeChanged; // Define the event
-    //Public delegate void EventHandler(object, EventArgs);
-    // EventHandler is a predefined delegate that returns void and has 2 parameters. 
-    // The first parameter is an object and the second is an EventArgs object
-
-    public void OnWelcomeChanged() // Methods that raise events usually start with the "On"
-    {
-        // The code below raises the event if the event is not null (verifies an event handler 
-        // is attached to the event)
-        WelcomeChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    // This method handles what to do when the change is detected
-    public void HandleWelcomeChanged(object sender, EventArgs eventArgs)
-    {
-        Console.WriteLine("The welcome message has changed!!");
-    } 
 }
+
+class EventProgram
+{
+    static void Main()
+    {
+        Button button = new Button();
+
+        // Subscribe to the event
+        button.Clicked += OnButtonClicked;
+
+        // Simulate a click
+        button.Click();
+    }
+
+    static void OnButtonClicked(object sender, EventArgs e)
+    {
+        Console.WriteLine("Event handler: Button click event received.");
+    }
+}
+
+output:
+Button was clicked.
+Event handler: Button click event received.
 ```
 
 #### Delegate vs Event
