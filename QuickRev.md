@@ -864,6 +864,210 @@ catch (RuntimeWrappedException e)
 }
 ```
 
+## Lambda Expressions
+```c#
+// Full syntax patterns:
+(parameter_list) => expression
+(parameter_list) => { statements; return value; }
+
+// Parameter list variations:
+() => expression                    // No parameters
+x => expression                     // Single parameter (parentheses optional)
+(x) => expression                   // Single parameter with parentheses
+(x, y) => expression               // Multiple parameters
+(int x, string y) => expression    // Explicit parameter types
+```
+
+#### Return Values
+Expression body - automatically returns the expression result:
+```c#
+Func<int, int> square = x => x * x;              // Returns x * x
+Func<int, string> toString = x => x.ToString();   // Returns string
+Func<int, bool> isEven = x => x % 2 == 0;        // Returns bool
+```
+
+Statement body - must explicitly use return:
+```c#
+Func<int, int> calculate = x => 
+{
+    var temp = x * 2;
+    return temp + 1;  // Explicit return required
+};
+
+// For void return (Action)
+Action<string> process = message => 
+{
+    Console.WriteLine(message);
+    // No return statement needed for void
+};
+```
+
+### Key Points About Variable Capture
+
+- By reference: Most variables are captured by reference (changes affect original)
+- By value: Loop variables in modern C# are captured by value (each iteration gets its own copy)
+- Lifetime extension: Captured variables live as long as the lambda exists
+- Performance: Capturing variables creates a closure, which has slight overhead
+
+```c#
+// COMPLETE LAMBDA EXPRESSION SYNTAX GUIDE
+
+// ========== BASIC SYNTAX PATTERNS ==========
+
+// 1. Expression body (single expression, auto-return)
+// (parameters) => expression
+
+// 2. Statement body (multiple statements, explicit return)
+// (parameters) => { statements; return value; }
+
+// ========== PARAMETER VARIATIONS ==========
+
+// No parameters
+Func<int> noParams = () => 42;
+Action noParamsAction = () => Console.WriteLine("Hello");
+
+// Single parameter (parentheses optional)
+Func<int, int> singleParam1 = x => x * 2;
+Func<int, int> singleParam2 = (x) => x * 2;  // Same as above
+
+// Multiple parameters (parentheses required)
+Func<int, int, int> multipleParams = (x, y) => x + y;
+
+// Explicit parameter types
+Func<int, string, bool> explicitTypes = (int x, string y) => x.ToString() == y;
+
+// Discarded parameters (when you don't use them)
+Func<int, int, int> discarded = (_, y) => y * 2;
+
+// ========== RETURN VALUE EXAMPLES ==========
+
+// Expression body - automatic return
+Func<int, bool> isPositive = x => x > 0;           // Returns bool
+Func<string, int> getLength = s => s.Length;       // Returns int
+Func<int, string> format = x => $"Value: {x}";     // Returns string
+
+// Statement body - explicit return
+Func<int, int> complex = x => 
+{
+    if (x < 0) return 0;
+    var result = x * x;
+    return result + 1;
+};
+
+// Void return (Action) - no return statement
+Action<string> print = message => 
+{
+    Console.WriteLine($"Message: {message}");
+    // No return needed for void
+};
+
+// ========== VARIABLE CAPTURE EXAMPLES ==========
+
+// Capture by reference (changes affect original)
+int sharedCounter = 0;
+Func<int> incrementShared = () => ++sharedCounter;
+
+// Capture local variables
+string prefix = "Hello";
+Func<string, string> addPrefix = name => $"{prefix}, {name}!";
+
+// Capture in loops (each iteration gets its own copy)
+var functions = new List<Func<int>>();
+for (int i = 0; i < 3; i++)
+{
+    int localCopy = i;  // Explicit copy if needed
+    functions.Add(() => localCopy);
+}
+
+// ========== DELEGATE TYPE EXAMPLES ==========
+
+// Func<TResult> - no parameters, returns TResult
+Func<DateTime> getCurrentTime = () => DateTime.Now;
+
+// Func<T, TResult> - one parameter, returns TResult
+Func<string, bool> isEmpty = s => string.IsNullOrEmpty(s);
+
+// Func<T1, T2, TResult> - two parameters, returns TResult
+Func<int, int, double> divide = (x, y) => (double)x / y;
+
+// Action - no parameters, void return
+Action sayHello = () => Console.WriteLine("Hello!");
+
+// Action<T> - one parameter, void return
+Action<string> printMessage = msg => Console.WriteLine(msg);
+
+// Action<T1, T2> - two parameters, void return
+Action<string, int> printWithCount = (msg, count) => 
+{
+    for (int i = 0; i < count; i++)
+        Console.WriteLine(msg);
+};
+
+// ========== ADVANCED PATTERNS ==========
+
+// Nested lambdas
+Func<int, Func<int, int>> multiplier = x => y => x * y;
+var timesTwo = multiplier(2);  // Returns a function that multiplies by 2
+int result = timesTwo(5);      // result = 10
+
+// Lambda with conditional expression
+Func<int, string> classify = x => x > 0 ? "positive" : x < 0 ? "negative" : "zero";
+
+// Lambda with method group (shorthand)
+Func<string, int> parseNumber = int.Parse;  // Equivalent to: s => int.Parse(s)
+
+// Lambda with null-conditional operator
+Func<string, int> safeLength = s => s?.Length ?? 0;
+
+// ========== COMMON USAGE PATTERNS ==========
+
+// LINQ operations
+var numbers = new[] { 1, 2, 3, 4, 5 };
+var evenSquares = numbers
+    .Where(x => x % 2 == 0)           // Filter
+    .Select(x => x * x)               // Transform
+    .OrderByDescending(x => x);       // Sort
+
+// Event handling
+// button.Click += (sender, e) => MessageBox.Show("Clicked!");
+
+// Async lambdas
+Func<Task<string>> fetchData = async () => 
+{
+    await Task.Delay(1000);
+    return "Data loaded";
+};
+
+// ========== VARIABLE CAPTURE GOTCHAS ==========
+
+// Problem: All lambdas capture the same variable
+var badFunctions = new List<Func<int>>();
+int counter = 0;
+for (int i = 0; i < 3; i++)
+{
+    badFunctions.Add(() => counter++);  // All share same counter
+}
+
+// Solution: Capture by value or create local copy
+var goodFunctions = new List<Func<int>>();
+for (int i = 0; i < 3; i++)
+{
+    int localCounter = i;  // Each lambda gets its own copy
+    goodFunctions.Add(() => localCounter);
+}
+
+// ========== TYPE INFERENCE ==========
+
+// Compiler infers types from context
+var list = new List<int> { 1, 2, 3 };
+
+// Type inferred from Where method signature
+var filtered = list.Where(x => x > 1);  // x is inferred as int
+
+// Explicit typing when needed
+var filtered2 = list.Where((int x) => x > 1);  // Explicit int type
+```
+
 #### Delegates and Events
 A ***delegate*** is a variable that can store a method and can then be passed around as needed. Mainly used for Async processing passing callback to async method and for injecting custom code in a class's code path.
 
