@@ -974,6 +974,36 @@ There are two ways to divide work amongst threads:<br>
 * Data Parallelism: Divide the data among threads to work on and combine the partial results at the end to get the final outcome. Usually, all the threads run the same algorithm on distinct pieces of data.
 * Task Parallelism: Divide differing tasks to be performed among threads. Usually, each task executes a different algorithm to achieve an uber common goal.
 
+### Creating and Starting Tasks
+```c#
+// Method 1: Task.Run (most common)
+Task task1 = Task.Run(() => Console.WriteLine("Hello from task!"));
+
+// Method 2: Task.Factory.StartNew
+Task task2 = Task.Factory.StartNew(() => Console.WriteLine("Hello from factory!"));
+
+// Method 3: new Task + Start
+Task task3 = new Task(() => Console.WriteLine("Hello from constructor!"));
+task3.Start();
+
+// With return value
+Task<int> taskWithResult = Task.Run(() => 42);
+```
+
+### Waiting for Tasks
+```c#
+// Wait for single task
+task1.Wait();
+
+// Wait for multiple tasks
+Task.WaitAll(task1, task2, task3);
+
+// Wait for any task to complete
+Task.WaitAny(task1, task2, task3);
+
+// Get result from Task<T>
+int result = taskWithResult.Result; // Blocks until complete
+```
 
 ## Tasks vs Threading API
 
