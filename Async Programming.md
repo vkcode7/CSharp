@@ -431,6 +431,40 @@ class ReentrantLockExample
 }
 ```
 
+## Lock => internally uses Monitor which is a language level construct
+```bash
+2. MONITOR INTERNAL IMPLEMENTATION:
+
+Monitor does NOT use semaphores. Instead it uses:
+
+A. Object Sync Block Structure:
+   ┌─────────────────┐
+   │ Object Header   │
+   ├─────────────────┤
+   │ Sync Block Ptr  │ ──┐
+   └─────────────────┘   │
+                         │
+   ┌─────────────────┐   │
+   │ Sync Block      │ ◄─┘
+   ├─────────────────┤
+   │ Lock State      │ ← Binary: locked/unlocked
+   │ Owner Thread ID │ ← Which thread owns it
+   │ Wait Queue      │ ← Threads waiting for lock
+   │ Ready Queue     │ ← Threads ready to acquire
+   └─────────────────┘
+
+B. Lock Acquisition Process:
+   1. Check if sync block exists for object
+   2. If unlocked: Set owner to current thread
+   3. If locked: Add thread to wait queue
+   4. Use OS wait primitives (events, not semaphores)
+
+C. Wait/Pulse Mechanism:
+   • Wait: Release lock, move to wait queue
+   • Pulse: Move one thread from wait to ready queue
+   • Uses condition variables, not semaphores
+```
+
 ## **Mutex vs Semaphore**
 
 Mutex as the name hints implies **_mutual exclusion_**. A mutex is used to guard shared data such as a linked-list, an array, or any primitive type. A mutex allows only a single thread to access a resource or critical section.<br>
