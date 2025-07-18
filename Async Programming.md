@@ -601,9 +601,63 @@ class Demonstration
 
 ## Using ThreadPools
 
+```c#
+    static void ThreadPoolConfiguration()
+    {
+        Console.WriteLine("THREADPOOL CONFIGURATION:");
+        Console.WriteLine();
+        
+        // Get current ThreadPool settings
+        ThreadPool.GetMinThreads(out int minWorker, out int minIO);
+        ThreadPool.GetMaxThreads(out int maxWorker, out int maxIO);
+        ThreadPool.GetAvailableThreads(out int availableWorker, out int availableIO);
+        
+        Console.WriteLine($"Min Threads - Worker: {minWorker}, IO: {minIO}");
+        Console.WriteLine($"Max Threads - Worker: {maxWorker}, IO: {maxIO}");
+        Console.WriteLine($"Available - Worker: {availableWorker}, IO: {availableIO}");
+        
+        // Set minimum threads (be careful with this in production)
+        int processorCount = Environment.ProcessorCount;
+        Console.WriteLine($"Processor count: {processorCount}");
+        
+        // Example: Set minimum threads to processor count
+        ThreadPool.SetMinThreads(processorCount, processorCount);
+        
+        ThreadPool.GetMinThreads(out minWorker, out minIO);
+        Console.WriteLine($"Updated Min Threads - Worker: {minWorker}, IO: {minIO}");
+        
+        Console.WriteLine();
+    }
+```
+output of above:
+```bash
+THREADPOOL CONFIGURATION:
+
+Min Threads - Worker: 10, IO: 1
+Max Threads - Worker: 32767, IO: 1000
+Available - Worker: 32767, IO: 1000
+Processor count: 10
+Updated Min Threads - Worker: 10, IO: 10
+```
+
 Threadpools are an abstraction offered by several programming languages to manage and handle threads on behalf of the user. Imagine an application that creates threads to undertake several thousand short-lived tasks. The application would incur a performance penalty for first creating hundreds of threads and then tearing down the allocated resources for each thread at the ends of its life. The general way programming frameworks solve this problem is by creating a pool of threads, which are handed out to execute each concurrent task and once completed, the thread is returned to the pool.<br>
 
 Threadpools in C# are tunable in that they allow a user to specify the maximum and the minimum number of threads. However, the caveat with using a thread pool is that all threads in the pool are background threads and therefore if all the foreground threads of an application exit, the application exits too whether or not the threads in the pool have completed. A thread is considered a background thread if the property <strong><code>IsBackground</code></strong> is set to true.<br>
+
+✅ Good for:
+```bash
+Short-lived tasks (< 1 second)
+Many small independent tasks
+CPU-bound work that can be parallelized
+Background processing
+```
+❌ Avoid for:
+```bash
+Long-running tasks (blocks pool threads)
+Tasks requiring specific thread configuration
+Tasks that need apartment state (STA)
+Blocking operations (file I/O, network calls)
+```
 
 We use <strong><code>QueueUserWorkItem()</code></strong> method of the <strong><code>ThreadPool</code></strong> class to enqueue a method to execute. Specifically, the method <strong><code>QueueUserWorkItem()</code></strong> takes in a delegate parameter of type <strong><code>WaitCallback</code></strong>. This is defined as:
 ```c#
