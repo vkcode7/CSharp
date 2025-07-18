@@ -1015,6 +1015,10 @@ private static void AddNumbers(int param1, int param2 )
 
 #### Predicate<T> <= Return type is always bool
 ```c#
+public delegate bool Predicate<in T>(T obj) where T : allows ref struct;
+```
+
+```c#
 //A predicate with Anonymous method:
 Predicate <string> CheckIfApple = delegate(string modelName) {  
     if (modelName == "I Phone X") return true;  
