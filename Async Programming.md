@@ -96,6 +96,275 @@ Multiple threads summed to 2305843008139952128
 Multiple threads took 322 milliseconds to complete
 ```
 
+```c#
+using System;
+using System.Threading;
+
+class ThreadExamples
+{
+    static void Main()
+    {
+        Console.WriteLine("=== Thread Examples ===\n");
+        
+        // Example 1: Basic Thread Creation and Start
+        BasicThreadExample();
+        
+        // Example 2: Thread with Parameters
+        ThreadWithParametersExample();
+        
+        // Example 3: Thread Join (Wait for completion)
+        ThreadJoinExample();
+        
+        // Example 4: Multiple Threads
+        MultipleThreadsExample();
+        
+        // Example 5: Thread Properties
+        ThreadPropertiesExample();
+        
+        // Example 6: Thread Sleep and Interrupt
+        ThreadSleepExample();
+        
+        Console.WriteLine("\nAll examples completed!");
+    }
+    
+    // Example 1: Basic Thread Creation
+    static void BasicThreadExample()
+    {
+        Console.WriteLine("1. Basic Thread Example:");
+        
+        // Create a thread that runs SimpleTask method
+        Thread thread = new Thread(SimpleTask);
+        thread.Start();
+        
+        // Main thread continues executing
+        Console.WriteLine("Main thread continues...");
+        
+        // Wait a bit to see the output
+        Thread.Sleep(2000);
+        Console.WriteLine();
+    }
+    
+    static void SimpleTask()
+    {
+        for (int i = 1; i <= 5; i++)
+        {
+            Console.WriteLine($"  Worker thread: {i}");
+            Thread.Sleep(300);
+        }
+    }
+    
+    // Example 2: Thread with Parameters
+    static void ThreadWithParametersExample()
+    {
+        Console.WriteLine("2. Thread with Parameters:");
+        
+        // Using ParameterizedThreadStart for passing data
+        Thread thread = new Thread(TaskWithParameter);
+        thread.Start("Hello from parameter!");
+        
+        // Using lambda expression (more modern approach)
+        Thread lambdaThread = new Thread(() => TaskWithLambda("Lambda parameter", 3));
+        lambdaThread.Start();
+        
+        Thread.Sleep(2000);
+        Console.WriteLine();
+    }
+    
+    static void TaskWithParameter(object data)
+    {
+        string message = (string)data;
+        Console.WriteLine($"  Received: {message}");
+    }
+    
+    static void TaskWithLambda(string message, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            Console.WriteLine($"  Lambda: {message} - {i}");
+            Thread.Sleep(200);
+        }
+    }
+    
+    // Example 3: Thread Join (Wait for completion)
+    static void ThreadJoinExample()
+    {
+        Console.WriteLine("3. Thread Join Example:");
+        
+        Thread worker = new Thread(LongRunningTask);
+        worker.Start();
+        
+        Console.WriteLine("  Main thread waiting for worker to complete...");
+        worker.Join(); // Wait for worker thread to complete
+        
+        Console.WriteLine("  Worker thread completed, main thread continues");
+        Console.WriteLine();
+    }
+    
+    static void LongRunningTask()
+    {
+        Console.WriteLine("  Long running task started...");
+        Thread.Sleep(1500);
+        Console.WriteLine("  Long running task completed!");
+    }
+    
+    // Example 4: Multiple Threads
+    static void MultipleThreadsExample()
+    {
+        Console.WriteLine("4. Multiple Threads Example:");
+        
+        Thread[] threads = new Thread[3];
+        
+        // Create and start multiple threads
+        for (int i = 0; i < threads.Length; i++)
+        {
+            int threadId = i + 1;
+            threads[i] = new Thread(() => CounterTask(threadId));
+            threads[i].Start();
+        }
+        
+        // Wait for all threads to complete
+        foreach (Thread thread in threads)
+        {
+            thread.Join();
+        }
+        
+        Console.WriteLine("  All threads completed");
+        Console.WriteLine();
+    }
+    
+    static void CounterTask(int threadId)
+    {
+        for (int i = 1; i <= 3; i++)
+        {
+            Console.WriteLine($"  Thread {threadId}: Count {i}");
+            Thread.Sleep(400);
+        }
+    }
+    
+    // Example 5: Thread Properties
+    static void ThreadPropertiesExample()
+    {
+        Console.WriteLine("5. Thread Properties Example:");
+        
+        Thread thread = new Thread(PropertyTask);
+        thread.Name = "MyWorkerThread";
+        thread.IsBackground = true; // Background thread
+        thread.Priority = ThreadPriority.AboveNormal;
+        
+        Console.WriteLine($"  Thread Name: {thread.Name}");
+        Console.WriteLine($"  Is Background: {thread.IsBackground}");
+        Console.WriteLine($"  Priority: {thread.Priority}");
+        Console.WriteLine($"  Thread State: {thread.ThreadState}");
+        
+        thread.Start();
+        
+        Console.WriteLine($"  Thread State after start: {thread.ThreadState}");
+        Console.WriteLine($"  Thread ID: {thread.ManagedThreadId}");
+        
+        thread.Join();
+        Console.WriteLine($"  Thread State after completion: {thread.ThreadState}");
+        Console.WriteLine();
+    }
+    
+    static void PropertyTask()
+    {
+        Console.WriteLine($"  Running in thread: {Thread.CurrentThread.Name}");
+        Console.WriteLine($"  Thread ID: {Thread.CurrentThread.ManagedThreadId}");
+        Thread.Sleep(1000);
+    }
+    
+    // Example 6: Thread Sleep and Interrupt
+    static void ThreadSleepExample()
+    {
+        Console.WriteLine("6. Thread Sleep and Interrupt Example:");
+        
+        Thread sleepingThread = new Thread(SleepingTask);
+        sleepingThread.Start();
+        
+        // Let it sleep for a bit
+        Thread.Sleep(2000);
+        
+        // Interrupt the sleeping thread
+        Console.WriteLine("  Interrupting sleeping thread...");
+        sleepingThread.Interrupt();
+        
+        sleepingThread.Join();
+        Console.WriteLine();
+    }
+    
+    static void SleepingTask()
+    {
+        try
+        {
+            Console.WriteLine("  Thread going to sleep for 5 seconds...");
+            Thread.Sleep(5000);
+            Console.WriteLine("  Thread woke up naturally");
+        }
+        catch (ThreadInterruptedException)
+        {
+            Console.WriteLine("  Thread was interrupted!");
+        }
+    }
+}
+
+// Example 7: Thread-Safe Counter (Bonus)
+class ThreadSafeCounter
+{
+    private int _count = 0;
+    private readonly object _lock = new object();
+    
+    public void Increment()
+    {
+        lock (_lock)
+        {
+            _count++;
+        }
+    }
+    
+    public int GetCount()
+    {
+        lock (_lock)
+        {
+            return _count;
+        }
+    }
+}
+
+// Example showing thread synchronization
+class ThreadSynchronizationExample
+{
+    static void RunSynchronizationExample()
+    {
+        Console.WriteLine("7. Thread Synchronization Example:");
+        
+        ThreadSafeCounter counter = new ThreadSafeCounter();
+        Thread[] threads = new Thread[5];
+        
+        // Create multiple threads that increment the counter
+        for (int i = 0; i < threads.Length; i++)
+        {
+            threads[i] = new Thread(() =>
+            {
+                for (int j = 0; j < 1000; j++)
+                {
+                    counter.Increment();
+                }
+            });
+            threads[i].Start();
+        }
+        
+        // Wait for all threads to complete
+        foreach (Thread thread in threads)
+        {
+            thread.Join();
+        }
+        
+        Console.WriteLine($"  Final count: {counter.GetCount()}");
+        Console.WriteLine("  (Should be 5000 if thread-safe)");
+    }
+}
+```
+
 ## Program vs Process vs Thread
 A program is a set of instructions and associated data that resides on the disk and is loaded by the operating system to perform a task.<br>
 A process is a program in execution. A process is an execution environment that consists of instructions, user-data, and system-data segments, as well as lots of other resources such as CPU, memory, address-space, disk and network I/O acquired at runtime. A program can have several copies of it running at the same time but a process necessarily belongs to only one program.<br>
