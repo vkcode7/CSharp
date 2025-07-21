@@ -869,7 +869,7 @@ When choosing a [collection class](https://learn.microsoft.com/en-us/dotnet/stan
    </td>
    <td>O(<code>n</code>)
    </td>
-   <td>
+   <td>Push, Pop, Peek, Contains, Count, Capacity
    </td>
    <td>
    </td>
@@ -881,7 +881,7 @@ When choosing a [collection class](https://learn.microsoft.com/en-us/dotnet/stan
    </td>
    <td>O(<code>n</code>)
    </td>
-   <td>
+   <td>Clear, Enqueue, Dequeue, Peek, Contains, Count, Capacity
    </td>
    <td>
    </td>
@@ -893,7 +893,7 @@ When choosing a [collection class](https://learn.microsoft.com/en-us/dotnet/stan
    </td>
    <td>O(<code>n</code>)
    </td>
-   <td>
+   <td>Remove, RemoveAll(Predicate<T>), RemoveAt(index), Clear, Sort, Add
    </td>
    <td>
    </td>
@@ -929,9 +929,9 @@ When choosing a [collection class](https://learn.microsoft.com/en-us/dotnet/stan
    </td>
    <td>O(<code>n</code>)
    </td>
-   <td>
+   <td>myhash1 = new HashSet<string>();
    </td>
-   <td>
+   <td>HashSet is an unordered collection of unique elements.
    </td>
   </tr>
   <tr>
@@ -941,7 +941,7 @@ When choosing a [collection class](https://learn.microsoft.com/en-us/dotnet/stan
    </td>
    <td>O(<code>n</code>)
    </td>
-   <td>
+   <td>SortedSet<int> sortedSetNumbers = new SortedSet<int>()
    </td>
    <td>
    </td>
@@ -953,7 +953,7 @@ When choosing a [collection class](https://learn.microsoft.com/en-us/dotnet/stan
    </td>
    <td>O(<code>n</code>)
    </td>
-   <td>
+   <td>Clear, Remove, ContainsKey, ContainsValue, Count, Item[], TryAdd, TryGetValue
    </td>
    <td>
    </td>
@@ -983,6 +983,24 @@ When choosing a [collection class](https://learn.microsoft.com/en-us/dotnet/stan
    </td>
   </tr>
 </table>
+
+#### SortedDictionary
+//implmented as a tree using SortedSet internally
+var descendingComparer = Comparer<int>.Create((x, y) => y.CompareTo(x));
+var ascendingComparer = Comparer<int>.Create((x, y) => x.CompareTo(y));
+
+WriteLine("\nPrinting SortedDictionary:");
+SortedDictionary<int, string> sd = new SortedDictionary<int, string>(descendingComparer);
+
+```c#
+SortedList<int, string> sl = new SortedList<int, string>(descendingComparer);
+//LinkedList<T> : AddFirst, AddLast, Clear, Remove, RemoveFirst, RemoveLast, Contains
+PriorityQueue<string, int> queue = new PriorityQueue<string, int>(); //Enqueue, Dequeue
+Hashtable: Clear, Remove, Add, Contains, ContainsKey, ContainsValue
+Hashtable ht = new Hashtable();
+ht.Add(1, "one");
+```
+
 
 ### **Dictionary&lt;TKey,TValue> Class**
 The [Dictionary&lt;TKey,TValue>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0) generic class provides a mapping from a set of keys to a set of values. Each addition to the dictionary consists of a value and its associated key. Retrieving a value by using its key is very fast, close to O(1), because the [Dictionary&lt;TKey,TValue>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0) class is implemented as a hash table.
