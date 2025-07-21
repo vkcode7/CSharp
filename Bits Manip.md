@@ -70,6 +70,26 @@ Bit Manipulation:
             return numbits;
         };
 
+        /*
+        How Two's Complement Works
+        Step-by-step process to find two's complement:
+        
+        Start with the binary representation of the positive number
+        Flip all the bits (0 becomes 1, 1 becomes 0) - this is called the "one's complement"
+        Add 1 to the result
+        
+        Example: Two's Complement of 5 (using 8-bit representation)
+        Step 1: Binary of 5 = 00000101
+        Step 2: Flip all bits = 11111010 (one's complement)
+        Step 3: Add 1 = 11111010 + 1 = 11111011
+        So the two's complement of 5 is 11111011, which represents -5.
+
+        0 XOR 0 = 0
+        1 XOR 1 = 0
+        0 XOR 1 = 1
+        1 XOR 0 = 1
+        */
+
         static Func<int, int, int> minusUsingBits = (int j, int k) => {
             int twosComplement = ~k + 1;
             int answer = j + twosComplement;
