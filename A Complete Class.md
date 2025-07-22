@@ -333,3 +333,61 @@ public class Program
 }
 ```
 
+
+This comprehensive example shows different ways to implement and use IComparer<T>:
+## Key IComparer<T> Concepts
+### 1. Purpose
+
+- IComparer<T> defines external comparison logic
+- Unlike IComparable<T> (which is implemented by the class being compared), IComparer<T> is implemented separately
+- Allows multiple different sorting strategies for the same type
+
+### 2. Compare Method Contract
+The Compare(T x, T y) method must return:
+
+- Negative value: x is less than y
+- Zero: x equals y
+- Positive value: x is greater than y
+
+### 3. Common Use Cases
+
+```c#
+// Single Property Sorting:
+public class EmployeeNameComparer : IComparer<Employee>
+{
+    public int Compare(Employee x, Employee y) =>
+        string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+}
+
+// Reverse/Descending Order:
+// Note: y.CompareTo(x) instead of x.CompareTo(y)
+return y.Salary.CompareTo(x.Salary);
+
+// Multi-level Sorting:
+// Sort by Dept, then Salary (desc), then Name
+int deptComp = string.Compare(x.Department, y.Department);
+if (deptComp != 0) return deptComp;
+// ... continue with next criteria
+
+// Modern Alternative: Lambda Expressions
+// Instead of creating a class:
+employees.Sort(Comparer<Employee>.Create((x, y) => x.Name.CompareTo(y.Name)));
+```
+
+### 4. Where IComparer is Used
+```c#
+List<T>.Sort(IComparer<T>)
+Array.Sort<T>(T[], IComparer<T>)
+SortedSet<T> constructor
+SortedDictionary<TKey, TValue> constructor
+LINQ OrderBy() and OrderByDescending()
+```
+
+### 5. IComparer vs IComparable
+- IComparable<T>: Implemented by the class itself, Defines natural ordering, one comparison per class, obj.CompareTo(other)
+- IComparer<T>: Implemented separately, Defines custom ordering, Multiple comparisons possible, comparer.Compare(obj1, obj2)
+  
+### 6. When to use each:
+
+- IComparer classes: Complex logic, reusability, performance-critical scenarios
+- Lambda expressions: Simple, one-off comparisons
