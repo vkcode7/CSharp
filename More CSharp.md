@@ -985,13 +985,14 @@ When choosing a [collection class](https://learn.microsoft.com/en-us/dotnet/stan
 </table>
 
 #### SortedDictionary
+```c#
 //implmented as a tree using SortedSet internally
 var descendingComparer = Comparer<int>.Create((x, y) => y.CompareTo(x));
 var ascendingComparer = Comparer<int>.Create((x, y) => x.CompareTo(y));
 
 WriteLine("\nPrinting SortedDictionary:");
 SortedDictionary<int, string> sd = new SortedDictionary<int, string>(descendingComparer);
-
+```
 ```c#
 SortedList<int, string> sl = new SortedList<int, string>(descendingComparer);
 //LinkedList<T> : AddFirst, AddLast, Clear, Remove, RemoveFirst, RemoveLast, Contains
@@ -999,6 +1000,31 @@ PriorityQueue<string, int> queue = new PriorityQueue<string, int>(); //Enqueue, 
 Hashtable: Clear, Remove, Add, Contains, ContainsKey, ContainsValue
 Hashtable ht = new Hashtable();
 ht.Add(1, "one");
+```
+
+```c#
+// Custom class with lambda comparer
+var people = new SortedSet<Person>(
+   Comparer<Person>.Create((x, y) => 
+   {
+       int ageComparison = x.Age.CompareTo(y.Age);
+       return ageComparison != 0 ? ageComparison : string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+   }));
+
+var people = new SortedSet<Person>(new PersonAgeComparer())
+
+// This class is now optional - you can use lambda expressions instead!
+public class PersonAgeComparer : IComparer<Person>
+{
+    public int Compare(Person x, Person y)
+    {
+        if (x == null || y == null)
+            return x == y ? 0 : (x == null ? -1 : 1);
+        
+        int ageComparison = x.Age.CompareTo(y.Age);
+        return ageComparison != 0 ? ageComparison : string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+    }
+}
 ```
 
 
