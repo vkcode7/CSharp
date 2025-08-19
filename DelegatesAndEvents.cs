@@ -34,6 +34,12 @@ Predicate<int> isEven2 = delegate(int x) { return x % 2 == 0; };
 
 // Lambda expression (C# 3.0+) - Preferred
 Predicate<int> isEven3 = x => x % 2 == 0;
+Predicate<(int, string)> myPredicate = pair => pair.Item2.Length == pair.Item1; //for more than 1 arg use a tuple
+//or define your own custom
+public delegate bool MyPredicate<T1, T2>(T1 arg1, T2 arg2);
+
+MyPredicate<int, string> myPredicate = (num, text) => text.Length == num;
+bool result = myPredicate(5, "Hello"); // true
 
 What Are Events?
 ================
