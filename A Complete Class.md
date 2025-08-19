@@ -1,5 +1,21 @@
 When you create a class in C#, it automatically inherits several interfaces and methods. Here's a comprehensive overview:
 
+```c#
+employees.Sort(Comparer<Employee>.Create((x, y) => x.Name.CompareTo(y.Name)));  //IComparer
+
+#region IComparable<T> Implementation (Recommended for sortable objects) - implemented within the class:
+
+public int CompareTo(PersonExample other)
+{
+    if (other == null) return 1;
+    
+    int nameComparison = string.Compare(Name, other.Name, StringComparison.Ordinal);
+    return nameComparison != 0 ? nameComparison : Age.CompareTo(other.Age);
+}
+```
+
+
+
 ## What Every C# Class Automatically Inherits
 From System.Object (automatically inherited):
 
