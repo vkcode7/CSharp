@@ -1213,6 +1213,8 @@ Represents a collection of objects that is maintained in sorted order. A [Sorted
 
 Same methods as in HashSet, plus Max, Min, Reverse, GetViewBetween(t1, t2)
 
+INTERNALLY it Uses a Red-Black Tree (a self-balancing binary search tree). Every time you add an item, it compares it to others to find its rightful place in the hierarchy.
+
 ### **Queue&lt;T> Class**
 FIFO: This class implements a generic queue as a circular array.
 ```c#
