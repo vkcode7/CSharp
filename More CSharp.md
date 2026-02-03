@@ -1026,7 +1026,12 @@ public class PersonAgeComparer : IComparer<Person>
     }
 }
 ```
+### Comparison: SortedList vs. SortedDictionary
+Because they both keep things sorted, it’s easy to mix them up. Here is the breakdown:
+- SortedList<K, V> - used 2 arrays internally and binary search to keep keys sorted, insertions aew slow due to shifting
+- SortedDictionary<K, V> - uses Red Black Tree, insertions are fast, more memory needed though due to more pointers (left, right, parent, node color)
 
+Use SortedList where number of items are less and insertions/deletions are less frequent, SortedDictionary otherwise
 
 ### **Dictionary&lt;TKey,TValue> Class**
 The [Dictionary&lt;TKey,TValue>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0) generic class provides a mapping from a set of keys to a set of values. Each addition to the dictionary consists of a value and its associated key. Retrieving a value by using its key is very fast, close to O(1), because the [Dictionary&lt;TKey,TValue>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0) class is implemented as a hash table.
