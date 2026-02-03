@@ -1159,6 +1159,41 @@ Another difference between the [SortedDictionary&lt;TKey,TValue>](https://learn.
 ### **HashSet&lt;T> Class**
 The [HashSet&lt;T>](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1?view=net-6.0) class provides high-performance set operations. A set is a collection that contains no duplicate elements, and whose elements are in no particular order.
 
+To understand how HashSet<T> works internally, you have to look at it as a hybrid between an array and a linked list. In .NET, it is implemented using a "Chaining" approach with two primary internal structures: 
+
+Buckets and Entries.
+
+1. The Internal Structures
+When you initialize a HashSet, the CLR allocates two arrays:
+- Buckets (int[]): This array stores indices that point into the Entries array. Think of it as a "Map" or a "Table of Contents.
+- "Entries (struct[]): This array stores the actual data, the pre-calculated hash code, and a "Next" pointer to handle collisions.
+2. How an Element is Stored
+When you call Add(item), the following happens:
+- Hashing: The set calls item.GetHashCode(). Let's say the hash is 12345.
+- Bucketing: It calculates the target bucket using the modulo operator:
+     - Index = HashCode % {BucketArray.Length}
+- Storage:
+     - The item is placed in the next available slot in the Entries array.
+- Linking:
+     - The Buckets array is updated to point to that entry.
+
+3. Handling Collisions
+A collision occurs when two different items result in the same bucket index (e.g., both "Apple" and "Bird" map to bucket #3). C# handles this using Singly Linked Lists within the Entries array.
+
+The Process:
+New Entry: If a new item maps to a bucket that is already occupied, the new item is placed in the next empty slot of the Entries array.
+
+The "Next" Pointer: The Next field of the new entry is set to the index of the item that previously occupied that bucket.
+
+Updating Bucket: The Buckets array is updated to point to the new entry (the head of the list).
+
+Example:
+If Item A is in bucket 1, and Item B also maps to bucket 1:
+
+Bucket[1] will now point to Entries[Index of B].
+
+Entries[Index of B].Next will point to Index of A.
+
 ```c#
 // Create a new HashSet populated with even numbers.
 HashSet<int> numbers = new HashSet<int>(evenNumbers);
