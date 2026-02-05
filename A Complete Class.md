@@ -407,3 +407,39 @@ LINQ OrderBy() and OrderByDescending()
 
 - IComparer classes: Complex logic, reusability, performance-critical scenarios
 - Lambda expressions: Simple, one-off comparisons
+
+### 7. Matrix and Tuples
+The correct way to create an array of direction tuples in C#:
+```c#
+    var directions = new (int, int)[]
+    {
+        (-1, 0),  // up
+        (1, 0),   // down  
+        (0, -1),  // left
+        (0, 1)    // right
+    };
+    //or
+    (int, int)[] directions =
+    {
+        (-1, 0),
+        (1, 0),
+        (0, -1),
+        (0, 1)
+    };
+    
+    foreach (var (di, dj) in directions)
+    {
+        Console.WriteLine($"{di}: {dj}");
+    }
+
+    // Empty matrix, specify dimensions
+    int[,] matrix1 = new int[3, 4];  // 3 rows, 4 columns
+    
+    // With values (dimensions inferred from initializer)
+    int[,] matrix2 = new int[,]
+    {
+        { 1, 2, 3 },
+        { 4, 5, 6 },
+        { 7, 8, 9 }
+    };
+```
