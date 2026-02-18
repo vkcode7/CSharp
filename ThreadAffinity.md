@@ -278,3 +278,253 @@ SIMD + cache-friendly layout is the combination used in game engines and HFT sys
 | `NativeMemory` aligned alloc | Cache-line alignment |
 
 The biggest wins in order: **eliminate pointer chasing → fix layout → avoid GC → then tune with SIMD/prefetch**.
+
+
+# SIMD — Single Instruction, Multiple Data
+
+## The Core Idea
+
+Normal scalar code processes **one value per instruction**. SIMD processes **multiple values simultaneously** using wide registers.
+
+```
+Scalar:  [a0] + [b0] = [c0]   (1 operation)
+
+SIMD:    [a0][a1][a2][a3]
+       + [b0][b1][b2][b3]
+       = [c0][c1][c2][c3]     (4 operations, 1 instruction)
+```
+
+The CPU has special wide registers and instructions that operate on all lanes at once — no loop needed.
+
+---
+
+## Register Widths
+
+| ISA Extension | Register Width | Floats (32-bit) | Doubles (64-bit) | Ints (32-bit) |
+|---------------|---------------|-----------------|------------------|---------------|
+| SSE           | 128-bit        | 4               | 2                | 4             |
+| AVX / AVX2    | 256-bit        | 8               | 4                | 8             |
+| AVX-512       | 512-bit        | 16              | 8                | 16            |
+
+On a 16-core CPU with AVX-512, you can theoretically process **16 floats × 16 cores = 256 floats per cycle**.
+
+---
+
+## How It Works Internally
+
+Think of a 256-bit AVX register as a fixed-width container split into **lanes**:
+
+```
+256-bit register YMM0:
+┌──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┐
+│  f0  │  f1  │  f2  │  f3  │  f4  │  f5  │  f6  │  f7  │  ← 8 × 32-bit floats
+└──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┘
+```
+
+A single `VADDPS` instruction adds two such registers lane-by-lane in **one clock cycle**.
+
+---
+
+## In C# — Three Levels of API
+
+### Level 1: `Vector<T>` — Portable, Auto-width (simplest)
+
+```csharp
+using System.Numerics;
+
+float[] a = { 1, 2, 3, 4, 5, 6, 7, 8 };
+float[] b = { 8, 7, 6, 5, 4, 3, 2, 1 };
+float[] result = new float[8];
+
+int vectorSize = Vector<float>.Count; // 4 on SSE, 8 on AVX
+
+for (int i = 0; i <= a.Length - vectorSize; i += vectorSize)
+{
+    var va = new Vector<float>(a, i);
+    var vb = new Vector<float>(b, i);
+    (va + vb).CopyTo(result, i);
+}
+```
+
+`Vector<T>.Count` adapts to whatever the CPU supports. The JIT emits the best instructions automatically. Good default choice.
+
+---
+
+### Level 2: `Vector128<T>` / `Vector256<T>` — Explicit Width
+
+```csharp
+using System.Runtime.Intrinsics;
+
+// Explicitly work with 256-bit vectors
+Vector256<float> va = Vector256.Create(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f);
+Vector256<float> vb = Vector256.Create(8f, 7f, 6f, 5f, 4f, 3f, 2f, 1f);
+Vector256<float> result = va + vb; // operator overloads in .NET 7+
+```
+
+You control the width explicitly. Still somewhat portable — JIT handles instruction selection.
+
+---
+
+### Level 3: Hardware Intrinsics — Full Control (most powerful)
+
+```csharp
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+
+if (Avx.IsSupported)
+{
+    unsafe
+    {
+        fixed (float* pA = a, pB = b, pResult = result)
+        {
+            Vector256<float> va = Avx.LoadVector256(pA);
+            Vector256<float> vb = Avx.LoadVector256(pB);
+            Vector256<float> vc = Avx.Add(va, vb);
+            Avx.Store(pResult, vc);
+        }
+    }
+}
+```
+
+This maps **1:1 to CPU instructions**. `Avx.Add` compiles directly to `VADDPS`. Maximum control, maximum performance.
+
+---
+
+## A Real Example — Dot Product
+
+```csharp
+static float DotProductScalar(float[] a, float[] b)
+{
+    float sum = 0;
+    for (int i = 0; i < a.Length; i++)
+        sum += a[i] * b[i];
+    return sum;
+}
+
+static unsafe float DotProductAVX(float[] a, float[] b)
+{
+    float result = 0;
+    int vectorSize = 8; // AVX: 8 floats per register
+    int i = 0;
+
+    var accumulator = Vector256<float>.Zero;
+
+    fixed (float* pA = a, pB = b)
+    {
+        for (; i <= a.Length - vectorSize; i += vectorSize)
+        {
+            var va = Avx.LoadVector256(pA + i);
+            var vb = Avx.LoadVector256(pB + i);
+            accumulator = Avx.Add(accumulator, Avx.Multiply(va, vb)); // or use FMA
+        }
+    }
+
+    // Horizontal sum — reduce 8 lanes to 1 scalar
+    var sum128 = Sse.Add(
+        Avx.ExtractVector128(accumulator, 0),
+        Avx.ExtractVector128(accumulator, 1));
+
+    sum128 = Sse.Add(sum128, Sse.MoveHighToLow(sum128, sum128));
+    sum128 = Sse.AddScalar(sum128, Sse.Shuffle(sum128, sum128, 1));
+    result = sum128.ToScalar();
+
+    // Scalar tail — handle remainder
+    for (; i < a.Length; i++)
+        result += a[i] * b[i];
+
+    return result;
+}
+```
+
+The SIMD version is typically **4–8× faster** on this kind of workload.
+
+---
+
+## FMA — Fused Multiply-Add
+
+Instead of separate multiply + add (2 instructions, 2 roundings), FMA does it in **one instruction with one rounding** — faster and more accurate:
+
+```csharp
+using System.Runtime.Intrinsics.X86;
+
+if (Fma.IsSupported)
+{
+    // result = a * b + c  (one instruction: VFMADD231PS)
+    var result = Fma.MultiplyAdd(va, vb, accumulator);
+}
+```
+
+FMA is critical for matrix multiply, neural networks, signal processing.
+
+---
+
+## Common Operations
+
+| Operation | Scalar | SIMD Equivalent |
+|-----------|--------|-----------------|
+| Add | `a + b` | `Avx.Add(va, vb)` |
+| Multiply | `a * b` | `Avx.Multiply(va, vb)` |
+| FMA | `a*b + c` | `Fma.MultiplyAdd(va, vb, vc)` |
+| Min/Max | `Math.Min` | `Avx.Min / Avx.Max` |
+| Conditional | `if (a > b)` | `Avx.Compare(va, vb, ...)` + mask |
+| Shuffle/Permute | manual index | `Avx.Permute / Avx2.Permute4x64` |
+| Gather | `arr[indices[i]]` | `Avx2.GatherVector256(...)` |
+| Horizontal sum | loop | extract + shuffle + add |
+
+---
+
+## Masking (AVX-512)
+
+AVX-512 introduced **per-lane masking** — apply operations conditionally per lane without branching:
+
+```csharp
+using System.Runtime.Intrinsics.X86;
+
+if (Avx512F.IsSupported)
+{
+    // Only write lanes where mask bit is set
+    var mask = Avx512F.CompareGreaterThan(va, vb); // returns a bitmask
+    Avx512F.Store(pResult, Avx512F.BlendVariable(va, vb, mask));
+}
+```
+
+Eliminates branch mispredictions inside SIMD loops entirely.
+
+---
+
+## The Auto-Vectorization Alternative
+
+Sometimes you don't need to write intrinsics at all — the JIT/RyuJIT can auto-vectorize simple loops:
+
+```csharp
+// RyuJIT may vectorize this automatically
+for (int i = 0; i < a.Length; i++)
+    result[i] = a[i] + b[i];
+```
+
+You can check by examining the JIT output with **BenchmarkDotNet + Disassembler** or **sharplab.io**. But complex loops with dependencies or conditionals usually need manual intrinsics.
+
+---
+
+## Pitfalls
+
+**Alignment** — Unaligned loads (`LoadVector256`) work but aligned loads (`LoadAlignedVector256`) are faster. Use `NativeMemory.AlignedAlloc(size, 32)` for AVX or `64` for AVX-512.
+
+**Horizontal reduction is expensive** — SIMD is fast for vertical (lane-wise) ops. Reducing across lanes (summing all 8 floats) requires shuffles and is relatively slow. Minimize it.
+
+**Not all types vectorize equally** — `float` and `int` are ideal. `double` halves your lane count. `byte`/`short` can be very efficient for image processing.
+
+**Check support at runtime** — Always guard with `Avx.IsSupported`, `Avx2.IsSupported`, etc. Ship a scalar fallback.
+
+---
+
+## When SIMD Shines
+
+- Signal/audio/image processing
+- Linear algebra (matrix multiply, dot products)
+- Physics simulations (particle systems)
+- HFT — scanning order books, pricing
+- ML inference (before you offload to GPU)
+- Compression / hashing / encryption
+
+The combination of **cache-friendly data layout + SIMD** is what separates microsecond-level C# from nanosecond-level C# in performance-critical systems.
