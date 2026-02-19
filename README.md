@@ -21,6 +21,30 @@ The IL code is actually stored in a .exe file, but this file does not contain ex
 
 The other style of comment apart from C++ is that C# comment uses three forward slashes (///). This is an XML-style comment and is used for advanced documentation techniques. The other two are normal as used in C++/Java.
 
+Here's a rundown of the main .NET versions and frameworks:
+
+## .NET Framework (Windows-only, legacy)
+The original Windows-only implementation. Major versions include 1.0, 1.1, 2.0, 3.0, 3.5, 4.0, 4.5, 4.6, 4.7, and **4.8** (the final version, still supported).
+
+## .NET Core (cross-platform, succeeded by .NET 5+)
+Microsoft's cross-platform, open-source reimagining of .NET. Versions: 1.0, 1.1, 2.0, 2.1, 2.2, 3.0, **3.1** (LTS). After this, "Core" was dropped from the name.
+
+## .NET 5, 6, 7, 8, 9 (modern unified .NET)
+Starting with .NET 5, Microsoft unified .NET Core and .NET Framework into a single platform:
+- **.NET 5** (2020) – first unified release
+- **.NET 6** (2021) – LTS, introduced MAUI
+- **.NET 7** (2022) – standard support
+- **.NET 8** (2023) – LTS, current long-term support release
+- **.NET 9** (2024) – standard support, latest release
+
+LTS versions are supported for 3 years; standard releases for 18 months.
+
+## ASP.NET / ASP.NET Core
+These are web frameworks built *on top of* .NET, not separate runtimes. ASP.NET runs on .NET Framework; ASP.NET Core runs on modern .NET.
+
+---
+
+**In short**, if you're starting something new today, you should be on **.NET 8** (LTS) or **.NET 9**. .NET Framework 4.8 is only relevant for maintaining legacy Windows applications.
 
 ## Data Types
 
